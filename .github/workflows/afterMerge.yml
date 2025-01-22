@@ -8,6 +8,7 @@ jobs:
   after_pr_merge:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - uses: PieterT2000/gh-housekeeping@latest
         with:
