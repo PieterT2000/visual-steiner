@@ -1,0 +1,14 @@
+name: PR
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  link-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: PieterT2000/gh-housekeeping@0.1.0
+        with:
+          task: link-issue
+          token: ${{ secrets.GITHUB_TOKEN }}
