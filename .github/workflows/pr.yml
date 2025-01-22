@@ -10,5 +10,5 @@ jobs:
     steps:
       - uses: PieterT2000/gh-housekeeping@latest
         with:
-          task: link-issue
+          task: autolink-issue
           token: ${{ secrets.GITHUB_TOKEN }}
