@@ -1,0 +1,20 @@
+name: After PR merged
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  after_pr_merge:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - uses: PieterT2000/gh-housekeeping@latest
+        with:
+          task: update-issue-status
+          token: ${{ secrets.GITHUB_TOKEN }}
+          project-name: Test project
+          done-column: Done
+          qa-column: QA
+          skip-qa-label: skip qa
