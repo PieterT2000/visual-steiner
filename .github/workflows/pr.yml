@@ -7,8 +7,7 @@ on:
 jobs:
   link-issue:
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
+    permissions: write-all
     steps:
       - uses: PieterT2000/gh-housekeeping@latest
         with:
