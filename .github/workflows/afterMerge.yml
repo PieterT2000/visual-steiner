@@ -1,4 +1,4 @@
-name: After PR merged
+name: After PR merged (update issue status)
 
 on:
   pull_request:
