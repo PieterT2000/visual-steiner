@@ -8,7 +8,7 @@ jobs:
   link-issue:
     runs-on: ubuntu-latest
     steps:
-      - uses: PieterT2000/gh-housekeeping@0.1.0
+      - uses: PieterT2000/gh-housekeeping@latest
         with:
           task: link-issue
           token: ${{ secrets.GITHUB_TOKEN }}
