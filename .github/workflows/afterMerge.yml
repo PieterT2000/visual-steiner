@@ -13,7 +13,8 @@ jobs:
       - uses: PieterT2000/gh-housekeeping@latest
         with:
           task: update-issue-status
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # Custom PAT due to projectsV2 API limitation
+          token: ${{ secrets.TOKEN }}
           project-name: Test project
           done-column: Done
           qa-column: QA
