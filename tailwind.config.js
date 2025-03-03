@@ -21,9 +21,12 @@ export default {
   			layer1: 'hsl(var(--layer1))',
   			layer2: 'hsl(var(--layer2))',
   			text: 'hsl(var(--text))',
+			label: 'hsl(var(--label))',
   			active: 'hsl(var(--selected-text))',
   			border: 'hsl(var(--border))',
+			inputBorder: 'rgb(var(--input-border))',
   			background: 'hsl(var(--background))',
+			
   			foreground: 'hsl(var(--foreground))',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
@@ -46,7 +49,7 @@ export default {
   				foreground: 'hsl(var(--destructive-foreground))'
   			},
   			input: 'hsl(var(--input))',
-  			ring: 'hsl(var(--ring))',
+  			ring: 'var(--ring)',
   			chart: {
   				'1': 'hsl(var(--chart-1))',
   				'2': 'hsl(var(--chart-2))',
@@ -61,7 +64,10 @@ export default {
   			canvas: 'calc(100vw - var(--sidebar-width) - var(--navbar-width))'
   		},
   		boxShadow: {
-  			'icon-bg': 'var(--shadow-icon-bg)'
+  			'icon-bg': 'var(--shadow-icon-bg)',
+			'inputFocus': '0 0 5px 0 var(--tw-shadow-color)',
+			'canvasBox': '0 2px 8px 0 rgba(0, 0, 0, 0.1)',
+			'canvasBoxItem': '0 2px 8px 0 var(--tw-shadow-color)'
   		},
   		keyframes: {
   			'accordion-down': {

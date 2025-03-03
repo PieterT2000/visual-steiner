@@ -1,30 +1,61 @@
 import Graph from "graphology";
 import { calcSMT } from "./steiner-utils.ts";
 import { SMTType } from "./steiner-utils.ts";
-import { GraphMutationItem, MutationEdge } from "@/types.ts";
+import { EdgeMutation, Edge, SupportedAlgorithms } from "@/types.ts";
 import { nanoid as generateId } from "nanoid";
 import { primsMST } from "./algorithms/prims.ts";
+import { calcEdgeWeights } from "./graph-utils";
+import { toCompleteGraph } from "./graph-utils";
 
-interface Context {
-  graph: Graph;
+interface Context<TGraph extends Graph> {
+  graph: TGraph;
 }
 
-export const calculateSMT = ({ graph }: Context, type: SMTType) => {
-  const nodes = graph.mapNodes((id, attr) => [id, attr.x, attr.y]);
+type ComputeResult<
+  TGraph,
+  TMeta extends undefined | { [key: string]: unknown } = undefined
+> = {
+  edgeMutations: Edge[];
+  mutationTimestamps?: number[];
+  graph: TGraph;
+  length: number;
+  /**
+   * Algorithm-specific metadata about the computation
+   */
+  meta: TMeta;
+};
+
+type SteinerMeta = {
+  steinerNodeIds: string[];
+};
+
+const smtAlgorithmMap: Record<SMTType, SupportedAlgorithms> = {
+  rectilinear: SupportedAlgorithms.RSMT,
+  euclidean: SupportedAlgorithms.ESMT,
+};
+
+export const calculateSMT = <TGraph extends Graph>(
+  type: SMTType,
+  { graph }: Context<TGraph>
+): ComputeResult<TGraph, SteinerMeta> => {
+  const graphCopy = graph.copy() as TGraph;
+  const nodes = graphCopy.mapNodes((id, attr) => [id, attr.x, attr.y] as const);
   const nodeIds = nodes.map((n) => n[0]);
-  const terms = nodes.map((n) => n.slice(1)).flat();
+  const terms = nodes.map((n) => n.slice(1)).flat() as number[];
   const { length, nsps, nedges, sps, edges } = calcSMT(terms, type);
 
   // add steiner points to graph
   const steinerNodeIds: string[] = [];
   for (let i = 0; i < nsps; i += 1) {
     const id = `sp-${generateId()}`;
-    graph.addNode(id, {
+    graphCopy.addNode(id, {
       x: sps[i * 2],
       y: sps[i * 2 + 1],
       size: 10,
       label: `SP ${i + 1}`,
       isSteiner: true,
+      steinerType: type,
+      algorithm: smtAlgorithmMap[type],
     });
     steinerNodeIds.push(id);
   }
@@ -35,64 +66,59 @@ export const calculateSMT = ({ graph }: Context, type: SMTType) => {
   // also find node ids for steiner points
 
   // add edges to graph
-  const edgeMutations: MutationEdge[] = [];
+  const edgeMutations: Edge[] = [];
   for (let i = 0; i < nedges; i += 1) {
     const v0 = allNodeIds[edges[i * 2]];
     const v1 = allNodeIds[edges[i * 2 + 1]];
-    const existingEdgeId = graph.edge(v0, v1);
-    if (!existingEdgeId) {
-      const edgeId = graph.addEdge(v0, v1, {
-        visible: false,
+    // console.log(v0, v1, edges, allNodeIds);
+    // console.log(type, i * 2, i * 2 + 1);
+    const existingEdgeId = graphCopy.edge(v0, v1);
+    let edgeId = existingEdgeId;
+    if (!edgeId) {
+      edgeId = graphCopy.addEdge(v0, v1, {
+        hidden: true,
+        algorithm: smtAlgorithmMap[type],
       });
-      edgeMutations.push({ id: edgeId, source: v0, target: v1 });
-    } else {
-      edgeMutations.push({ id: existingEdgeId, source: v0, target: v1 });
     }
+
+    edgeMutations.push({
+      id: edgeId,
+      source: v0,
+      target: v1,
+    });
   }
 
   return {
     edgeMutations,
-    steinerNodeIds,
-    graphLength: length,
+    length,
+    meta: {
+      steinerNodeIds,
+    },
+    graph: graphCopy,
   };
 };
 
-export function calculatePrimsMST({ graph }: Context) {
-  const treeMutationHistory: GraphMutationItem[] = [];
-  // generate all edges
-  const order = graph.order;
-  const nodes = graph.nodes();
-  const newGraph = graph.emptyCopy(); // only copy nodes
-  for (let i = 0; i < order; i++) {
-    const sourceNode = nodes[i];
-    for (let j = i + 1; j < order; j++) {
-      const targetNode = nodes[j];
-      const sourceAttr = graph.getNodeAttributes(sourceNode);
-      const targetAttr = graph.getNodeAttributes(targetNode);
-      const weight = Math.hypot(
-        sourceAttr.x - targetAttr.x,
-        sourceAttr.y - targetAttr.y
-      );
-      newGraph.addEdge(sourceNode, targetNode, {
-        weight,
-        visible: true,
-      });
-    }
-  }
-  primsMST(newGraph, (mutation) => {
-    treeMutationHistory.push(mutation);
-    // add edge to graph if it doesn't exist for later highlighting
-    if (!graph.hasEdge(mutation.edge.id)) {
-      // console.log("add edge to graph", mutation.edge.id);
-      graph.addEdge(mutation.edge.source, mutation.edge.target, {
-        id: mutation.edge.id,
-        // hide the edge until it becomes visible as part of the animation
-        hidden: false,
-      });
-    }
-  });
+export function calculatePrimsMST<TGraph extends Graph>({
+  graph,
+}: Context<TGraph>): ComputeResult<TGraph> {
+  const edgeMutations: EdgeMutation[] = [];
+  const graphCopy = graph.copy();
+  toCompleteGraph(graphCopy);
+  calcEdgeWeights(graphCopy);
+  const mst = primsMST(graphCopy, (edge) => {
+    edgeMutations.push(edge);
+  }) as TGraph;
+  const treeLength = mst
+    .mapEdges((_, attributes) => {
+      return attributes.weight;
+    })
+    .reduce((acc, weight) => acc + weight, 0);
 
   return {
-    treeMutationHistory,
+    edgeMutations: edgeMutations.map((i) => i.edge),
+    mutationTimestamps: edgeMutations.map((i) => i.timestamp),
+    graph: mst,
+    length: treeLength,
+    meta: undefined,
   };
 }

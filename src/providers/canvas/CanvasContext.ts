@@ -1,15 +1,24 @@
+import { CanvasControl, CanvasMode } from "@/features/canvas/types.ts";
 import { SupportedAlgorithms } from "@/types.ts";
 import Graph from "graphology";
 import { createContext, useContext } from "react";
-import Sigma from "sigma";
 
 export interface CanvasContext {
   graph: Graph;
-  setGraph: (graph: Graph) => void;
-  sigma: Sigma | undefined;
-  setSigma: (sigma: Sigma | undefined) => void;
+  replaceGraphInContext: (newGraph: Graph) => void;
+  updateInitialGraph: (newGraph: Graph) => void;
+  initialGraphRef: React.MutableRefObject<Graph>;
   activeAlgorithm: SupportedAlgorithms | undefined;
-  setActiveAlgorithm: (algorithm: SupportedAlgorithms | undefined) => void;
+  setActiveAlgorithm: React.Dispatch<
+    React.SetStateAction<SupportedAlgorithms | undefined>
+  >;
+  controlRef: React.RefObject<CanvasControl>;
+  canvasImageUrl: string | null;
+  setCanvasImageUrl: React.Dispatch<React.SetStateAction<string | null>>;
+  canvasMode: CanvasMode;
+  setCanvasMode: React.Dispatch<React.SetStateAction<CanvasMode>>;
+  graphDirty: boolean;
+  setGraphDirty: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const CanvasContext = createContext<CanvasContext | undefined>(

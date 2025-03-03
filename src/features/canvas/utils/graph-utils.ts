@@ -1,4 +1,8 @@
 import { UndirectedGraph } from "graphology";
+import type { Attributes } from "graphology-types";
+import { AlgorithmDisplaySettings } from "../types.ts";
+import { SupportedAlgorithms } from "@/types.ts";
+import { GRAPH_DEFAULT_SETTINGS } from "../consts";
 
 export function createDefaultGraph() {
   const defaultGraph = new UndirectedGraph();
@@ -26,11 +30,47 @@ export function createDefaultGraph() {
     y: 0,
     size: 10,
   });
-  defaultGraph.addEdge(1, 2);
-  defaultGraph.addEdge(1, 3);
-  defaultGraph.addEdge(1, 4);
-  defaultGraph.addEdge(2, 3);
-  defaultGraph.addEdge(2, 4);
-  defaultGraph.addEdge(3, 4);
+  const edgeAttrs = {
+    hidden: true,
+    initialEdge: true,
+  };
+  defaultGraph.addEdge(1, 2, edgeAttrs);
+  defaultGraph.addEdge(1, 3, edgeAttrs);
+  defaultGraph.addEdge(1, 4, edgeAttrs);
+  defaultGraph.addEdge(2, 3, edgeAttrs);
+  defaultGraph.addEdge(2, 4, edgeAttrs);
+  defaultGraph.addEdge(3, 4, edgeAttrs);
   return defaultGraph;
+}
+
+export function isSteinerNode(nodeAttrs: Attributes) {
+  return !!nodeAttrs.isSteiner;
+}
+
+export function isRectSteinerNode(nodeAttrs: Attributes) {
+  return nodeAttrs.steinerType === "rectilinear";
+}
+
+export function isEuclidSteinerNode(nodeAttrs: Attributes) {
+  return nodeAttrs.steinerType === "euclidean";
+}
+
+export function getNodeColor(
+  nodeAttrs: Attributes,
+  settings: AlgorithmDisplaySettings,
+  isDrawMode: boolean
+) {
+  if (isSteinerNode(nodeAttrs)) {
+    return isDrawMode
+      ? GRAPH_DEFAULT_SETTINGS.steinerNodeColor
+      : (settings as AlgorithmDisplaySettings<SupportedAlgorithms.ESMT>)?.colors
+          .steinerVertex;
+  }
+  return isDrawMode
+    ? GRAPH_DEFAULT_SETTINGS.nodeColor
+    : settings?.colors?.vertex;
+}
+
+export function isDrawNode(nodeAttrs: Attributes) {
+  return nodeAttrs.isTemp;
 }

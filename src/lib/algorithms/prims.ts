@@ -1,9 +1,9 @@
-import { GraphMutationItem } from "@/types.ts";
+import { EdgeMutation, SupportedAlgorithms } from "@/types.ts";
 import Graph from "graphology";
 
 export function primsMST(
   graph: Graph,
-  onTreeUpdate?: (mutation: GraphMutationItem) => void
+  onTreeUpdate?: (mutation: EdgeMutation) => void
 ) {
   const tree = new Graph();
   const intree: Record<string, boolean> = {};
@@ -46,9 +46,17 @@ export function primsMST(
       if (!edgeId) {
         throw new Error("PrimMST: Attempting to add non-existent edge to MST");
       }
-      tree.addEdge(parent[v], v, { id: edgeId });
+      tree.addEdge(parent[v], v, {
+        id: edgeId,
+        algorithm: SupportedAlgorithms.PRIMS_MST,
+        ...graph.getEdgeAttributes(edgeId),
+      });
       onTreeUpdate?.({
-        edge: { id: edgeId, source: parent[v], target: v },
+        edge: {
+          id: edgeId,
+          source: parent[v],
+          target: v,
+        },
         timestamp: Date.now(),
       });
     }

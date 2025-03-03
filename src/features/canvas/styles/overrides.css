@@ -1,0 +1,15 @@
+@tailwind utilities;
+
+@layer utilities {
+  .bg-dotted {
+    background-image: url("/dotted-pattern.png");
+    background-size: var(--dotted-pattern-size) var(--dotted-pattern-size);
+    background-repeat: repeat;
+    background-color: hsl(var(--accent));
+    /* background-position: center center; */
+  }
+}
+
+div.react-sigma {
+  @apply bg-dotted;
+}

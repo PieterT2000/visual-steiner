@@ -1,0 +1,534 @@
+\documentclass{l4proj}
+
+    
+%==============================================================================
+% Put any additional packages here
+% You can add any packages you want, as long as it does not alter
+% the overall format (e.g. don't change the margins or the reference style).
+%
+\usepackage{pdfpages} % if you want to include a PDF for an ethics checklist, for example
+%
+%
+
+\begin{document}
+
+%==============================================================================
+%% METADATA
+\title{Level 4 Project Report Template} % change this to your title
+\author{Pieter van Tuijl}
+\date{February 21, 2025}
+
+\maketitle
+
+%==============================================================================
+%% ABSTRACT
+\begin{abstract}
+    Every abstract follows a similar pattern. Motivate; set aims; describe work; explain results.
+    \vskip 0.5em
+    ``XYZ is bad. This project investigated ABC to determine if it was better.
+    ABC used XXX and YYY to implement ZZZ. This is particularly interesting as XXX and YYY have
+    never been used together. It was found that
+    ABC was 20\% better than XYZ, though it caused rabies in half of subjects.''
+\end{abstract}
+
+%==============================================================================
+%% ACKNOWLEDGEMENTS
+\chapter*{Acknowledgements}
+% Enter any acknowledgements here. This is optional; you may leave this blank if you wish,
+% or remove the entire chapter
+%
+% We give thanks to the Gods of LaTeX, who in their eternal graciousness, 
+% have granted that this document may compile without errors or overfull hboxes.
+%
+
+%==============================================================================
+
+% EDUCATION REUSE CONSENT FORM
+% If you consent to your project being shown to future students for educational purposes
+% then insert your name and the date below to  sign the education use form that appears in the front of the document. 
+% You must explicitly give consent if you wish to do so.
+% If you sign, your project may be included in the Hall of Fame if it scores particularly highly.
+%
+% Please note that you are under no obligation to sign 
+% this declaration, but doing so would help future students.
+%
+%\def\consentname {My Name} % your full name
+%\def\consentdate {20 March 2018} % the date you agree
+%
+\educationalconsent
+
+
+%==============================================================================
+\tableofcontents
+
+%==============================================================================
+%% Notes on formatting
+%==============================================================================
+% The first page, abstract and table of contents are numbered using Roman numerals and are not
+% included in the page count. 
+%
+% From now on pages are numbered
+% using Arabic numerals. Therefore, immediately after the first call to \chapter we need the call
+% \pagenumbering{arabic} and this should be called once only in the document. 
+%
+%
+% The first Chapter should then be on page 1. 
+
+% PAGE LIMITS
+% You are allowed 40 pages for a 40 credit project and 30 pages for a 
+% 20 credit report. 
+% This includes everything numbered in Arabic numerals (excluding front matter) up
+% to but *excluding the appendices and bibliography*.
+%
+% FORMATTING
+% You must not alter text size (it is currently 10pt) or alter margins or spacing.
+% Do not alter the bibliography style. 
+%
+%==================================================================================================================================
+%
+% IMPORTANT
+% The chapter headings and structure here are **suggestions**. You don't have to follow this model if
+% it doesn't fit your project. Every project should have an introduction and conclusion,
+% however.  If in doubt, your supervisor can give you specific guidance; their view takes precedence over
+% the structure suggested here.
+%
+%==================================================================================================================================
+\chapter{Introduction}
+
+% reset page numbering. Don't remove this!
+\pagenumbering{arabic}
+
+% You can use \todo{} to mark text that needs to be fixed. Anything inside will appear as highlighted 
+% text in the final copy, and you will also get warnings when you compile (so you don't
+% forget to take them out!)
+
+\section{Context}
+
+Algorithms drive much of our digital world. They are used in everything from search engines to social media to self-driving cars. Algorithms operate on data and both the data and the operations can be complex and difficult to visualise without good tools. This is particularly the case for spatial data.
+
+Graph data structures are a common way to represent spatial data, where locations are modelled as nodes and connections between the locations as edges. Trees are a type of graph that connect all nodes in a single, connected network. In other words, for each node in the network, there exists exactly one path to all other nodes \citep{tree_graph_theory}.
+\\
+Here, we will discuss the visualisation of two types of trees: minimum spanning trees and Steiner minimal trees. Additionally, in this project, we only consider the Euclidian variants of these trees. This means that the Euclidian distance between two nodes is used as the edge weight.
+
+\subsection{Minimum Spanning Tree}
+A minimum spanning tree (MST) is a tree that connects all nodes in a network with the least amount of total distance.
+There exist well-established algorithms for finding the MST of a graph, such as Kruskal's or Prim's algorithm. These algorithms run in polynomial time and work by building up the MST one edge at a time.
+\subsection{Steiner Minimal Tree}
+A Steiner minimal tree (SMT) is a variant of the MST.
+Apart from connecting all nodes in the network with minimal total distance, other nodes may be added to potentially further reduce the total distance. These additional nodes are called Steiner points.
+A SMT with zero Steiner points is equivalent to an MST. In contrast to the MST algorithm, finding the optimal SMT is a NP-hard problem, meaning, there exists no polynomial time algorithm for finding the optimal SMT (more on this later).
+
+\colorbox{yellow}{TODO: show example of MST vs SMT}
+
+
+
+\section{Aims}
+Many tools exist for visualising minimum spanning trees. However, few tools exist for visualising Steiner minimal trees. This is related to the earlier-mentioned fact that the optimal SMT for a given set of nodes is computationally hard to find. This has historically imposed serious limits on the instance sizes that can be solved on an average computer, thus limiting the practicality and usefulness of SMT visualisation tools.
+Advances in computer hardware and efficient algorithm implementations, however, have made it possible to solve instances of several orders of magnitude larger than previously possible in reasonable time \citep{29ee725d11ac4584b72f7fe66c4326fa}.
+
+The few existing visualisation tools lack flexibility and a user-friendly interface. (see background)
+We aim to fill this gap by developing a user-friendly interface that allows users to visualise SMTs alongside MSTs for graph instances of arbitrary sizes. These instances can be generated randomly or imported from a file.
+
+The interface should be able to display the MST and SMT of a graph simultaneously, allowing for direct comparison of their structures and total length.
+\\
+Comparison of length will be helpful for building intuition for the \textit{Steiner Ratio},  which is defined as the least upper bound (supremum) of the ratio between the length of the MST and the SMT.  \cite{Gilbert1968SteinerMT} conjectured that this ratio is $$\frac{2}{\sqrt{3}} \approx 1.1547$$
+In other words, the \textit{Steiner Ratio} states that the MST is at most 15\% longer than the SMT in the worst case.
+
+Lastly, the interface should be able to dynamically update the solution when the user modifies the graph.
+
+\section{Dissertation Outline}
+
+\colorbox{yellow}{TODO: write at the end of the project}
+
+%- What is this thing/problem about?
+%- Why is it important?
+%- What is the problem?
+%- How is this dissertation going to be structured.
+
+
+
+%==================================================================================================================================
+
+\chapter{Background}
+Let's start with the theoretical background. Then we will proceed to talk about existing tools and how they compare to our aims.
+
+Start with explaining why the SMT is a NP hard problem. State what algorithms exist and why they are not polynomial time algorithms.
+
+\section{Existing visualisation tools}
+
+During the research phase, we found three related projects on Github whose features and limitations will be discussed in this section.
+
+\subsection{Steiner-Tree-Visualisation (STV)}
+STV is a Python-based GUI tool developed by \cite{Steiner-Tree-Visualisation}. It provides a simple interface for visualising Euclidian MSTs and SMTs, displaying their lengths and allowing for direct comparison. However, the tool is limited by a few factors.
+\\
+First, a brute-force approximation algorithm is used to find the SMT, and despite the ${O(n^4 \log(n))}$ complexity, the tool freezes for instances larger than 40 nodes.
+Additionally, the GUI is not very flexible. For example, you cannot overlay the MST and SMT simultaneously and the canvas does not support zooming or resizing. It is also not possible to import a graph from an external file or export the results.
+Lastly, the tool does not work out of the box and requires code patching to run in modern Python environments.
+
+\subsection{ESteiner-3D (E3D)}
+E3D is another Python-based tool developed by \cite{ESteiner-3D}. It is a program that can be used to find the Euclidian SMT of a graph and supports 2D and 3D graphs. However, the tool is limited due to a lack of an interface, whether it a GUI or CLI. It also does not support the simultaneous visualisation of MSTs and SMTs and the comparison of their lengths.
+
+\subsection{Steiner-Tree (ST)}
+ST is a Javascript-based tool developed by \cite{Steiner-Tree}. It is a web page that can be used to find the Rectilinear SMT of a graph. Although the tool has a nice interface and provides a flexible canvas, it does not support MSTs or SMTs in the Euclidian plane (L2-norm). Furthermore, it is not possible to import a graph from an external file or export the results.
+
+\section{Theoretical background}
+
+\section{Algorithms}
+
+\section{Problem definition}
+
+Given a graph $G = (V, E)$ and a set of Steiner points $S \subseteq V$, find the SMT $T$ of $G$ with respect to $S$.`
+
+% $$f(k) = \frac{(2k - 4)!}{2^{k-2} \cdot (k-2)!}$$
+
+% $$r(x) = \frac{L_{T}}{L_{MST}}$$
+%==================================================================================================================================
+\chapter{Analysis/Requirements}
+What is the problem that you want to solve, and how did you arrive at it?
+\section{Guidance}
+Make it clear how you derived the constrained form of your problem via a clear and logical process.
+
+The analysis chapter explains the process by which you arrive at a concrete design. In software
+engineering projects, this will include a statement of the requirement capture process and the
+derived requirements.
+
+In research projects, it will involve developing a design drawing on
+the work established in the background, and stating how the space of possible projects was
+sensibly narrowed down to what you have done.
+
+%==================================================================================================================================
+\chapter{Design}
+How is this problem to be approached, without reference to specific implementation details?
+\section{Guidance}
+Design should cover the abstract design in such a way that someone else might be able to do what you did,
+but with a different language or library or tool. This might include overall system architecture diagrams,
+user interface designs (wireframes/personas/etc.), protocol specifications, algorithms, data set design choices,
+among others. Specific languages, technical choices, libraries and such like should not usually appear in the design. These are implementation details.
+
+
+%==================================================================================================================================
+\chapter{Implementation}
+What did you do to implement this idea, and what technical achievements did you make?
+\section{Guidance}
+You can't talk about everything. Cover the high level first, then cover important, relevant or impressive details.
+
+\section{General guidance for technical writing}
+
+These points apply to the whole dissertation, not just this chapter.
+
+\subsection{Figures}
+\emph{Always} refer to figures included, like Figure \ref{fig:relu}, in the body of the text. Include full, explanatory captions and make sure the figures look good on the page.
+You may include multiple figures in one float, as in Figure \ref{fig:synthetic}, using \texttt{subcaption}, which is enabled in the template.
+
+
+% Figures are important. Use them well.
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/relu.pdf}
+
+    \caption{In figure captions, explain what the reader is looking at: ``A schematic of the rectifying linear unit, where $a$ is the output amplitude,
+        $d$ is a configurable dead-zone, and $Z_j$ is the input signal'', as well as why the reader is looking at this:
+        ``It is notable that there is no activation \emph{at all} below 0, which explains our initial results.''
+        \textbf{Use vector image formats (.pdf) where possible}. Size figures appropriately, and do not make them over-large or too small to read.
+    }
+
+    % use the notation fig:name to cross reference a figure
+    \label{fig:relu}
+\end{figure}
+
+
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{images/synthetic.png}
+        \caption{Synthetic image, black on white.}
+        \label{fig:syn1}
+    \end{subfigure}
+    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+    %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{images/synthetic_2.png}
+        \caption{Synthetic image, white on black.}
+        \label{fig:syn2}
+    \end{subfigure}
+    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+    %(or a blank line to force the subfigure onto a new line)    
+    \caption{Synthetic test images for edge detection algorithms. \subref{fig:syn1} shows various gray levels that require an adaptive algorithm. \subref{fig:syn2}
+        shows more challenging edge detection tests that have crossing lines. Fusing these into full segments typically requires algorithms like the Hough transform.
+        This is an example of using subfigures, with \texttt{subref}s in the caption.
+    }\label{fig:synthetic}
+\end{figure}
+
+\clearpage
+
+\subsection{Equations}
+
+Equations should be typeset correctly and precisely. Make sure you get parenthesis sizing correct, and punctuate equations correctly
+(the comma is important and goes \textit{inside} the equation block). Explain any symbols used clearly if not defined earlier.
+
+For example, we might define:
+\begin{equation}
+    \hat{f}(\xi) = \frac{1}{2}\left[ \int_{-\infty}^{\infty} f(x) e^{2\pi i x \xi} \right],
+\end{equation}
+where $\hat{f}(\xi)$ is the Fourier transform of the time domain signal $f(x)$.
+
+\subsection{Algorithms}
+Algorithms can be set using \texttt{algorithm2e}, as in Algorithm \ref{alg:metropolis}.
+
+% NOTE: line ends are denoted by \; in algorithm2e
+\begin{algorithm}
+    \DontPrintSemicolon
+    \KwData{$f_X(x)$, a probability density function returing the density at $x$.\; $\sigma$ a standard deviation specifying the spread of the proposal distribution.\;
+        $x_0$, an initial starting condition.}
+    \KwResult{$s=[x_1, x_2, \dots, x_n]$, $n$ samples approximately drawn from a distribution with PDF $f_X(x)$.}
+    \Begin{
+        $s \longleftarrow []$\;
+        $p \longleftarrow f_X(x)$\;
+        $i \longleftarrow 0$\;
+        \While{$i < n$}
+        {
+            $x^\prime \longleftarrow \mathcal{N}(x, \sigma^2)$\;
+            $p^\prime \longleftarrow f_X(x^\prime)$\;
+            $a \longleftarrow \frac{p^\prime}{p}$\;
+            $r \longleftarrow U(0,1)$\;
+            \If{$r<a$}
+            {
+                $x \longleftarrow x^\prime$\;
+                $p \longleftarrow f_X(x)$\;
+                $i \longleftarrow i+1$\;
+                append $x$ to $s$\;
+            }
+        }
+    }
+
+    \caption{The Metropolis-Hastings MCMC algorithm for drawing samples from arbitrary probability distributions,
+        specialised for normal proposal distributions $q(x^\prime|x) = \mathcal{N}(x, \sigma^2)$. The symmetry of the normal distribution means the acceptance rule takes the simplified form.}\label{alg:metropolis}
+\end{algorithm}
+
+\subsection{Tables}
+
+If you need to include tables, like Table \ref{tab:operators}, use a tool like https://www.tablesgenerator.com/ to generate the table as it is
+extremely tedious otherwise.
+
+\begin{table}[]
+    \caption{The standard table of operators in Python, along with their functional equivalents from the \texttt{operator} package. Note that table
+        captions go above the table, not below. Do not add additional rules/lines to tables. }\label{tab:operators}
+    %\tt 
+    \rowcolors{2}{}{gray!3}
+    \begin{tabular}{@{}lll@{}}
+        %\toprule
+        \textbf{Operation}    & \textbf{Syntax}                         & \textbf{Function}                          \\ %\midrule % optional rule for header
+        Addition              & \texttt{a + b}                          & \texttt{add(a, b)}                         \\
+        Concatenation         & \texttt{seq1 + seq2}                    & \texttt{concat(seq1, seq2)}                \\
+        Containment Test      & \texttt{obj in seq}                     & \texttt{contains(seq, obj)}                \\
+        Division              & \texttt{a / b}                          & \texttt{div(a, b) }                        \\
+        Division              & \texttt{a / b}                          & \texttt{truediv(a, b) }                    \\
+        Division              & \texttt{a // b}                         & \texttt{floordiv(a, b)}                    \\
+        Bitwise And           & \texttt{a \& b}                         & \texttt{and\_(a, b)}                       \\
+        Bitwise Exclusive Or  & \texttt{a \textasciicircum b}           & \texttt{xor(a, b)}                         \\
+        Bitwise Inversion     & \texttt{$\sim$a}                        & \texttt{invert(a)}                         \\
+        Bitwise Or            & \texttt{a | b}                          & \texttt{or\_(a, b)}                        \\
+        Exponentiation        & \texttt{a ** b}                         & \texttt{pow(a, b)}                         \\
+        Identity              & \texttt{a is b}                         & \texttt{is\_(a, b)}                        \\
+        Identity              & \texttt{a is not b}                     & \texttt{is\_not(a, b)}                     \\
+        Indexed Assignment    & \texttt{obj{[}k{]} = v}                 & \texttt{setitem(obj, k, v)}                \\
+        Indexed Deletion      & \texttt{del obj{[}k{]}}                 & \texttt{delitem(obj, k)}                   \\
+        Indexing              & \texttt{obj{[}k{]}}                     & \texttt{getitem(obj, k)}                   \\
+        Left Shift            & \texttt{a \textless{}\textless b}       & \texttt{lshift(a, b)}                      \\
+        Modulo                & \texttt{a \% b}                         & \texttt{mod(a, b)}                         \\
+        Multiplication        & \texttt{a * b}                          & \texttt{mul(a, b)}                         \\
+        Negation (Arithmetic) & \texttt{- a}                            & \texttt{neg(a)}                            \\
+        Negation (Logical)    & \texttt{not a}                          & \texttt{not\_(a)}                          \\
+        Positive              & \texttt{+ a}                            & \texttt{pos(a)}                            \\
+        Right Shift           & \texttt{a \textgreater{}\textgreater b} & \texttt{rshift(a, b)}                      \\
+        Sequence Repetition   & \texttt{seq * i}                        & \texttt{repeat(seq, i)}                    \\
+        Slice Assignment      & \texttt{seq{[}i:j{]} = values}          & \texttt{setitem(seq, slice(i, j), values)} \\
+        Slice Deletion        & \texttt{del seq{[}i:j{]}}               & \texttt{delitem(seq, slice(i, j))}         \\
+        Slicing               & \texttt{seq{[}i:j{]}}                   & \texttt{getitem(seq, slice(i, j))}         \\
+        String Formatting     & \texttt{s \% obj}                       & \texttt{mod(s, obj)}                       \\
+        Subtraction           & \texttt{a - b}                          & \texttt{sub(a, b)}                         \\
+        Truth Test            & \texttt{obj}                            & \texttt{truth(obj)}                        \\
+        Ordering              & \texttt{a \textless b}                  & \texttt{lt(a, b)}                          \\
+        Ordering              & \texttt{a \textless{}= b}               & \texttt{le(a, b)}                          \\
+        % \bottomrule
+    \end{tabular}
+\end{table}
+\subsection{Code}
+
+Avoid putting large blocks of code in the report (more than a page in one block, for example). Use syntax highlighting if possible, as in Listing \ref{lst:callahan}.
+
+\begin{lstlisting}[language=python, float, caption={The algorithm for packing the $3\times 3$ outer-totalistic binary CA successor rule into a 
+    $16\times 16\times 16\times 16$ 4 bit lookup table, running an equivalent, notionally 16-state $2\times 2$ CA.}, label=lst:callahan]
+    def create_callahan_table(rule="b3s23"):
+        """Generate the lookup table for the cells."""        
+        s_table = np.zeros((16, 16, 16, 16), dtype=np.uint8)
+        birth, survive = parse_rule(rule)
+
+        # generate all 16 bit strings
+        for iv in range(65536):
+            bv = [(iv >> z) & 1 for z in range(16)]
+            a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p = bv
+
+            # compute next state of the inner 2x2
+            nw = apply_rule(f, a, b, c, e, g, i, j, k)
+            ne = apply_rule(g, b, c, d, f, h, j, k, l)
+            sw = apply_rule(j, e, f, g, i, k, m, n, o)
+            se = apply_rule(k, f, g, h, j, l, n, o, p)
+
+            # compute the index of this 4x4
+            nw_code = a | (b << 1) | (e << 2) | (f << 3)
+            ne_code = c | (d << 1) | (g << 2) | (h << 3)
+            sw_code = i | (j << 1) | (m << 2) | (n << 3)
+            se_code = k | (l << 1) | (o << 2) | (p << 3)
+
+            # compute the state for the 2x2
+            next_code = nw | (ne << 1) | (sw << 2) | (se << 3)
+
+            # get the 4x4 index, and write into the table
+            s_table[nw_code, ne_code, sw_code, se_code] = next_code
+
+        return s_table
+
+\end{lstlisting}
+
+%==================================================================================================================================
+\chapter{Evaluation}
+How good is your solution? How well did you solve the general problem, and what evidence do you have to support that?
+
+\section{Guidance}
+\begin{itemize}
+    \item
+          Ask specific questions that address the general problem.
+    \item
+          Answer them with precise evidence (graphs, numbers, statistical
+          analysis, qualitative analysis).
+    \item
+          Be fair and be scientific.
+    \item
+          The key thing is to show that you know how to evaluate your work, not
+          that your work is the most amazing product ever.
+\end{itemize}
+
+\section{Evidence}
+Make sure you present your evidence well. Use appropriate visualisations,
+reporting techniques and statistical analysis, as appropriate. The point is not
+to dump all the data you have but to present an argument well supported by evidence gathered.
+
+If you use numerical evidence, specify reasonable numbers of significant digits; don't state ``18.41141\% of users were successful'' if you only had 20 users. If you average \textit{anything}, present both a measure of central tendency (e.g. mean, median) \textit{and} a measure of spread (e.g. standard deviation, min/max, interquartile range).
+
+You can use \texttt{siunitx} to define units, space numbers neatly, and set the precision for the whole LaTeX document.
+
+% setup siunitx to have two decimal places
+\sisetup{
+    round-mode = places,
+    round-precision = 2
+}
+
+For example, these numbers will appear with two decimal places: \num{3.141592}, \num{2.71828}, and this one will appear with reasonable spacing \num{1000000}.
+
+
+
+If you use statistical procedures, make sure you understand the process you are using,
+and that you check the required assumptions hold in your case.
+
+If you visualise, follow the basic rules, as illustrated in Figure \ref{fig:boxplot}:
+\begin{itemize}
+    \item Label everything correctly (axis, title, units).
+    \item Caption thoroughly.
+    \item Reference in text.
+    \item \textbf{Include appropriate display of uncertainty (e.g. error bars, Box plot)}
+    \item Minimize clutter.
+\end{itemize}
+
+See the file \texttt{guide\_to\_visualising.pdf} for further information and guidance.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=1.0\linewidth]{images/boxplot_finger_distance.pdf}
+
+    \caption{Average number of fingers detected by the touch sensor at different heights above the surface, averaged over all gestures. Dashed lines indicate
+        the true number of fingers present. The Box plots include bootstrapped uncertainty notches for the median. It is clear that the device is biased toward
+        undercounting fingers, particularly at higher $z$ distances.
+    }
+
+    % use the notation fig:name to cross reference a figure
+    \label{fig:boxplot}
+\end{figure}
+
+
+%==================================================================================================================================
+\chapter{Conclusion}
+Summarise the whole project for a lazy reader who didn't read the rest (e.g. a prize-awarding committee). This chapter should be short in most dissertations; maybe one to three pages.
+\section{Guidance}
+\begin{itemize}
+    \item
+          Summarise briefly and fairly.
+    \item
+          You should be addressing the general problem you introduced in the
+          Introduction.
+    \item
+          Include summary of concrete results (``the new compiler ran 2x
+          faster'')
+    \item
+          Indicate what future work could be done, but remember: \textbf{you
+              won't get credit for things you haven't done}.
+\end{itemize}
+
+\section{Summary}
+Summarise what you did; answer the general questions you asked in the introduction. What did you achieve? Briefly describe what was built and summarise the evaluation results.
+
+\section{Reflection}
+Discuss what went well and what didn't and how you would do things differently if you did this project again.
+
+\section{Future work}
+Discuss what you would do if you could take this further -- where would the interesting directions to go next be? (e.g. you got another year to work on it, or you started a company to work on this, or you pursued a PhD on this topic)
+
+%==================================================================================================================================
+%
+% 
+%==================================================================================================================================
+%  APPENDICES  
+
+\begin{appendices}
+
+    \chapter{Appendices}
+
+    Use separate appendix chapters for groups of ancillary material that support your dissertation.
+    Typical inclusions in the appendices are:
+
+    \begin{itemize}
+        \item
+              Copies of ethics approvals (you must include these if you needed to get them)
+        \item
+              Copies of questionnaires etc. used to gather data from subjects. Don't include
+              voluminous data logs; instead submit these electronically alongside your source code.
+        \item
+              Extensive tables or figures that are too bulky to fit in the main body of
+              the report, particularly ones that are repetitive and summarised in the body.
+        \item Outline of the source code (e.g. directory structure),
+              or other architecture documentation like class diagrams.
+        \item User manuals, and any guides to starting/running the software.
+              Your equivalent of \texttt{readme.md} should be included.
+
+    \end{itemize}
+
+    \textbf{Don't include your source code in the appendices}. It will be
+    submitted separately.
+
+
+
+\end{appendices}
+
+%==================================================================================================================================
+%   BIBLIOGRAPHY   
+
+% The bibliography style is agsm (Harvard)
+% The bibliography always appears last, after the appendices.
+
+\bibliographystyle{agsm}
+
+% Force the bibliography not to be numbered
+\renewcommand{\thechapter}{0}
+\bibliography{l4proj}
+
+\end{document}

@@ -1,33 +1,56 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { CanvasContext } from "./CanvasContext.ts";
-import { empty } from "graphology-generators/classic";
-import { UndirectedGraph } from "graphology";
-import { random } from "graphology-layout";
+import { CanvasControl, CanvasMode } from "@/features/canvas/types.ts";
+import { createDefaultGraph } from "@/features/canvas/utils/graph-utils.ts";
+import { replaceGraph } from "@/lib/graph-utils";
+import Graph from "graphology";
+import { useFormSettings } from "../form-settings/FormSettingsContext";
 
 interface CanvasProviderProps {
   children: React.ReactNode;
 }
 
-// import { createDefaultGraph } from "./utils/graph-utils.ts";
-// const defaultGraph = createDefaultGraph();
-const defaultGraph = empty(UndirectedGraph, 10);
-random.assign(defaultGraph, {
-  dimensions: ["x", "y"],
-});
+const defaultGraph = createDefaultGraph();
 
 const CanvasProvider = ({ children }: CanvasProviderProps) => {
-  const [graph, setGraph] = useState<CanvasContext["graph"]>(defaultGraph);
-  const [sigma, setSigma] = useState<CanvasContext["sigma"]>();
+  const [graph] = useState<CanvasContext["graph"]>(defaultGraph);
+  const initialGraphRef = useRef(graph.copy());
   const [activeAlgorithm, setActiveAlgorithm] =
     useState<CanvasContext["activeAlgorithm"]>();
+  const [canvasImageUrl, setCanvasImageUrl] = useState<string | null>(null);
+  const [canvasMode, setCanvasMode] = useState(CanvasMode.Visualize);
+  // By default, solutions are not computed, so the graph is said to be dirty initially
+  const [graphDirty, setGraphDirty] = useState(true);
+  const controlRef = useRef<CanvasControl>(null);
+  /**
+   * Sigma.js does not support graph instance replacements, so instead we
+   * merge the new graph into the cleared existing graph instance.
+   * @param newGraph
+   */
+  const handleReplaceGraph = (newGraph: Graph) => {
+    replaceGraph(graph, newGraph);
+    initialGraphRef.current = newGraph.copy();
+    setCanvasImageUrl(null);
+  };
+
+  const updateInitialGraph = (newGraph: Graph) => {
+    replaceGraph(initialGraphRef.current, newGraph);
+  };
 
   const context: CanvasContext = {
     graph,
-    setGraph,
-    sigma,
-    setSigma,
     activeAlgorithm,
     setActiveAlgorithm,
+    controlRef,
+    canvasImageUrl,
+    setCanvasImageUrl,
+    replaceGraphInContext: handleReplaceGraph,
+    updateInitialGraph,
+    initialGraphRef,
+    canvasMode,
+    setCanvasMode,
+    graphDirty,
+    setGraphDirty,
   };
 
   return (
