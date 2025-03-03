@@ -58,7 +58,7 @@ async function canvasToPngBlob(
     tmpRoot,
     renderer.getSettings()
   );
-  tmpRenderer.setSetting("nodeReducer", (node, data) => {
+  tmpRenderer.setSetting("nodeReducer", (_, data) => {
     return {
       ...data,
       size: 6,
@@ -66,7 +66,7 @@ async function canvasToPngBlob(
       hidden: data.isSteiner && !visibleAlgorithms?.includes(data.algorithm),
     };
   });
-  tmpRenderer.setSetting("edgeReducer", (edge, data) => {
+  tmpRenderer.setSetting("edgeReducer", (_, data) => {
     return {
       ...data,
       size: 5,

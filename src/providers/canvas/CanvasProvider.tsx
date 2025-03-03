@@ -4,7 +4,6 @@ import { CanvasControl, CanvasMode } from "@/features/canvas/types.ts";
 import { createDefaultGraph } from "@/features/canvas/utils/graph-utils.ts";
 import { replaceGraph } from "@/lib/graph-utils";
 import Graph from "graphology";
-import { useFormSettings } from "../form-settings/FormSettingsContext";
 
 interface CanvasProviderProps {
   children: React.ReactNode;

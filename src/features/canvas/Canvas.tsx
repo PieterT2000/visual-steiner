@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-} from "react";
+import { useCallback, useImperativeHandle, useMemo, useRef } from "react";
 import { SupportedAlgorithms } from "@/types.ts";
 import { SMTType } from "@/lib/steiner-utils.ts";
 import { useCanvas } from "@/providers/canvas/CanvasContext.ts";
@@ -41,7 +35,7 @@ const createSolutionInitState = (
 export default function Canvas() {
   const { graph, controlRef, setCanvasImageUrl, initialGraphRef, canvasMode } =
     useCanvas();
-  const { algorithmVisibility, graphPubSub } = useFormSettings();
+  const { algorithmVisibility } = useFormSettings();
 
   const visibleAlgorithmsRef = useValueRef(
     algorithmVisibility

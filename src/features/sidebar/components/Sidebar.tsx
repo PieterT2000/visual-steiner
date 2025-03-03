@@ -39,7 +39,7 @@ const Sidebar = () => {
   const { activeAlgorithmCard, setActiveAlgorithmCard, formRef } =
     useFormSettings();
 
-  const onSubmit = (values: z.infer<typeof algorithmsFormSchema>) => {
+  const onSubmit = (_: z.infer<typeof algorithmsFormSchema>) => {
     // console.log("submitted values", values);
   };
 
