@@ -1,7 +1,6 @@
 import { SupportedAlgorithms } from "@/types.ts";
 import { createContext, useContext } from "react";
 import { Updater } from "use-immer";
-import { createPubSub } from "@/hooks/usePubSub";
 export interface AlgorithmVisibility {
   algorithm: SupportedAlgorithms;
   visible: boolean;
@@ -13,7 +12,6 @@ export interface FormSettingsContext {
   formRef: React.RefObject<HTMLFormElement>;
   algorithmVisibility: AlgorithmVisibility[];
   setAlgorithmVisibility: Updater<AlgorithmVisibility[]>;
-  graphPubSub: ReturnType<typeof createPubSub<"graphUpdated">>;
 }
 
 export const FormSettingsContext = createContext<

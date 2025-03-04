@@ -1,7 +1,7 @@
 import { themeHexColors } from "@/theme";
 
 export const GRAPH_DEFAULT_SETTINGS = {
-  nodeSize: 10,
+  nodeSize: 8,
   nodeColor: themeHexColors.black,
   steinerNodeColor: themeHexColors.primary,
   labelSize: 14,
@@ -10,6 +10,8 @@ export const GRAPH_DEFAULT_SETTINGS = {
   labelColor: themeHexColors.black,
   edgeWidth: 1,
   edgeColor: themeHexColors.black,
+  cameraFitDuration: 500,
+  cameraFitRatio: 1.5,
 };
 // in edit mode:
 // when dragging a node (add temp node and hide original node)

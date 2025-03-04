@@ -1,6 +1,11 @@
 import { themeHexColors } from "@/theme";
 import { SupportedAlgorithms } from "@/types";
 import { Sigma } from "sigma";
+import {
+  isEdgeUsedByVisibleAlgorithms,
+  isNodeUsedByVisibleAlgorithms,
+  isSteinerNode,
+} from "@/lib/graph-utils";
 
 export function getRelativeMousePosition<T extends HTMLElement>(
   event: MouseEvent,
@@ -63,15 +68,21 @@ async function canvasToPngBlob(
       ...data,
       size: 6,
       color: themeHexColors.primary,
-      hidden: data.isSteiner && !visibleAlgorithms?.includes(data.algorithm),
+      // Hide any Steiner nodes not used by visible-toggled algorithms
+      // All other nodes should be visible
+      hidden:
+        isSteinerNode(data) &&
+        !isNodeUsedByVisibleAlgorithms(data, visibleAlgorithms),
     };
   });
+
   tmpRenderer.setSetting("edgeReducer", (_, data) => {
     return {
       ...data,
       size: 5,
       color: themeHexColors.primary,
-      hidden: !visibleAlgorithms?.includes(data.algorithm),
+      // Hide any edges not used by visible-toggled algorithms
+      hidden: !isEdgeUsedByVisibleAlgorithms(data, visibleAlgorithms),
     };
   });
 
@@ -108,6 +119,7 @@ async function canvasToPngBlob(
     // Save the canvas as a PNG image:
     canvas.toBlob((blob) => {
       // Cleanup:
+      tmpRenderer.removeAllListeners();
       tmpRenderer.kill();
       tmpRoot.remove();
       if (blob) {

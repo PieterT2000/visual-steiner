@@ -6,7 +6,6 @@ import { calculatePrimsMST, calculateSMT } from "@/lib/algorithm-helpers.ts";
 import { NodePointProgram } from "sigma/rendering";
 import { SigmaContainer } from "@react-sigma/core";
 import { AlgorithmSolution, CanvasMode } from "./types.ts";
-import { useImmer } from "use-immer";
 import GraphSettingsController from "./controllers/GraphSettingsController.tsx";
 import GraphEventsController from "./controllers/GraphEventsController.tsx";
 import { default as Sigma } from "sigma";
@@ -33,8 +32,15 @@ const createSolutionInitState = (
 });
 
 export default function Canvas() {
-  const { graph, controlRef, setCanvasImageUrl, initialGraphRef, canvasMode } =
-    useCanvas();
+  const {
+    graph,
+    controlRef,
+    setCanvasImageUrl,
+    initialGraphRef,
+    canvasMode,
+    setSolutions,
+    solutions,
+  } = useCanvas();
   const { algorithmVisibility } = useFormSettings();
 
   const visibleAlgorithmsRef = useValueRef(
@@ -42,8 +48,6 @@ export default function Canvas() {
       .filter((item) => item.visible)
       .map((item) => item.algorithm)
   );
-
-  const [solutions, setSolutions] = useImmer<AlgorithmSolution[]>([]);
 
   const sigmaSettings = useMemo(
     () => ({
@@ -71,10 +75,25 @@ export default function Canvas() {
     () => {
       return {
         computeSolutions,
-        setSigmaSettings: (
-          settings: Parameters<Sigma["setSettings"]>[number]
+        triggerUpdateGraphThumbnail: handleGraphUpdated,
+        animatedCameraFit: (
+          duration = GRAPH_DEFAULT_SETTINGS.cameraFitDuration
         ) => {
-          return sigmaRef.current?.setSettings(settings);
+          // Set initial position for fade-in effect
+          sigmaRef.current?.getCamera().setState({
+            x: 0.5,
+            y: 0.5,
+            ratio: 10,
+          });
+          // Animate to final position
+          sigmaRef.current?.getCamera().animate(
+            {
+              x: 0.5,
+              y: 0.5,
+              ratio: GRAPH_DEFAULT_SETTINGS.cameraFitRatio,
+            },
+            { duration }
+          );
         },
       };
     },
@@ -178,7 +197,6 @@ export default function Canvas() {
     requestIdleCallback(() => {
       generateCanvasImageUrl()
         .then((imageUrl) => {
-          console.log("imageUrl", imageUrl);
           setCanvasImageUrl((prev) => {
             if (prev) {
               URL.revokeObjectURL(prev);

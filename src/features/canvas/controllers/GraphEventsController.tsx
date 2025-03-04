@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { nanoid as generateId } from "nanoid";
 import { useCanvas } from "@/providers/canvas/CanvasContext";
 import { useValueRef } from "@/hooks/useValueRef";
-import { useFormSettings } from "@/providers/form-settings/FormSettingsContext";
+import { useGraphContext } from "@/providers/graph/GraphContext";
 
 const noop = () => {};
 
@@ -30,7 +30,7 @@ const GraphEventsController = ({
   const containerRef = sigma.getContainer();
   const registerEvents = useRegisterEvents();
   const { setGraphDirty, graphDirty } = useCanvas();
-  const { graphPubSub } = useFormSettings();
+  const { graphPubSub } = useGraphContext();
   const isGraphDirtyRef = useValueRef(graphDirty);
 
   useEffect(() => {
@@ -57,6 +57,18 @@ const GraphEventsController = ({
     // Original node that is being dragged/edited
 
     registerEvents({
+      rightClickNode: (evt) => {
+        evt.preventSigmaDefault();
+        evt.event.original.preventDefault();
+        evt.event.original.stopPropagation();
+        const nodeId = evt.node;
+        if (!nodeId) return;
+        graph.dropNode(nodeId);
+        if (!isGraphDirtyRef.current) {
+          setGraphDirty(true);
+        }
+        graphPubSub.publishGraphUpdated();
+      },
       clickStage: (evt) => {
         if (isDragging) return;
 
@@ -91,6 +103,13 @@ const GraphEventsController = ({
         graphPubSub.publishGraphUpdated();
       },
       downNode: (evt) => {
+        // check if mouse right button is pressed
+        const event = evt.event.original as MouseEvent;
+        const isRightButton = event.button === 2;
+        if (isRightButton) {
+          // should be handled by rightClickNode event
+          return;
+        }
         draggingNode = {
           id: evt.node,
           x: evt.event.x,
@@ -155,6 +174,12 @@ const GraphEventsController = ({
         containerRef.style.cursor = "pointer";
       },
       mouseup: (evt) => {
+        const event = evt.original as MouseEvent;
+        const isRightButton = event.button === 2;
+        if (isRightButton) {
+          // should be handled by rightClickNode event
+          return;
+        }
         if (clickTimer) {
           clearTimeout(clickTimer);
           clickTimer = null;

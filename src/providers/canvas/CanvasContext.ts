@@ -1,7 +1,12 @@
-import { CanvasControl, CanvasMode } from "@/features/canvas/types.ts";
+import {
+  AlgorithmSolution,
+  CanvasControl,
+  CanvasMode,
+} from "@/features/canvas/types.ts";
 import { SupportedAlgorithms } from "@/types.ts";
 import Graph from "graphology";
 import { createContext, useContext } from "react";
+import { Updater } from "use-immer";
 
 export interface CanvasContext {
   graph: Graph;
@@ -19,6 +24,8 @@ export interface CanvasContext {
   setCanvasMode: React.Dispatch<React.SetStateAction<CanvasMode>>;
   graphDirty: boolean;
   setGraphDirty: React.Dispatch<React.SetStateAction<boolean>>;
+  solutions: AlgorithmSolution[];
+  setSolutions: Updater<AlgorithmSolution[]>;
 }
 
 export const CanvasContext = createContext<CanvasContext | undefined>(

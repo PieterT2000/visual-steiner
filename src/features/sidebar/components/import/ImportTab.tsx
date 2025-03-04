@@ -4,24 +4,29 @@ import {
   isEuclidSteinerNode,
   isRectSteinerNode,
   isSteinerNode,
-} from "@/features/canvas/utils/graph-utils";
+} from "@/lib/graph-utils";
+import useOnMountOnce from "@/hooks/useOnMountOnce";
 import { generateRandomGraph } from "@/lib/graph-utils";
 import { useCanvas } from "@/providers/canvas/CanvasContext";
 import { Fragment, useMemo, useState } from "react";
 
 const ImportTab = () => {
-  const {
-    canvasImageUrl,
-    graph,
-    replaceGraphInContext: replaceGraph,
-  } = useCanvas();
+  const { canvasImageUrl, graph, replaceGraphInContext, controlRef } =
+    useCanvas();
   const [randomGraphSize, setRandomGraphSize] = useState<number | null>(null);
+  const [graphSource, setGraphSource] = useState<string | null>(
+    "default_graph"
+  );
+
+  useOnMountOnce(() => {
+    controlRef.current?.triggerUpdateGraphThumbnail();
+  });
 
   const activeGraphMetadata = useMemo(() => {
     return {
       source: {
         label: "Source",
-        value: "default_graph",
+        value: graphSource,
       },
       nodes: {
         label: "#Vertices",
@@ -36,13 +41,14 @@ const ImportTab = () => {
         value: graph.filterNodes((_, attr) => isRectSteinerNode(attr)).length,
       },
     };
-  }, [graph.order, graph.size]);
+  }, [graph.order, graph.size, graphSource]);
 
   const handleGenerateRandomGraph = () => {
     if (randomGraphSize === null || randomGraphSize <= 0) {
       return;
     }
-    replaceGraph(generateRandomGraph(randomGraphSize));
+    setGraphSource("random_graph");
+    replaceGraphInContext(generateRandomGraph(randomGraphSize));
   };
 
   return (

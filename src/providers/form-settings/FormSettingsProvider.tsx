@@ -9,7 +9,7 @@ import { useAlgorithmsForm } from "@/features/sidebar/components/form/useAlgorit
 import { algorithmsFormSchema } from "@/features/sidebar/components/form/schema.ts";
 import { defaultValues } from "@/features/sidebar/components/form/defaultValues.ts";
 import { Updater, useImmer } from "use-immer";
-import { useGraphUpdates } from "@/features/canvas/hooks/useGraphUpdates";
+import { useGraphContext } from "@/providers/graph/GraphContext";
 
 const defaultAlgorithmVisibilityAndOrder: AlgorithmVisibility[] = [
   {
@@ -29,15 +29,16 @@ const defaultAlgorithmVisibilityAndOrder: AlgorithmVisibility[] = [
     visible: false,
   },
 ];
+
 const FormSettingsProvider = ({ children }: { children: React.ReactNode }) => {
   const [activeAlgorithmCard, setActiveAlgorithmCard] = useState<
     SupportedAlgorithms | undefined
-  >(undefined);
+  >(SupportedAlgorithms.ESMT);
   const form = useAlgorithmsForm(algorithmsFormSchema, defaultValues);
   const [algorithmVisibility, setAlgorithmVisibility] = useImmer<
     AlgorithmVisibility[]
   >(defaultAlgorithmVisibilityAndOrder);
-  const graphPubSub = useGraphUpdates();
+  const { graphPubSub } = useGraphContext();
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -54,9 +55,8 @@ const FormSettingsProvider = ({ children }: { children: React.ReactNode }) => {
       formRef,
       algorithmVisibility,
       setAlgorithmVisibility: handleSetAlgorithmVisibility,
-      graphPubSub,
     }),
-    [activeAlgorithmCard, algorithmVisibility, formRef.current, graphPubSub]
+    [activeAlgorithmCard, algorithmVisibility, formRef.current]
   );
 
   return (

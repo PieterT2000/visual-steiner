@@ -48,8 +48,8 @@ export function primsMST(
       }
       tree.addEdge(parent[v], v, {
         id: edgeId,
-        algorithm: SupportedAlgorithms.PRIMS_MST,
         ...graph.getEdgeAttributes(edgeId),
+        algorithm: [SupportedAlgorithms.PRIMS_MST],
       });
       onTreeUpdate?.({
         edge: {

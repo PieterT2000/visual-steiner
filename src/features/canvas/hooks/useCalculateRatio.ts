@@ -2,16 +2,17 @@ import { SupportedAlgorithms } from "@/types";
 import { AlgorithmSolution } from "../types";
 import { useMemo } from "react";
 
-type SolutionWithRatio = AlgorithmSolution & {
+type Input = Pick<AlgorithmSolution, "algorithm" | "meta">;
+type Return = Input & {
   meta: {
     ratio: number;
   };
 };
 
 const useCalculateRatio = (
-  solutions: AlgorithmSolution[],
+  solutions: Input[],
   baseAlgorithm: SupportedAlgorithms = SupportedAlgorithms.PRIMS_MST
-): SolutionWithRatio[] => {
+): Return[] => {
   return useMemo(() => {
     const base = solutions.find(
       (solution) => solution.algorithm === baseAlgorithm

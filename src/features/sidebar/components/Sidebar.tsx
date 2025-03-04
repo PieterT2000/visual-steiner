@@ -80,7 +80,7 @@ const Sidebar = () => {
             {/* TODO: make this a toggle */}
             <div className="flex gap-x-2 items-center">
               <ArrowDownFilledIcon />
-              <p>Active layers</p>
+              <p>Available algorithms/layers</p>
             </div>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -102,13 +102,13 @@ const Sidebar = () => {
                 ))}
               </Accordion>
             </form>
-            <Button
+            {/* <Button
               className="flex gap-x-2 items-center p-0 pl-1 justify-start text-text"
               variant="link"
             >
               <PlusIcon />
               <p>Add algorithm/layer</p>
-            </Button>
+            </Button> */}
           </div>
         </TabsContent>
         <TabsContent

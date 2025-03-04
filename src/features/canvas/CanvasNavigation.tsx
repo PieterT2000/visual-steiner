@@ -10,7 +10,12 @@ import { algorithmsFormSchema } from "../sidebar/components/form/schema.ts";
 import { z } from "zod";
 import { SupportedAlgorithms } from "@/types.ts";
 import { useCanvas } from "@/providers/canvas/CanvasContext.ts";
-import { isSteinerNode } from "./utils/graph-utils";
+import { isSteinerNode } from "@/lib/graph-utils";
+import {
+  TooltipContent,
+  TooltipTrigger,
+  Tooltip,
+} from "@/components/ui/tooltip";
 
 const canvasModeIconStyles =
   "h-8 w-8 rounded-full flex items-center justify-center text-active transition-colors transition-opacity duration-300";
@@ -75,6 +80,7 @@ const CanvasNavigation = () => {
           filteredGraph.dropNode(node);
         }
       });
+      // Update the base graph on which the algorithms should run
       updateInitialGraph(filteredGraph);
     }
 
@@ -88,17 +94,23 @@ const CanvasNavigation = () => {
       <div />
       <div className="bg-accent flex rounded-[24px] gap-x-2 items-center px-1 py-1">
         {Object.values(CanvasMode).map((mode) => (
-          <Button
-            key={mode}
-            className={cn(canvasModeIconStyles, {
-              [canvasModeIconActiveStyles]: canvasMode === mode,
-            })}
-            onClick={() => handleCanvasModeChange(mode)}
-            variant={"icon"}
-            size={"icon"}
-          >
-            {canvasModeIconMap[mode]}
-          </Button>
+          <Tooltip key={mode} delayDuration={200}>
+            <TooltipTrigger asChild>
+              <Button
+                className={cn(canvasModeIconStyles, {
+                  [canvasModeIconActiveStyles]: canvasMode === mode,
+                })}
+                onClick={() => handleCanvasModeChange(mode)}
+                variant={"icon"}
+                size={"icon"}
+              >
+                {canvasModeIconMap[mode]}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{mode}</p>
+            </TooltipContent>
+          </Tooltip>
         ))}
       </div>
       <Button

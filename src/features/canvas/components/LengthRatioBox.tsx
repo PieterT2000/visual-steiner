@@ -7,13 +7,16 @@ import { AlgorithmSolution } from "../types";
 import useCalculateRatio from "../hooks/useCalculateRatio";
 import { roundTo } from "@/lib/math-utils";
 import RatioEqImg from "@/images/ratio_eq.png";
-
+import { useUpdatedSolutionLengths } from "../hooks/useUpdatedSolutionLengths";
+import { useCanvas } from "@/providers/canvas/CanvasContext";
 const widgetWidth = "w-[250px]";
 const boxPosition = "absolute bottom-4 right-[22px]";
 
 const LengthRatioBox = ({ solutions }: { solutions: AlgorithmSolution[] }) => {
+  const { graph } = useCanvas();
+  const updatedSolutions = useUpdatedSolutionLengths(solutions, graph);
   // compute ratio for each solution
-  const solutionsWithRatio = useCalculateRatio(solutions);
+  const solutionsWithRatio = useCalculateRatio(updatedSolutions);
   const orderedResults = useOrderedList(
     solutionsWithRatio,
     (solution) => solution.meta.ratio

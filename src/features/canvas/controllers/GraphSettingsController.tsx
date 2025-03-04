@@ -4,7 +4,7 @@ import { useFormSettings } from "@/providers/form-settings/FormSettingsContext.t
 import { AlgorithmSolution } from "../types.ts";
 import { useFormContext } from "react-hook-form";
 import { AlgorithmsFormSchema } from "@/features/sidebar/components/form/schema.ts";
-import { getNodeColor, isDrawNode } from "../utils/graph-utils.ts";
+import { getNodeColor, isDrawNode } from "@/lib/graph-utils";
 import { useCanvas } from "@/providers/canvas/CanvasContext";
 import { GRAPH_DEFAULT_SETTINGS } from "../consts";
 
