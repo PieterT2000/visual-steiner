@@ -1,4 +1,4 @@
-import Logo from "@/images/icons/logo.svg?react";
+import Logo from "@/images/icons/logo_2.svg?react";
 import SettingsIcon from "@/images/icons/settings.svg?react";
 import QuestionIcon from "@/images/icons/question_mark.svg?react";
 import LicenseIcon from "@/images/icons/license.svg?react";
