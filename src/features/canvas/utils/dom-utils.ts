@@ -1,4 +1,3 @@
-import { themeHexColors } from "@/theme";
 import { SupportedAlgorithms } from "@/types";
 import { Sigma } from "sigma";
 import {
@@ -6,6 +5,7 @@ import {
   isNodeUsedByVisibleAlgorithms,
   isSteinerNode,
 } from "@/lib/graph-utils";
+import { GraphCanvasStyle } from "../types";
 
 export function getRelativeMousePosition<T extends HTMLElement>(
   event: MouseEvent,
@@ -19,10 +19,11 @@ export function getRelativeMousePosition<T extends HTMLElement>(
 
 export async function graphCanvasToImageUrl(
   sigma: Sigma,
+  style: GraphCanvasStyle,
+  layers: string[] = ["edges", "nodes"],
   visibleAlgorithms?: SupportedAlgorithms[]
 ) {
-  const layers = ["edges", "nodes"];
-  const blob = await canvasToPngBlob(sigma, layers, visibleAlgorithms);
+  const blob = await canvasToPngBlob(sigma, style, layers, visibleAlgorithms);
   if (blob) {
     return URL.createObjectURL(blob);
   }
@@ -43,11 +44,12 @@ export async function graphCanvasToImageUrl(
  */
 async function canvasToPngBlob(
   renderer: Sigma,
-  inputLayers?: string[],
+  style: GraphCanvasStyle,
+  inputLayers: string[],
   visibleAlgorithms?: SupportedAlgorithms[]
 ) {
-  const width = 256;
-  const height = 256;
+  const width = style.canvasWidth;
+  const height = style.canvasHeight;
 
   const tmpRoot = document.createElement("div");
   tmpRoot.style.width = `${width}px`;
@@ -66,8 +68,10 @@ async function canvasToPngBlob(
   tmpRenderer.setSetting("nodeReducer", (_, data) => {
     return {
       ...data,
-      size: 6,
-      color: themeHexColors.primary,
+      size: isSteinerNode(data)
+        ? style.steinerNodeSize ?? style.nodeSize
+        : style.nodeSize,
+      color: style.nodeColor,
       // Hide any Steiner nodes not used by visible-toggled algorithms
       // All other nodes should be visible
       hidden:
@@ -79,8 +83,8 @@ async function canvasToPngBlob(
   tmpRenderer.setSetting("edgeReducer", (_, data) => {
     return {
       ...data,
-      size: 5,
-      color: themeHexColors.primary,
+      size: style.edgeSize,
+      color: style.edgeColor,
       // Hide any edges not used by visible-toggled algorithms
       hidden: !isEdgeUsedByVisibleAlgorithms(data, visibleAlgorithms),
     };
@@ -128,5 +132,25 @@ async function canvasToPngBlob(
         reject(new Error("Failed to convert canvas to blob"));
       }
     }, "image/png");
+  });
+}
+
+export function addWhiteBackground(imageUrl: string) {
+  return new Promise<string>((resolve, reject) => {
+    const img = new Image();
+    img.src = imageUrl;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL("image/jpeg"));
+    };
+    img.onerror = () => {
+      reject(new Error("Failed to load image"));
+    };
   });
 }

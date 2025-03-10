@@ -4,6 +4,12 @@ export type Edge = {
   target: string;
 };
 
+export type Node = {
+  key: string;
+  x: number;
+  y: number;
+};
+
 export type EdgeMutation = {
   edge: Edge;
   timestamp: number;
@@ -26,4 +32,9 @@ export enum SupportedAlgorithms {
    * Euclidean Steiner minimal tree
    */
   ESMT = "euclideanSteinerMinimalTree",
+}
+
+export enum GraphSource {
+  DEFAULT_GRAPH = "default_graph",
+  RANDOM_GRAPH = "random_graph",
 }

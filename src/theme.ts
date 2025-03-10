@@ -3,4 +3,5 @@ export const themeHexColors = {
   layer1: "#1C6AE6",
   layer2: "#128D9A",
   black: "#000000",
+  graphBlack: "#080808",
 };

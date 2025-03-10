@@ -13,9 +13,8 @@ import { useFormContext } from "react-hook-form";
 import { algorithmsFormSchema } from "./form/schema.ts";
 import { z } from "zod";
 import { useFormSettings } from "@/providers/form-settings/FormSettingsContext.ts";
-import { Button } from "@/components/ui/button.tsx";
-import PlusIcon from "@/images/icons/plus.svg?react";
 import ImportTab from "./import/ImportTab.tsx";
+import ExportTab from "./export/ExportTab";
 enum Tab {
   Import = "Import",
   Algorithm = "Algorithms",
@@ -119,9 +118,12 @@ const Sidebar = () => {
             <ImportTab />
           </div>
         </TabsContent>
-        <TabsContent value={Tab.Export} className={tabContentStyles}>
-          <div>
-            <h2>Export</h2>
+        <TabsContent
+          value={Tab.Export}
+          className={cn(tabContentStyles, "grow")}
+        >
+          <div className="py-4 px-[calc(1rem-3px)] h-full">
+            <ExportTab />
           </div>
         </TabsContent>
       </Tabs>

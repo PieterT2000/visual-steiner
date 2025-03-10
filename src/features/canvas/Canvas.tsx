@@ -8,7 +8,7 @@ import { SigmaContainer } from "@react-sigma/core";
 import { AlgorithmSolution, CanvasMode } from "./types.ts";
 import GraphSettingsController from "./controllers/GraphSettingsController.tsx";
 import GraphEventsController from "./controllers/GraphEventsController.tsx";
-import { default as Sigma } from "sigma";
+import Sigma from "sigma";
 import Graph from "graphology";
 import { mergeGraphs, replaceGraph } from "@/lib/graph-utils.ts";
 import ZoomControls from "./components/ZoomControls";
@@ -16,7 +16,10 @@ import "@react-sigma/core/lib/style.css";
 import "./styles/overrides.css";
 import LengthRatioBox from "./components/LengthRatioBox";
 import { graphCanvasToImageUrl } from "./utils/dom-utils.ts";
-import { GRAPH_DEFAULT_SETTINGS } from "./consts";
+import {
+  EXPORT_TAB_CANVAS_PREVIEW_STYLE,
+  GRAPH_DEFAULT_SETTINGS,
+} from "./consts";
 import { useFormSettings } from "@/providers/form-settings/FormSettingsContext";
 import { useValueRef } from "@/hooks/useValueRef";
 
@@ -95,6 +98,7 @@ export default function Canvas() {
             { duration }
           );
         },
+        getSigma: () => sigmaRef.current,
       };
     },
     []
@@ -155,14 +159,20 @@ export default function Canvas() {
 
   const computeSolutions = () => {
     // reset to initial graph
+    const initialGraph = initialGraphRef.current;
+    // reset edge.algorithm to empty array
+    initialGraph.forEachEdge((edge) => {
+      initialGraph.setEdgeAttribute(edge, "algorithm", []);
+    });
     replaceGraph(graph, initialGraphRef.current);
 
     const problemGraph = graph.copy();
+
     // clear previous solutions
     setSolutions([]);
     [
-      SupportedAlgorithms.ESMT,
       SupportedAlgorithms.PRIMS_MST,
+      SupportedAlgorithms.ESMT,
       SupportedAlgorithms.RSMT,
     ].forEach((algorithm) => {
       if (algorithm === SupportedAlgorithms.PRIMS_MST) {
@@ -184,7 +194,11 @@ export default function Canvas() {
     const sigma = sigmaRef.current;
     try {
       if (sigma) {
-        return await graphCanvasToImageUrl(sigma, visibleAlgorithmsRef.current);
+        return await graphCanvasToImageUrl(
+          sigma,
+          EXPORT_TAB_CANVAS_PREVIEW_STYLE,
+          visibleAlgorithmsRef.current
+        );
       }
       return null;
     } catch (error) {
@@ -225,7 +239,10 @@ export default function Canvas() {
       settings={sigmaSettings}
       ref={sigmaRef}
     >
-      <ZoomControls />
+      <ZoomControls
+        animationDuration={GRAPH_DEFAULT_SETTINGS.cameraFitDuration}
+        sigmaRef={sigmaRef}
+      />
       <LengthRatioBox solutions={solutions} />
       <GraphSettingsController
         solutions={solutions}

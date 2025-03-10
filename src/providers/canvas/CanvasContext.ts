@@ -26,6 +26,8 @@ export interface CanvasContext {
   setGraphDirty: React.Dispatch<React.SetStateAction<boolean>>;
   solutions: AlgorithmSolution[];
   setSolutions: Updater<AlgorithmSolution[]>;
+  files: File[];
+  setFiles: React.Dispatch<React.SetStateAction<File[]>>;
 }
 
 export const CanvasContext = createContext<CanvasContext | undefined>(

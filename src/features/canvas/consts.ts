@@ -1,4 +1,5 @@
 import { themeHexColors } from "@/theme";
+import { GraphCanvasStyle } from "./types";
 
 export const GRAPH_DEFAULT_SETTINGS = {
   nodeSize: 8,
@@ -13,9 +14,22 @@ export const GRAPH_DEFAULT_SETTINGS = {
   cameraFitDuration: 500,
   cameraFitRatio: 1.5,
 };
-// in edit mode:
-// when dragging a node (add temp node and hide original node)
-// when adding node, just add it
-// when deleting a node, don't delete it, just set its hidden attribute to true
-// in visualise mode, show both temp node and the original node
-// toggle hidden attribute of original nodes
+
+export const IMPORT_TAB_CANVAS_PREVIEW_STYLE: GraphCanvasStyle = {
+  canvasWidth: 256,
+  canvasHeight: 256,
+  nodeSize: 6,
+  edgeSize: 4,
+  nodeColor: themeHexColors.primary,
+  edgeColor: themeHexColors.primary,
+};
+
+export const EXPORT_TAB_CANVAS_PREVIEW_STYLE: GraphCanvasStyle = {
+  canvasWidth: 1024,
+  canvasHeight: 1024,
+  nodeSize: 3,
+  edgeSize: 1,
+  steinerNodeSize: 1,
+  nodeColor: themeHexColors.graphBlack,
+  edgeColor: themeHexColors.graphBlack,
+};

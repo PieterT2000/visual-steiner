@@ -8,7 +8,6 @@ import {
 import { createDefaultGraph } from "@/lib/graph-utils";
 import { replaceGraph } from "@/lib/graph-utils";
 import Graph from "graphology";
-import { useFormSettings } from "../form-settings/FormSettingsContext";
 import { useImmer } from "use-immer";
 import { useGraphContext } from "../graph/GraphContext";
 
@@ -28,7 +27,7 @@ const CanvasProvider = ({ children }: CanvasProviderProps) => {
   // By default, solutions are not computed, so the graph is said to be dirty initially
   const [graphDirty, setGraphDirty] = useState(true);
   const [solutions, setSolutions] = useImmer<AlgorithmSolution[]>([]);
-
+  const [files, setFiles] = useState<File[]>([]);
   const controlRef = useRef<CanvasControl>(null);
   const { graphPubSub } = useGraphContext();
   /**
@@ -37,8 +36,8 @@ const CanvasProvider = ({ children }: CanvasProviderProps) => {
    * @param newGraph
    */
   const handleReplaceGraph = (newGraph: Graph) => {
-    replaceGraph(graph, newGraph);
     initialGraphRef.current = newGraph.copy();
+    replaceGraph(graph, newGraph);
     setCanvasImageUrl(null);
     setGraphDirty(true);
     setSolutions([]);
@@ -66,6 +65,8 @@ const CanvasProvider = ({ children }: CanvasProviderProps) => {
     setGraphDirty,
     solutions,
     setSolutions,
+    files,
+    setFiles,
   };
 
   return (

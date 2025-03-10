@@ -1,5 +1,6 @@
 import { SupportedAlgorithms } from "@/types.ts";
 import { AlgorithmsFormSchema } from "../sidebar/components/form/schema.ts";
+import Sigma from "sigma";
 
 export enum CanvasMode {
   Visualize = "Visualize",
@@ -10,6 +11,17 @@ export type CanvasControl = {
   computeSolutions: () => void;
   triggerUpdateGraphThumbnail: () => void;
   animatedCameraFit: (duration?: number) => void;
+  getSigma: () => Sigma | null;
+};
+
+export type GraphCanvasStyle = {
+  nodeSize: number;
+  edgeSize: number;
+  nodeColor: string;
+  edgeColor: string;
+  canvasWidth: number;
+  canvasHeight: number;
+  steinerNodeSize?: number;
 };
 
 export type AlgorithmSolution = {

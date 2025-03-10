@@ -46,8 +46,11 @@
 
     /* Sizes */
     --navbar-width: 68px;
-    --sidebar-width: 450px;
+    --sidebar-width: 425px;
     --dotted-pattern-size: 364px;
+
+    --loader-size: 60px;
+    --loader-color: hsl(var(--selected-text));
 
     @media (max-width: 1024px) {
       --sidebar-width: 300px;
@@ -95,6 +98,37 @@
   }
   body {
     @apply bg-background text-text;
+  }
+}
+
+@layer utilities {
+  .loader {
+    width: var(--loader-size);
+    aspect-ratio: 2;
+    --_g: no-repeat
+      radial-gradient(circle closest-side, var(--loader-color) 90%, transparent);
+    background: var(--_g) 0% 50%, var(--_g) 50% 50%, var(--_g) 100% 50%;
+    background-size: calc(100% / 3) 50%;
+    animation: l3 1s infinite linear;
+  }
+  @keyframes l3 {
+    20% {
+      background-position: 0% 0%, 50% 50%, 100% 50%;
+    }
+    40% {
+      background-position: 0% 100%, 50% 0%, 100% 50%;
+    }
+    60% {
+      background-position: 0% 50%, 50% 100%, 100% 0%;
+    }
+    80% {
+      background-position: 0% 50%, 50% 50%, 100% 100%;
+    }
+  }
+  .loader.paused {
+    animation-play-state: paused;
+    transition: opacity 0.5s ease-out;
+    opacity: 0;
   }
 }
 

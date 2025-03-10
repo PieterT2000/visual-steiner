@@ -4,8 +4,7 @@ import { Attributes } from "graphology-types";
 import { complete } from "graphology-generators/classic";
 import { AlgorithmDisplaySettings } from "@/features/canvas/types";
 import { GRAPH_DEFAULT_SETTINGS } from "@/features/canvas/consts";
-import { SupportedAlgorithms } from "@/types";
-
+import { SupportedAlgorithms, Node } from "@/types";
 function mergeStringOrArrayAttribute(
   attr1?: string | string[] | undefined,
   attr2?: string | string[] | undefined
@@ -89,6 +88,31 @@ export function generateRandomGraph(size: number): Graph {
   return newGraph;
 }
 
+export function graphFromNodes(nodes: Node[]) {
+  const graph = new UndirectedGraph();
+  nodes.forEach((node) => {
+    graph.addNode(node.key, {
+      x: node.x,
+      y: node.y,
+      size: GRAPH_DEFAULT_SETTINGS.nodeSize,
+      color: GRAPH_DEFAULT_SETTINGS.nodeColor,
+    });
+  });
+  toCompleteGraph(graph);
+  graph.forEachEdge((edge) => {
+    graph.updateEdgeAttributes(edge, (attrs) => ({
+      ...attrs,
+      algorithm: [],
+      // Hide all initial edges in complete graph by default
+      hidden: true,
+      initialEdge: true,
+      size: GRAPH_DEFAULT_SETTINGS.edgeWidth,
+      color: GRAPH_DEFAULT_SETTINGS.edgeColor,
+    }));
+  });
+  return graph;
+}
+
 /**
  * Converts an existing undirected graph to a complete undirected graph in-place
  * @param graph undirected graph
@@ -103,9 +127,32 @@ export function toCompleteGraph<TGraph extends UndirectedGraph>(graph: TGraph) {
       if (graph.hasEdge(nodes[i], nodes[j])) {
         continue;
       }
-      graph.addUndirectedEdge(nodes[i], nodes[j]);
+      graph.addUndirectedEdge(nodes[i], nodes[j], {
+        algorithm: [],
+        hidden: true,
+        initialEdge: true,
+      });
     }
   }
+}
+
+/**
+ * Adds edges between passed node and all its neighbors in a complete graph
+ * @param graph undirected graph
+ * @param node node
+ */
+export function addAdjacentEdges<TGraph extends UndirectedGraph>(
+  graph: TGraph,
+  nodeKey: string
+) {
+  const otherNodes = graph.nodes().filter((n) => n !== nodeKey);
+  otherNodes.forEach((neighbor) => {
+    graph.addUndirectedEdge(nodeKey, neighbor, {
+      algorithm: [],
+      hidden: true,
+      initialEdge: true,
+    });
+  });
 }
 
 /**
@@ -201,7 +248,8 @@ export function isEdgeUsedByVisibleAlgorithms(
   edgeAttrs: Attributes,
   visibleAlgorithms?: SupportedAlgorithms[]
 ) {
-  return visibleAlgorithms?.some((algo) => {
+  if (!visibleAlgorithms) return false;
+  return visibleAlgorithms.some((algo) => {
     return edgeAttrs.algorithm.includes(algo);
   });
 }
@@ -210,7 +258,8 @@ export function isNodeUsedByVisibleAlgorithms(
   nodeAttrs: Attributes,
   visibleAlgorithms?: SupportedAlgorithms[]
 ) {
-  return visibleAlgorithms?.some((algo) => nodeAttrs.algorithm.includes(algo));
+  if (!visibleAlgorithms) return false;
+  return visibleAlgorithms.some((algo) => nodeAttrs.algorithm.includes(algo));
 }
 
 export function calculateGraphLength(graph: Graph) {
