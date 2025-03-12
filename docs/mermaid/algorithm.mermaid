@@ -1,0 +1,15 @@
+classDiagram
+    class ComputeResult{
+      +Graph graph
+      +number length
+      +Edge[] edgeMutations
+      +Object meta
+    }
+    ComputeResult *-- Edge
+    <<interface>> ComputeResult
+    class Edge{
+        +string id
+        +string source
+        +string target
+    }
+    <<interface>> Edge

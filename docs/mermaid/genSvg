@@ -1,0 +1,5 @@
+#! /bin/bash
+mmdc -i $1.mermaid -o $1.pdf --pdfFit --configFile mermaid.json
+pdf2svg $1.pdf $1.0.svg
+mv $1.0.svg $1.svg
+rm -rf $1.pdf

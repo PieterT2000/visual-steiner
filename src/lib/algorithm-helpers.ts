@@ -66,6 +66,7 @@ export const calculateSMT = <TGraph extends Graph>(
   // also find node ids for steiner points
 
   // add edges to graph
+  console.log(edges);
   const edgeMutations: Edge[] = [];
   for (let i = 0; i < nedges; i += 1) {
     const v0 = allNodeIds[edges[i * 2]];

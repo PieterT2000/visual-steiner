@@ -6,7 +6,7 @@ OPT_FLAGS = -O3
 CFLAGS = -Wall $(OPT_FLAGS)
 INCLUDES = -I$(GST_DIR)
 LIBS = -L$(GST_DIR) -lgeosteiner $(LP_SOLVE_DIR)/libLPS.a -lm
-EMFLAGS = -s WASM=1 -s ENVIRONMENT=web -s ALLOW_MEMORY_GROWTH=1 \
+EMFLAGS = -s WASM=1 -s ENVIRONMENT=web \
  -s EXPORTED_FUNCTIONS="['_calc_esmt', '_calc_rsmt', '_main', '_malloc', '_free']" \
  -s EXPORTED_RUNTIME_METHODS="['cwrap', 'getValue', 'setValue']"
 

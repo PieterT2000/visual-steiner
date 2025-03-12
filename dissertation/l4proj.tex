@@ -9,6 +9,9 @@
 \usepackage{pdfpages} % if you want to include a PDF for an ethics checklist, for example
 %
 %
+\usepackage{svg}
+\usepackage{wrapstuff}
+
 
 \begin{document}
 
@@ -23,12 +26,12 @@
 %==============================================================================
 %% ABSTRACT
 \begin{abstract}
-    Every abstract follows a similar pattern. Motivate; set aims; describe work; explain results.
-    \vskip 0.5em
-    ``XYZ is bad. This project investigated ABC to determine if it was better.
-    ABC used XXX and YYY to implement ZZZ. This is particularly interesting as XXX and YYY have
-    never been used together. It was found that
-    ABC was 20\% better than XYZ, though it caused rabies in half of subjects.''
+      Every abstract follows a similar pattern. Motivate; set aims; describe work; explain results.
+      \vskip 0.5em
+      ``XYZ is bad. This project investigated ABC to determine if it was better.
+      ABC used XXX and YYY to implement ZZZ. This is particularly interesting as XXX and YYY have
+      never been used together. It was found that
+      ABC was 20\% better than XYZ, though it caused rabies in half of subjects.''
 \end{abstract}
 
 %==============================================================================
@@ -205,191 +208,161 @@ but with a different language or library or tool. This might include overall sys
 user interface designs (wireframes/personas/etc.), protocol specifications, algorithms, data set design choices,
 among others. Specific languages, technical choices, libraries and such like should not usually appear in the design. These are implementation details.
 
+What did you do to implement this idea, and what technical achievements did you make?
+Cover high level first, then cover important, or impressive details.
+Don't mix levels of abstraction and start with abstract thoughts and general structures and then refine into details.
+Keep a logical ordering.
 
 %==================================================================================================================================
 \chapter{Implementation}
-What did you do to implement this idea, and what technical achievements did you make?
-\section{Guidance}
-You can't talk about everything. Cover the high level first, then cover important, relevant or impressive details.
+Having given a high-level design of the proposed solution in the previous chapter, this chapter will discuss the practicalities of our implementation and address topics such as:
+\begin{itemize}
+      \item Why we chose to build a web app over a native app.
+      \item What tech stack we used and why.
+      \item What the big picture architecture is and how different parts are connected.
+      \item How the codebase is structured, in order to support extensibility and maintainability.
+      \item How we implemented the algorithms and integrated them with the UI, including a in-depth look at the use of WebAssembly (WASM).
+\end{itemize}
 
-\section{General guidance for technical writing}
+\section{Building for the web}
+The first implementation decision was to build a web app instead of a native app. As stated in the problem description, our aim was to make a visually-appealing and accessible tool that does not require technical expertise or custom tooling for use. Browsers are ubiquitous nowadays and provide a platform-independent way to run and distribute applications. Updates can easily be deployed without the need for users to install them manually.
+Futhermore, differences between browser vendors have become less pronounced due to the development of standards and the rise of frameworks that abstract away some of the most jarring differences.
 
-These points apply to the whole dissertation, not just this chapter.
+% The constraining factor for web apps has been the performance of computationally intensive tasks. However, this has been mitigated by the development of WebAssembly (WASM), a technology that allows for near-native performance while still being platform-independent.
 
-\subsection{Figures}
-\emph{Always} refer to figures included, like Figure \ref{fig:relu}, in the body of the text. Include full, explanatory captions and make sure the figures look good on the page.
-You may include multiple figures in one float, as in Figure \ref{fig:synthetic}, using \texttt{subcaption}, which is enabled in the template.
+\subsection{Tech stack}
 
+The application is built using Typescript\footnote{https://www.typescriptlang.org/} (TS) as the main programming language, which is a statically-typed superset of Javascript (JS) that compiles to JS \citep{typescript}.
+JS, the web's main language, is dynamically typed and has some loose features that can make it prone to bugs. For example, invalid references are not detected until runtime, in contrast to TS which adds compile-time type checking.
+Empirical evidence has shown that TS is effective at detecting bugs and improving code maintainability \citep{typescript_bugs_paper}.
 
-% Figures are important. Use them well.
-\begin{figure}[htb]
-    \centering
-    \includegraphics[width=0.5\linewidth]{images/relu.pdf}
+Interactive web applications often rely on something called DOM manipulation. This is the process of mutating HTML elements in the DOM, the tree of HTML elements that make up the UI. DOM manipulation is costly and is a major performance bottleneck for web apps.
+We have used React\footnote{https://react.dev/} (which makes use of a virtual DOM) to build an interactive UI whilst still ensuring that the real DOM gets mutated as little as possible.
+Moreover, React code is declarative (i.e. we tell what the UI should look like, not how to achieve it) and therefore easier to reason about and maintain.
 
-    \caption{In figure captions, explain what the reader is looking at: ``A schematic of the rectifying linear unit, where $a$ is the output amplitude,
-        $d$ is a configurable dead-zone, and $Z_j$ is the input signal'', as well as why the reader is looking at this:
-        ``It is notable that there is no activation \emph{at all} below 0, which explains our initial results.''
-        \textbf{Use vector image formats (.pdf) where possible}. Size figures appropriately, and do not make them over-large or too small to read.
-    }
+Other dependencies include:
+\begin{itemize}
+      \item Shadcn/ui\footnote{https://ui.shadcn.com/} for base UI components, such as buttons, inputs, dropdowns, etc.
+      \item Sigma.js\footnote{https://sigmajs.org/} for drawing graphs on the canvas.
+      \item Graphology\footnote{https://graphology.github.io/} for the graph data model
+\end{itemize}
 
-    % use the notation fig:name to cross reference a figure
-    \label{fig:relu}
+\subsection{Application architecture}
+% See \ref{fig:architecture} for the architecture diagram.
+The application has been developed as a client-only application, with no need for a backend API. Figure \ref{fig:architecture} shows the various high-level components of the application. The top-layer (i.e. the frontend) is divided into three main parts:
+\begin{itemize}
+      \item The views part, which handles user interaction (controls) and the visual appearance
+      \item The algorithms part, which handles the computation of the algorithms supported by the application.
+      \item The graph datastructure as a global state, which can be read and mutated by the views and algorithms.
+\end{itemize}
+
+\begin{figure}[h]
+      \centering
+      \includesvg[width=0.8\linewidth]{images/architecture_diagram.svg}
+      \caption{Architecture of the application. The arrows indicate the flow of data and control.}
+      \label{fig:architecture}
 \end{figure}
 
+The controls allow the user to modify the graph instance, either directly by adding a new graph or by editing the existing one, or indirectly by triggering the computation of an algorithm.
+Updates to the graph datastructure are reflected in the the canvas component.
 
-\begin{figure}[htb]
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{images/synthetic.png}
-        \caption{Synthetic image, black on white.}
-        \label{fig:syn1}
-    \end{subfigure}
-    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
-    %(or a blank line to force the subfigure onto a new line)
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{images/synthetic_2.png}
-        \caption{Synthetic image, white on black.}
-        \label{fig:syn2}
-    \end{subfigure}
-    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
-    %(or a blank line to force the subfigure onto a new line)    
-    \caption{Synthetic test images for edge detection algorithms. \subref{fig:syn1} shows various gray levels that require an adaptive algorithm. \subref{fig:syn2}
-        shows more challenging edge detection tests that have crossing lines. Fusing these into full segments typically requires algorithms like the Hough transform.
-        This is an example of using subfigures, with \texttt{subref}s in the caption.
-    }\label{fig:synthetic}
-\end{figure}
+The lower layer contains the WebAssembly module that contains the WASM byte code of the compiled Geosteiner C-library, which is used for computing the Euclidian and Rectilinear variants of the Steiner minimal tree. The WebAssembly module is dynamically imported by the frontend during runtime.
+We discuss the use of WebAssembly in more detail in section \ref{sec:webassembly}.
 
-\clearpage
+\section{Algorithm implementations}
 
-\subsection{Equations}
+\begin{wrapstuff}[r,width=0.3\textwidth,type=figure]
+      \centering
+      \caption{Interface of the algorithm computational output.}
+      \includesvg[width=1\textwidth]{images/algorithm_output.svg}
+      \label{fig:algorithm_interface}
+\end{wrapstuff}
+Each algorithm is implemented as an isolated, pure function that takes an undirected graph as input and returns a computation.
+Figure \ref{fig:algorithm_interface} specifies the interface of the computational output. The tree is returned as new graph instance, alongside the length of the tree. The list of edge mutations keeps track of all the edges that were added to the tree in order of insertion. Some algorithms, such as the ESMT and the RSMT also pass additional metadata, such as the list of Steiner nodes.
+By coding to an interface as opposed to a concrete implementation, algorithm implementations can be swapped out and new algorithms can be added easily.
 
-Equations should be typeset correctly and precisely. Make sure you get parenthesis sizing correct, and punctuate equations correctly
-(the comma is important and goes \textit{inside} the equation block). Explain any symbols used clearly if not defined earlier.
+The output from the algorithm is used to update the global graph datastructure by a \textit{merge} operation. We can't directly mutate the global graph because of limitations in Sigma.js (the library used for canvas drawing).
+Merging the tree with the existing graph is done by adding all the tree edges and nodes into the existing graph. If an edge or node already exists, its attributes are updated to indicate that it is part of the algorithm-generated tree. By keeping track of which edges/nodes are generated by which algorithm, we can toggle the visibility of each tree separately whilst still using the same graph instance.
 
-For example, we might define:
-\begin{equation}
-    \hat{f}(\xi) = \frac{1}{2}\left[ \int_{-\infty}^{\infty} f(x) e^{2\pi i x \xi} \right],
-\end{equation}
-where $\hat{f}(\xi)$ is the Fourier transform of the time domain signal $f(x)$.
+\wrapstuffclear
+\subsection{Euclidian Minimum Spanning Tree}
+The EMST is implemented using Prim's algorithm \citep[pp. 194--195]{Skiena2008}. Since the algorithm operates in Euclidian space, the input graph is first preprocessed to be a complete undirected graph. See pseudocode \ref{alg:emst} for the implementation.
 
-\subsection{Algorithms}
-Algorithms can be set using \texttt{algorithm2e}, as in Algorithm \ref{alg:metropolis}.
-
-% NOTE: line ends are denoted by \; in algorithm2e
 \begin{algorithm}
-    \DontPrintSemicolon
-    \KwData{$f_X(x)$, a probability density function returing the density at $x$.\; $\sigma$ a standard deviation specifying the spread of the proposal distribution.\;
-        $x_0$, an initial starting condition.}
-    \KwResult{$s=[x_1, x_2, \dots, x_n]$, $n$ samples approximately drawn from a distribution with PDF $f_X(x)$.}
-    \Begin{
-        $s \longleftarrow []$\;
-        $p \longleftarrow f_X(x)$\;
-        $i \longleftarrow 0$\;
-        \While{$i < n$}
-        {
-            $x^\prime \longleftarrow \mathcal{N}(x, \sigma^2)$\;
-            $p^\prime \longleftarrow f_X(x^\prime)$\;
-            $a \longleftarrow \frac{p^\prime}{p}$\;
-            $r \longleftarrow U(0,1)$\;
-            \If{$r<a$}
-            {
-                $x \longleftarrow x^\prime$\;
-                $p \longleftarrow f_X(x)$\;
-                $i \longleftarrow i+1$\;
-                append $x$ to $s$\;
+      \caption{Prim's $O(n^2)$ algorithm for the EMST}
+      \label{alg:emst}
+      \SetAlgoLined
+      \KwIn{Graph $G = (V, E)$}
+      \KwOut{Tree $T = (V', E')$}
+      \SetKwFunction{Prim}{Prim}
+      initialize tree $T$, parent vector $p$, distance vector $d$\;
+      Set $v$ to startNode\;
+      \While{$v$ not in $T$}{
+            E = v.edges()\;
+            \ForEach{edge $e \in E$}{
+                  $u \leftarrow$ edge.target()\;
+                  $w \leftarrow$ edge.weight()\;
+                  \If{distance[$u$] > $w$ and $u$ not in $T$}{
+                        distance[$u$] = $w$\;
+                        parent[$u$] = $v$\;
+                  }
             }
-        }
-    }
-
-    \caption{The Metropolis-Hastings MCMC algorithm for drawing samples from arbitrary probability distributions,
-        specialised for normal proposal distributions $q(x^\prime|x) = \mathcal{N}(x, \sigma^2)$. The symmetry of the normal distribution means the acceptance rule takes the simplified form.}\label{alg:metropolis}
+            $fringe$ = $V \setminus V'$\;
+            $v$ = node $u$ in $fringe$ with smallest distance to $v$\;
+            T.addNode($v$)\;
+            T.addEdge(p[$v$], $v$)\;
+      }
+      \Return{$T$}\;
 \end{algorithm}
 
-\subsection{Tables}
+\subsection{Euclidean \& Rectilinear Steiner Minimal Tree}
+For the ESMT and RSMT, we make use of the Geosteiner\footnote{http://www.geosteiner.com/} C-library implementation. As highlighted in the background section, efficient exact SMT algorithms are hard to implement and the GeoSteiner library is a well-established library that makes use of many heuristics and clever techniques to find the exact solution in a reasonable time.
+From the frontend perspective therefore, we treat the library as a black box and only care about the input and the output, whilst leaving the implementation details to the library.
 
-If you need to include tables, like Table \ref{tab:operators}, use a tool like https://www.tablesgenerator.com/ to generate the table as it is
-extremely tedious otherwise.
+We have implemented a wrapper around the library that provides a simplified interface, only exposing the functions that are needed by the frontend. Listing \ref{lst:wrapper_functions} shows the wrapper functions that are exposed to the frontend.
 
-\begin{table}[]
-    \caption{The standard table of operators in Python, along with their functional equivalents from the \texttt{operator} package. Note that table
-        captions go above the table, not below. Do not add additional rules/lines to tables. }\label{tab:operators}
-    %\tt 
-    \rowcolors{2}{}{gray!3}
-    \begin{tabular}{@{}lll@{}}
-        %\toprule
-        \textbf{Operation}    & \textbf{Syntax}                         & \textbf{Function}                          \\ %\midrule % optional rule for header
-        Addition              & \texttt{a + b}                          & \texttt{add(a, b)}                         \\
-        Concatenation         & \texttt{seq1 + seq2}                    & \texttt{concat(seq1, seq2)}                \\
-        Containment Test      & \texttt{obj in seq}                     & \texttt{contains(seq, obj)}                \\
-        Division              & \texttt{a / b}                          & \texttt{div(a, b) }                        \\
-        Division              & \texttt{a / b}                          & \texttt{truediv(a, b) }                    \\
-        Division              & \texttt{a // b}                         & \texttt{floordiv(a, b)}                    \\
-        Bitwise And           & \texttt{a \& b}                         & \texttt{and\_(a, b)}                       \\
-        Bitwise Exclusive Or  & \texttt{a \textasciicircum b}           & \texttt{xor(a, b)}                         \\
-        Bitwise Inversion     & \texttt{$\sim$a}                        & \texttt{invert(a)}                         \\
-        Bitwise Or            & \texttt{a | b}                          & \texttt{or\_(a, b)}                        \\
-        Exponentiation        & \texttt{a ** b}                         & \texttt{pow(a, b)}                         \\
-        Identity              & \texttt{a is b}                         & \texttt{is\_(a, b)}                        \\
-        Identity              & \texttt{a is not b}                     & \texttt{is\_not(a, b)}                     \\
-        Indexed Assignment    & \texttt{obj{[}k{]} = v}                 & \texttt{setitem(obj, k, v)}                \\
-        Indexed Deletion      & \texttt{del obj{[}k{]}}                 & \texttt{delitem(obj, k)}                   \\
-        Indexing              & \texttt{obj{[}k{]}}                     & \texttt{getitem(obj, k)}                   \\
-        Left Shift            & \texttt{a \textless{}\textless b}       & \texttt{lshift(a, b)}                      \\
-        Modulo                & \texttt{a \% b}                         & \texttt{mod(a, b)}                         \\
-        Multiplication        & \texttt{a * b}                          & \texttt{mul(a, b)}                         \\
-        Negation (Arithmetic) & \texttt{- a}                            & \texttt{neg(a)}                            \\
-        Negation (Logical)    & \texttt{not a}                          & \texttt{not\_(a)}                          \\
-        Positive              & \texttt{+ a}                            & \texttt{pos(a)}                            \\
-        Right Shift           & \texttt{a \textgreater{}\textgreater b} & \texttt{rshift(a, b)}                      \\
-        Sequence Repetition   & \texttt{seq * i}                        & \texttt{repeat(seq, i)}                    \\
-        Slice Assignment      & \texttt{seq{[}i:j{]} = values}          & \texttt{setitem(seq, slice(i, j), values)} \\
-        Slice Deletion        & \texttt{del seq{[}i:j{]}}               & \texttt{delitem(seq, slice(i, j))}         \\
-        Slicing               & \texttt{seq{[}i:j{]}}                   & \texttt{getitem(seq, slice(i, j))}         \\
-        String Formatting     & \texttt{s \% obj}                       & \texttt{mod(s, obj)}                       \\
-        Subtraction           & \texttt{a - b}                          & \texttt{sub(a, b)}                         \\
-        Truth Test            & \texttt{obj}                            & \texttt{truth(obj)}                        \\
-        Ordering              & \texttt{a \textless b}                  & \texttt{lt(a, b)}                          \\
-        Ordering              & \texttt{a \textless{}= b}               & \texttt{le(a, b)}                          \\
-        % \bottomrule
-    \end{tabular}
-\end{table}
-\subsection{Code}
+\begin{lstlisting}[language=C,caption=Wrapper functions for the Geosteiner library,label=lst:wrapper_functions]
+      void calc_esmt(int n, double *terms, double *length, int *nsps, double *sps, int *nedges, int *edges);
 
-Avoid putting large blocks of code in the report (more than a page in one block, for example). Use syntax highlighting if possible, as in Listing \ref{lst:callahan}.
-
-\begin{lstlisting}[language=python, float, caption={The algorithm for packing the $3\times 3$ outer-totalistic binary CA successor rule into a 
-    $16\times 16\times 16\times 16$ 4 bit lookup table, running an equivalent, notionally 16-state $2\times 2$ CA.}, label=lst:callahan]
-    def create_callahan_table(rule="b3s23"):
-        """Generate the lookup table for the cells."""        
-        s_table = np.zeros((16, 16, 16, 16), dtype=np.uint8)
-        birth, survive = parse_rule(rule)
-
-        # generate all 16 bit strings
-        for iv in range(65536):
-            bv = [(iv >> z) & 1 for z in range(16)]
-            a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p = bv
-
-            # compute next state of the inner 2x2
-            nw = apply_rule(f, a, b, c, e, g, i, j, k)
-            ne = apply_rule(g, b, c, d, f, h, j, k, l)
-            sw = apply_rule(j, e, f, g, i, k, m, n, o)
-            se = apply_rule(k, f, g, h, j, l, n, o, p)
-
-            # compute the index of this 4x4
-            nw_code = a | (b << 1) | (e << 2) | (f << 3)
-            ne_code = c | (d << 1) | (g << 2) | (h << 3)
-            sw_code = i | (j << 1) | (m << 2) | (n << 3)
-            se_code = k | (l << 1) | (o << 2) | (p << 3)
-
-            # compute the state for the 2x2
-            next_code = nw | (ne << 1) | (sw << 2) | (se << 3)
-
-            # get the 4x4 index, and write into the table
-            s_table[nw_code, ne_code, sw_code, se_code] = next_code
-
-        return s_table
-
+      void calc_rsmt(int n, double *terms, double *length, int *nsps, double *sps, int *nedges, int *edges);
 \end{lstlisting}
+
+The browser, however, cannot execute C code directly. Therefore, we need to compile the C code to WebAssembly (WASM) byte code. We do this using the Emscripten\footnote{https://emscripten.org/} toolchain.
+We discuss the details of the compilation process and integration of the WASM module with the frontend in section \ref{sec:webassembly}.
+
+With WASM, we have to explicitly manage memory allocation and deallocation. From the properties of the Steiner minimum tree, we know that the maximum number of Steiner points is $n - 2$ and the maximum number of edges is $2n - 3$. Using these constraints, we pre-allocate the memory for the Steiner points and edges and pass the pointers to the wrapper functions defined above.
+
+
+\section{WebAssembly}
+\label{sec:webassembly}
+Previously, Javascript was the only language that could run in the browser. This meant that native code could not be executed and always had to be manually ported to JS.
+This limitation let to attempts to compile native code to JS, such as ASM.js. It was found that ASM.js was more performant than code that had been manually rewritten in JS \citep{WebAssemblyIntro}.
+In 2015, WebAssembly\footnote{https://webassembly.org/} (WASM) was introduced as new compilation target for the browser. WASM is a binary instruction format that is more performant than JS and can be used to run native code at near native speeds.
+WASM is supported by most browsers, with the exception of Internet Explorer and Opera Mini \footnote{https://caniuse.com/wasm}.
+
+WASM is designed to be portable (i.e. write once, run everywhere), similar to C in a sense. Code compiled to WASM can run on any platform, both web and off-web (e.g. Node.js).
+The current application is a client-only application, but if we were to decide to run the Geosteiner algorithms on a Node.js backend, WASM would allow us to do so seamlessly.
+
+\subsection{How WASM works}
+The browser features a virtual machine (VM) that can execute JS and WASM binary code. A WASM binary is called a module and can be loaded into the VM by calling the WebAssembly Browser APIs from a JS script.
+In order for JS to call WASM functions, the WASM module must explicitly export these functions. WASM itself only supports 4 basic data types: 32/64 bit ints/floats. This means that we can't pass complex data structures to a WASM function or return such data from it.
+Instead, we can utilise the shared contiguous memory space between JS and WASM to pass pointers to memory locations that contain the data.
+
+\subsection{Emscripten}
+
+As highlighted in the figure \ref{fig:architecture}, the Geosteiner library is compiled to WASM using the Emscripten toolchain. The Emscripten toolchain consists of a designated compiler frontend (emcc) and LLVM backend optimised for the generation of WASM binaries.
+Apart from the compiler, the toolchain also exposes a set of "glue code" that aims to simplify the boilerplate code required to both load the WASM module and interface between the WASM module and JS code \citep{Emscripten_tutorial}.
+
+The glue code also provides an ergonomic memory management API. We can 'view' the same memory buffer in different ways depending on the data type, such as an array of 32-bit integers or 64-bit floats. This avoids the need to manually handle different offsets and strides when accessing the data.
+
+The output from the Empscripten compiler is a .wasm file and a .js file. The .js file is imported by the frontend and contains the glue code and is used to asynchronously load and instantiate the WASM module.
+
+\section{Structure of the codebase}
+
+\section{Visualisation/design}
+
+\section{Summary}
+
 
 %==================================================================================================================================
 \chapter{Evaluation}
@@ -397,16 +370,16 @@ How good is your solution? How well did you solve the general problem, and what 
 
 \section{Guidance}
 \begin{itemize}
-    \item
-          Ask specific questions that address the general problem.
-    \item
-          Answer them with precise evidence (graphs, numbers, statistical
-          analysis, qualitative analysis).
-    \item
-          Be fair and be scientific.
-    \item
-          The key thing is to show that you know how to evaluate your work, not
-          that your work is the most amazing product ever.
+      \item
+            Ask specific questions that address the general problem.
+      \item
+            Answer them with precise evidence (graphs, numbers, statistical
+            analysis, qualitative analysis).
+      \item
+            Be fair and be scientific.
+      \item
+            The key thing is to show that you know how to evaluate your work, not
+            that your work is the most amazing product ever.
 \end{itemize}
 
 \section{Evidence}
@@ -420,8 +393,8 @@ You can use \texttt{siunitx} to define units, space numbers neatly, and set the 
 
 % setup siunitx to have two decimal places
 \sisetup{
-    round-mode = places,
-    round-precision = 2
+      round-mode = places,
+      round-precision = 2
 }
 
 For example, these numbers will appear with two decimal places: \num{3.141592}, \num{2.71828}, and this one will appear with reasonable spacing \num{1000000}.
@@ -433,26 +406,26 @@ and that you check the required assumptions hold in your case.
 
 If you visualise, follow the basic rules, as illustrated in Figure \ref{fig:boxplot}:
 \begin{itemize}
-    \item Label everything correctly (axis, title, units).
-    \item Caption thoroughly.
-    \item Reference in text.
-    \item \textbf{Include appropriate display of uncertainty (e.g. error bars, Box plot)}
-    \item Minimize clutter.
+      \item Label everything correctly (axis, title, units).
+      \item Caption thoroughly.
+      \item Reference in text.
+      \item \textbf{Include appropriate display of uncertainty (e.g. error bars, Box plot)}
+      \item Minimize clutter.
 \end{itemize}
 
 See the file \texttt{guide\_to\_visualising.pdf} for further information and guidance.
 
 \begin{figure}[htb]
-    \centering
-    \includegraphics[width=1.0\linewidth]{images/boxplot_finger_distance.pdf}
+      \centering
+      \includegraphics[width=1.0\linewidth]{images/boxplot_finger_distance.pdf}
 
-    \caption{Average number of fingers detected by the touch sensor at different heights above the surface, averaged over all gestures. Dashed lines indicate
-        the true number of fingers present. The Box plots include bootstrapped uncertainty notches for the median. It is clear that the device is biased toward
-        undercounting fingers, particularly at higher $z$ distances.
-    }
+      \caption{Average number of fingers detected by the touch sensor at different heights above the surface, averaged over all gestures. Dashed lines indicate
+            the true number of fingers present. The Box plots include bootstrapped uncertainty notches for the median. It is clear that the device is biased toward
+            undercounting fingers, particularly at higher $z$ distances.
+      }
 
-    % use the notation fig:name to cross reference a figure
-    \label{fig:boxplot}
+      % use the notation fig:name to cross reference a figure
+      \label{fig:boxplot}
 \end{figure}
 
 
@@ -461,17 +434,17 @@ See the file \texttt{guide\_to\_visualising.pdf} for further information and gui
 Summarise the whole project for a lazy reader who didn't read the rest (e.g. a prize-awarding committee). This chapter should be short in most dissertations; maybe one to three pages.
 \section{Guidance}
 \begin{itemize}
-    \item
-          Summarise briefly and fairly.
-    \item
-          You should be addressing the general problem you introduced in the
-          Introduction.
-    \item
-          Include summary of concrete results (``the new compiler ran 2x
-          faster'')
-    \item
-          Indicate what future work could be done, but remember: \textbf{you
-              won't get credit for things you haven't done}.
+      \item
+            Summarise briefly and fairly.
+      \item
+            You should be addressing the general problem you introduced in the
+            Introduction.
+      \item
+            Include summary of concrete results (``the new compiler ran 2x
+            faster'')
+      \item
+            Indicate what future work could be done, but remember: \textbf{you
+                  won't get credit for things you haven't done}.
 \end{itemize}
 
 \section{Summary}
@@ -491,29 +464,29 @@ Discuss what you would do if you could take this further -- where would the inte
 
 \begin{appendices}
 
-    \chapter{Appendices}
+      \chapter{Appendices}
 
-    Use separate appendix chapters for groups of ancillary material that support your dissertation.
-    Typical inclusions in the appendices are:
+      Use separate appendix chapters for groups of ancillary material that support your dissertation.
+      Typical inclusions in the appendices are:
 
-    \begin{itemize}
-        \item
-              Copies of ethics approvals (you must include these if you needed to get them)
-        \item
-              Copies of questionnaires etc. used to gather data from subjects. Don't include
-              voluminous data logs; instead submit these electronically alongside your source code.
-        \item
-              Extensive tables or figures that are too bulky to fit in the main body of
-              the report, particularly ones that are repetitive and summarised in the body.
-        \item Outline of the source code (e.g. directory structure),
-              or other architecture documentation like class diagrams.
-        \item User manuals, and any guides to starting/running the software.
-              Your equivalent of \texttt{readme.md} should be included.
+      \begin{itemize}
+            \item
+                  Copies of ethics approvals (you must include these if you needed to get them)
+            \item
+                  Copies of questionnaires etc. used to gather data from subjects. Don't include
+                  voluminous data logs; instead submit these electronically alongside your source code.
+            \item
+                  Extensive tables or figures that are too bulky to fit in the main body of
+                  the report, particularly ones that are repetitive and summarised in the body.
+            \item Outline of the source code (e.g. directory structure),
+                  or other architecture documentation like class diagrams.
+            \item User manuals, and any guides to starting/running the software.
+                  Your equivalent of \texttt{readme.md} should be included.
 
-    \end{itemize}
+      \end{itemize}
 
-    \textbf{Don't include your source code in the appendices}. It will be
-    submitted separately.
+      \textbf{Don't include your source code in the appendices}. It will be
+      submitted separately.
 
 
 
