@@ -110,7 +110,10 @@ describe("useUpdatedSolutionLengths", () => {
      */
     const maxDeletes = 2;
     for (let i = 0; i < maxDeletes; i++) {
-      graph.dropEdge([...highlightedEdges][i]);
+      const edge = [...highlightedEdges][i];
+      if (edge) {
+        graph.dropEdge(edge);
+      }
     }
 
     const btn = screen.getByText("update graph");
