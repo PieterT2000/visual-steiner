@@ -39,21 +39,46 @@ export function mergeGraphs<TGraph extends Graph>(
 ): void {
   const dest = graph1;
   graph2.forEachNode((node, nodeAttrs) => {
-    dest.mergeNode(node, {
-      ...nodeAttrs,
-      algorithm: mergeStringOrArrayAttribute(nodeAttrs.algorithm),
-    });
+    if (dest.hasNode(node)) {
+      const existingNodeAttrs = dest.getNodeAttributes(node);
+      Object.assign(existingNodeAttrs, {
+        ...nodeAttrs,
+        algorithm: mergeStringOrArrayAttribute(
+          existingNodeAttrs.algorithm,
+          nodeAttrs.algorithm
+        ),
+      });
+    } else {
+      dest.addNode(node, {
+        ...nodeAttrs,
+        algorithm: mergeStringOrArrayAttribute(nodeAttrs.algorithm),
+      });
+    }
   });
   graph2.forEachEdge((edgeId, edgeAttrs, source, target) => {
-    dest.updateEdgeWithKey(edgeId, source, target, (attrs) => ({
-      ...attrs,
-      ...edgeAttrs,
-      // If the edge is used by multiple algorithms, keep track of algorithms in an array
-      algorithm: mergeStringOrArrayAttribute(
-        attrs.algorithm,
-        edgeAttrs.algorithm
-      ),
-    }));
+    const hasEdgeWithId = dest.hasEdge(edgeId);
+    const hasEdgeWithSourceTarget = dest.hasEdge(source, target);
+    const existingEdgeAttrs = hasEdgeWithId
+      ? dest.getEdgeAttributes(edgeId)
+      : hasEdgeWithSourceTarget
+      ? dest.getEdgeAttributes(source, target)
+      : null;
+    if (existingEdgeAttrs) {
+      const { key, ...rest } = edgeAttrs;
+      Object.assign(existingEdgeAttrs, {
+        ...rest,
+        algorithm: mergeStringOrArrayAttribute(
+          existingEdgeAttrs.algorithm,
+          edgeAttrs.algorithm
+        ),
+      });
+    } else {
+      dest.addEdgeWithKey(edgeId, source, target, {
+        ...edgeAttrs,
+        key: edgeId,
+        algorithm: mergeStringOrArrayAttribute(edgeAttrs.algorithm),
+      });
+    }
   });
 }
 
@@ -67,25 +92,38 @@ export function generateRandomGraph(size: number): Graph {
   random.assign(newGraph, {
     dimensions: ["x", "y"],
   });
-  newGraph.forEachEdge((edge) => {
-    newGraph.updateEdgeAttributes(edge, (attrs) => ({
-      ...attrs,
-      algorithm: [],
-      // Hide all initial edges in complete graph by default
-      hidden: true,
-      initialEdge: true,
-      size: GRAPH_DEFAULT_SETTINGS.edgeWidth,
-      color: GRAPH_DEFAULT_SETTINGS.edgeColor,
-    }));
+  const defaultEdgeAttrs = {
+    algorithm: [],
+    hidden: true,
+    initialEdge: true,
+    size: GRAPH_DEFAULT_SETTINGS.edgeWidth,
+    color: GRAPH_DEFAULT_SETTINGS.edgeColor,
+  };
+  const defaultNodeAttrs = {
+    size: GRAPH_DEFAULT_SETTINGS.nodeSize,
+    color: GRAPH_DEFAULT_SETTINGS.nodeColor,
+  };
+  const newEdges = newGraph.mapEdges((key, attrs, source, target) => ({
+    key,
+    source,
+    target,
+    attributes: Object.assign(attrs, defaultEdgeAttrs),
+  }));
+  const newNodes = newGraph.mapNodes((key, attrs) => ({
+    key,
+    attributes: Object.assign(attrs, defaultNodeAttrs),
+  }));
+
+  return UndirectedGraph.from({
+    nodes: newNodes,
+    edges: newEdges,
+    attributes: newGraph.getAttributes(),
+    options: {
+      type: "undirected",
+      multi: false,
+      allowSelfLoops: false,
+    },
   });
-  newGraph.forEachNode((node) => {
-    newGraph.updateNodeAttributes(node, (attrs) => ({
-      ...attrs,
-      size: GRAPH_DEFAULT_SETTINGS.nodeSize,
-      color: GRAPH_DEFAULT_SETTINGS.nodeColor,
-    }));
-  });
-  return newGraph;
 }
 
 export function graphFromNodes(nodes: Node[]) {
@@ -98,18 +136,34 @@ export function graphFromNodes(nodes: Node[]) {
       color: GRAPH_DEFAULT_SETTINGS.nodeColor,
     });
   });
-  toCompleteGraph(graph);
-  graph.forEachEdge((edge) => {
-    graph.updateEdgeAttributes(edge, (attrs) => ({
-      ...attrs,
-      algorithm: [],
-      // Hide all initial edges in complete graph by default
-      hidden: true,
-      initialEdge: true,
-      size: GRAPH_DEFAULT_SETTINGS.edgeWidth,
-      color: GRAPH_DEFAULT_SETTINGS.edgeColor,
-    }));
-  });
+  const defaultEdgeAttrs = {
+    algorithm: [],
+    // Hide all initial edges in complete graph by default
+    hidden: true,
+    initialEdge: true,
+    size: GRAPH_DEFAULT_SETTINGS.edgeWidth,
+    color: GRAPH_DEFAULT_SETTINGS.edgeColor,
+  };
+  toCompleteGraph(graph, defaultEdgeAttrs);
+  // graph.forEachEdge((_, attributes) => {
+  //   Object.assign(attributes, {
+  //     algorithm: [],
+  //     // Hide all initial edges in complete graph by default
+  //     hidden: true,
+  //     initialEdge: true,
+  //     size: GRAPH_DEFAULT_SETTINGS.edgeWidth,
+  //     color: GRAPH_DEFAULT_SETTINGS.edgeColor,
+  //   });
+  // graph.updateEdgeAttributes(edge, (attrs) => ({
+  //   ...attrs,
+  //   algorithm: [],
+  //   // Hide all initial edges in complete graph by default
+  //   hidden: true,
+  //   initialEdge: true,
+  //   size: GRAPH_DEFAULT_SETTINGS.edgeWidth,
+  //   color: GRAPH_DEFAULT_SETTINGS.edgeColor,
+  // }));
+  // });
   return graph;
 }
 
@@ -118,7 +172,10 @@ export function graphFromNodes(nodes: Node[]) {
  * @param graph undirected graph
  * @returns complete undirected graph
  */
-export function toCompleteGraph<TGraph extends UndirectedGraph>(graph: TGraph) {
+export function toCompleteGraph<TGraph extends UndirectedGraph>(
+  graph: TGraph,
+  defaultEdgeAttrs: Attributes = {}
+) {
   let i, j;
   const order = graph.order;
   const nodes = graph.nodes();
@@ -128,9 +185,7 @@ export function toCompleteGraph<TGraph extends UndirectedGraph>(graph: TGraph) {
         continue;
       }
       graph.addUndirectedEdge(nodes[i], nodes[j], {
-        algorithm: [],
-        hidden: true,
-        initialEdge: true,
+        ...defaultEdgeAttrs,
       });
     }
   }

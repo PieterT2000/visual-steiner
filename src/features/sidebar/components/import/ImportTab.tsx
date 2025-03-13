@@ -6,7 +6,6 @@ import {
   isRectSteinerNode,
   isSteinerNode,
 } from "@/lib/graph-utils";
-import useOnMountOnce from "@/hooks/useOnMountOnce";
 import { generateRandomGraph } from "@/lib/graph-utils";
 import { useCanvas } from "@/providers/canvas/CanvasContext";
 import { Fragment, useMemo, useState } from "react";
@@ -16,14 +15,9 @@ import { RotateCcw } from "lucide-react";
 import { GraphSource } from "@/types";
 
 const ImportTab = () => {
-  const { canvasImageUrl, graph, replaceGraphInContext, controlRef } =
-    useCanvas();
+  const { graph, replaceGraphInContext } = useCanvas();
   const [randomGraphSize, setRandomGraphSize] = useState<number | null>(null);
   const { graphSource, setGraphSource } = useGraphContext();
-
-  useOnMountOnce(() => {
-    controlRef.current?.triggerUpdateGraphThumbnail();
-  });
 
   const activeGraphMetadata = useMemo(() => {
     return {
@@ -32,15 +26,15 @@ const ImportTab = () => {
         value: graphSource,
       },
       nodes: {
-        label: "#Vertices",
+        label: "# Vertices",
         value: graph.filterNodes((_, attr) => !isSteinerNode(attr)).length,
       },
       edges: {
-        label: "#Eucl. S-points",
+        label: "# Euclidean S-points",
         value: graph.filterNodes((_, attr) => isEuclidSteinerNode(attr)).length,
       },
       rectSteinerPoints: {
-        label: "#Rect. S-points",
+        label: "# Rectilinear S-points",
         value: graph.filterNodes((_, attr) => isRectSteinerNode(attr)).length,
       },
     };
@@ -74,17 +68,6 @@ const ImportTab = () => {
           </TooltipButton>
         </div>
         <div className="flex w-full gap-x-6">
-          {canvasImageUrl ? (
-            <img
-              src={canvasImageUrl}
-              alt="graph"
-              className="h-[100px] bg-transparent w-[100px]"
-            />
-          ) : (
-            <div className="h-full bg-transparent flex items-center justify-center text-xs w-[100px]">
-              Click on "execute" to generate graph thumbnail
-            </div>
-          )}
           <div
             className="grid gap-y-2 gap-x-3 h-min"
             style={{

@@ -37,7 +37,6 @@ export function calcSMT(terms: number[], type: SMTType = "euclidean") {
   // read sps and edges
   const sps = new Float64Array(Module.HEAPF64.buffer, spsPtr, nsps * 2);
   const edges = new Uint32Array(Module.HEAPU32.buffer, edgesPtr, nedges * 2);
-  console.log(edges, sps);
 
   // Deallocate memory
   Module._free(inputPtr);

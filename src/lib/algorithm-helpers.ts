@@ -5,7 +5,6 @@ import { EdgeMutation, Edge, SupportedAlgorithms } from "@/types.ts";
 import { nanoid as generateId } from "nanoid";
 import { primsMST } from "./algorithms/prims.ts";
 import { calcEdgeWeights, calculateGraphLength } from "./graph-utils";
-import { toCompleteGraph } from "./graph-utils";
 
 interface Context<TGraph extends Graph> {
   graph: TGraph;
@@ -66,13 +65,16 @@ export const calculateSMT = <TGraph extends Graph>(
   // also find node ids for steiner points
 
   // add edges to graph
-  console.log(edges);
   const edgeMutations: Edge[] = [];
   for (let i = 0; i < nedges; i += 1) {
     const v0 = allNodeIds[edges[i * 2]];
     const v1 = allNodeIds[edges[i * 2 + 1]];
-    // console.log(v0, v1, edges, allNodeIds);
-    // console.log(type, i * 2, i * 2 + 1);
+    if (v0 === undefined || v1 === undefined) {
+      // Sometimes the edge indices are out of bounds, not sure why this happens.
+      console.warn("Invalid edge indices");
+      console.warn(i * 2, i * 2 + 1, edges[i * 2], edges[i * 2 + 1]);
+      continue;
+    }
     const existingEdgeId = graphCopy.edge(v0, v1);
     let edgeId = existingEdgeId;
     if (edgeId) {
@@ -106,7 +108,7 @@ export function calculatePrimsMST<TGraph extends Graph>({
 }: Context<TGraph>): ComputeResult<TGraph> {
   const edgeMutations: EdgeMutation[] = [];
   const graphCopy = graph.copy();
-  toCompleteGraph(graphCopy);
+  // toCompleteGraph(graphCopy);
   calcEdgeWeights(graphCopy);
   const mst = primsMST(graphCopy, (edge) => {
     edgeMutations.push(edge);

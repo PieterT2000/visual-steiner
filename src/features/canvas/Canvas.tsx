@@ -161,8 +161,10 @@ export default function Canvas() {
     // reset to initial graph
     const initialGraph = initialGraphRef.current;
     // reset edge.algorithm to empty array
-    initialGraph.forEachEdge((edge) => {
-      initialGraph.setEdgeAttribute(edge, "algorithm", []);
+    initialGraph.forEachEdge((_, attributes) => {
+      Object.assign(attributes, {
+        algorithm: [],
+      });
     });
     replaceGraph(graph, initialGraphRef.current);
 
@@ -223,13 +225,6 @@ export default function Canvas() {
         });
     });
   }, []);
-
-  // useEffect(() => {
-  //   const unsubscribe = graphPubSub.subscribeGraphUpdated(handleGraphUpdated);
-  //   return () => {
-  //     unsubscribe();
-  //   };
-  // }, []);
 
   return (
     <SigmaContainer
