@@ -15,6 +15,9 @@ import { z } from "zod";
 import { useFormSettings } from "@/providers/form-settings/FormSettingsContext.ts";
 import ImportTab from "./import/ImportTab.tsx";
 import ExportTab from "./export/ExportTab";
+import { defaultAlgorithmVisibilityAndOrder } from "@/providers/form-settings/const.ts";
+import { BaseSyntheticEvent } from "react";
+import { Button } from "@/components/ui/button";
 enum Tab {
   Import = "Import",
   Algorithm = "Algorithms",
@@ -29,17 +32,17 @@ const tabButtonActiveStyles =
 const tabContentStyles = "mt-1 mr-[3px] ml-[3px]";
 
 const Sidebar = () => {
-  const selectedAlgorithms = [
-    SupportedAlgorithms.ESMT,
-    SupportedAlgorithms.PRIMS_MST,
-    SupportedAlgorithms.RSMT,
-  ];
   const form = useFormContext();
   const { activeAlgorithmCard, setActiveAlgorithmCard, formRef } =
     useFormSettings();
 
-  const onSubmit = (_: z.infer<typeof algorithmsFormSchema>) => {
-    // console.log("submitted values", values);
+  const onSubmit = (
+    values: z.infer<typeof algorithmsFormSchema>,
+    evt: BaseSyntheticEvent | undefined
+  ) => {
+    evt?.preventDefault();
+    evt?.stopPropagation();
+    console.log("submitted values", values);
   };
 
   const formKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -79,7 +82,7 @@ const Sidebar = () => {
             {/* TODO: make this a toggle */}
             <div className="flex gap-x-2 items-center">
               <ArrowDownFilledIcon />
-              <p>Available algorithms/layers</p>
+              <p className="text-sm">Available algorithms/layers</p>
             </div>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -96,7 +99,7 @@ const Sidebar = () => {
                   setActiveAlgorithmCard(value as SupportedAlgorithms)
                 }
               >
-                {selectedAlgorithms.map((algorithm) => (
+                {defaultAlgorithmVisibilityAndOrder.map(({ algorithm }) => (
                   <AlgorithmCard key={algorithm} algorithm={algorithm} />
                 ))}
               </Accordion>

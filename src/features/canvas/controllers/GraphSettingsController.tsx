@@ -66,7 +66,11 @@ const GraphSettingsController = ({
             size: isDrawMode
               ? GRAPH_DEFAULT_SETTINGS.nodeSize
               : algorithm.displaySettings?.vertexRadius,
-            color: getNodeColor(data, algorithm.displaySettings, isDrawMode),
+            color: getNodeColor(
+              data,
+              algorithm.displaySettings!.colors,
+              isDrawMode
+            ),
             // 0 zindex does not work in SigmaJS
             zIndex: idx + 1,
             hidden: false,
@@ -80,6 +84,15 @@ const GraphSettingsController = ({
         finalData = {
           ...finalData,
           hidden: isNodeHidden,
+          color: getNodeColor(
+            data,
+            {
+              vertex: GRAPH_DEFAULT_SETTINGS.nodeColor,
+              steinerVertex: GRAPH_DEFAULT_SETTINGS.steinerNodeColor,
+            },
+            isDrawMode
+          ),
+          size: GRAPH_DEFAULT_SETTINGS.nodeSize,
         };
       }
       return finalData;

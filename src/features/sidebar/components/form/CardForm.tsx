@@ -24,12 +24,12 @@ const CardForm = ({ algorithm }: { algorithm: SupportedAlgorithms }) => {
             {row.map((item) => {
               const key = typeof item === "string" ? item : item.id;
               const formKey = `${algorithm}.${key}`;
-              // @ts-expect-error it is difficult to connect the types of schema and layout
               const fieldSchema = schema._def.shape()[key];
               const label = getLabelFromFieldSchema(fieldSchema);
               return key === "colors" ? (
                 <ColorFields
                   key={formKey}
+                  // @ts-expect-error it is difficult to connect the types of schema and layout
                   schema={fieldSchema}
                   algorithm={algorithm}
                 />

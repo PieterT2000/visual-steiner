@@ -1,4 +1,4 @@
-import { useCallback, useImperativeHandle, useMemo, useRef } from "react";
+import { useImperativeHandle, useMemo, useRef } from "react";
 import { SupportedAlgorithms } from "@/types.ts";
 import { SMTType } from "@/lib/steiner-utils.ts";
 import { useCanvas } from "@/providers/canvas/CanvasContext.ts";
@@ -15,13 +15,9 @@ import ZoomControls from "./components/ZoomControls";
 import "@react-sigma/core/lib/style.css";
 import "./styles/overrides.css";
 import LengthRatioBox from "./components/LengthRatioBox";
-import { graphCanvasToImageUrl } from "./utils/dom-utils.ts";
-import {
-  EXPORT_TAB_CANVAS_PREVIEW_STYLE,
-  GRAPH_DEFAULT_SETTINGS,
-} from "./consts";
-import { useFormSettings } from "@/providers/form-settings/FormSettingsContext";
-import { useValueRef } from "@/hooks/useValueRef";
+import { GRAPH_DEFAULT_SETTINGS } from "./consts";
+import { useGraphPubSub } from "./hooks/useGraphPubSub";
+import { Settings } from "sigma/settings";
 
 const createSolutionInitState = (
   algorithm: SupportedAlgorithms
@@ -38,21 +34,13 @@ export default function Canvas() {
   const {
     graph,
     controlRef,
-    setCanvasImageUrl,
     initialGraphRef,
     canvasMode,
     setSolutions,
     solutions,
   } = useCanvas();
-  const { algorithmVisibility } = useFormSettings();
-
-  const visibleAlgorithmsRef = useValueRef(
-    algorithmVisibility
-      .filter((item) => item.visible)
-      .map((item) => item.algorithm)
-  );
-
-  const sigmaSettings = useMemo(
+  const { publishGraphUpdated } = useGraphPubSub();
+  const sigmaSettings: Partial<Settings> = useMemo(
     () => ({
       allowInvalidContainer: true,
       nodeProgramClasses: {
@@ -67,6 +55,7 @@ export default function Canvas() {
       labelWeight: GRAPH_DEFAULT_SETTINGS.labelWeight,
       defaultNodeColor: GRAPH_DEFAULT_SETTINGS.nodeColor,
       defaultEdgeColor: GRAPH_DEFAULT_SETTINGS.edgeColor,
+      minEdgeThickness: GRAPH_DEFAULT_SETTINGS.edgeWidth,
     }),
     []
   );
@@ -78,7 +67,6 @@ export default function Canvas() {
     () => {
       return {
         computeSolutions,
-        triggerUpdateGraphThumbnail: handleGraphUpdated,
         animatedCameraFit: (
           duration = GRAPH_DEFAULT_SETTINGS.cameraFitDuration
         ) => {
@@ -114,7 +102,14 @@ export default function Canvas() {
     });
     const algo = SupportedAlgorithms.PRIMS_MST;
 
-    mergeGraphs(graph, updatedGraph);
+    const mergedEdgesMap = mergeGraphs(graph, updatedGraph);
+    // replace edgeIds with the correct edgeIds
+    edgeMutations.forEach((mutation) => {
+      if (mergedEdgesMap.has(mutation.key)) {
+        mutation.key = mergedEdgesMap.get(mutation.key)!;
+      }
+    });
+
     setSolutions((draft) => {
       let solution = draft.find((solution) => solution.algorithm === algo);
       if (!solution) {
@@ -122,7 +117,7 @@ export default function Canvas() {
         draft.push(solution);
       }
       edgeMutations.forEach((edge) => {
-        solution.highlightedEdges.add(edge.id);
+        solution.highlightedEdges.add(edge.key);
         solution.highlightedNodes.add(edge.source).add(edge.target);
       });
       solution.meta.length = length;
@@ -142,7 +137,14 @@ export default function Canvas() {
         ? SupportedAlgorithms.ESMT
         : SupportedAlgorithms.RSMT;
 
-    mergeGraphs(graph, updatedGraph);
+    const mergedEdgesMap = mergeGraphs(graph, updatedGraph);
+    // replace edgeIds with the correct edgeIds
+    edgeMutations.forEach((mutation) => {
+      if (mergedEdgesMap.has(mutation.key)) {
+        mutation.key = mergedEdgesMap.get(mutation.key)!;
+      }
+    });
+
     setSolutions((draft) => {
       let solution = draft.find((solution) => solution.algorithm === algorithm);
       if (!solution) {
@@ -150,7 +152,7 @@ export default function Canvas() {
         draft.push(solution);
       }
       edgeMutations.forEach((mutation) => {
-        solution.highlightedEdges.add(mutation.id);
+        solution.highlightedEdges.add(mutation.key);
         solution.highlightedNodes.add(mutation.source).add(mutation.target);
       });
       solution.meta.length = length;
@@ -170,13 +172,8 @@ export default function Canvas() {
 
     const problemGraph = graph.copy();
 
-    // clear previous solutions
     setSolutions([]);
-    [
-      SupportedAlgorithms.PRIMS_MST,
-      SupportedAlgorithms.ESMT,
-      SupportedAlgorithms.RSMT,
-    ].forEach((algorithm) => {
+    Object.values(SupportedAlgorithms).forEach((algorithm) => {
       if (algorithm === SupportedAlgorithms.PRIMS_MST) {
         computePrimsMST(problemGraph);
       } else if (algorithm === SupportedAlgorithms.ESMT) {
@@ -185,46 +182,10 @@ export default function Canvas() {
         computeSMT("rectilinear", problemGraph);
       }
     });
-
-    // update image url
-    handleGraphUpdated();
+    publishGraphUpdated();
   };
 
   const sigmaRef = useRef<Sigma>(null);
-
-  const generateCanvasImageUrl = useCallback(async () => {
-    const sigma = sigmaRef.current;
-    try {
-      if (sigma) {
-        return await graphCanvasToImageUrl(
-          sigma,
-          EXPORT_TAB_CANVAS_PREVIEW_STYLE,
-          visibleAlgorithmsRef.current
-        );
-      }
-      return null;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  }, []);
-
-  const handleGraphUpdated = useCallback(() => {
-    requestIdleCallback(() => {
-      generateCanvasImageUrl()
-        .then((imageUrl) => {
-          setCanvasImageUrl((prev) => {
-            if (prev) {
-              URL.revokeObjectURL(prev);
-            }
-            return imageUrl;
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    });
-  }, []);
 
   return (
     <SigmaContainer

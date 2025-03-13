@@ -4,7 +4,7 @@ import { SMTType } from "./steiner-utils.ts";
 import { EdgeMutation, Edge, SupportedAlgorithms } from "@/types.ts";
 import { nanoid as generateId } from "nanoid";
 import { primsMST } from "./algorithms/prims.ts";
-import { calcEdgeWeights, calculateGraphLength } from "./graph-utils";
+import { calculateGraphLength, toCompleteWeightedGraph } from "./graph-utils";
 
 interface Context<TGraph extends Graph> {
   graph: TGraph;
@@ -50,10 +50,8 @@ export const calculateSMT = <TGraph extends Graph>(
     graphCopy.addNode(id, {
       x: sps[i * 2],
       y: sps[i * 2 + 1],
-      size: 10,
       label: `SP ${i + 1}`,
       isSteiner: true,
-      steinerType: type,
       algorithm: [smtAlgorithmMap[type]],
     });
     steinerNodeIds.push(id);
@@ -81,13 +79,12 @@ export const calculateSMT = <TGraph extends Graph>(
       graphCopy.setEdgeAttribute(edgeId, "algorithm", [smtAlgorithmMap[type]]);
     } else {
       edgeId = graphCopy.addEdge(v0, v1, {
-        hidden: true,
         algorithm: [smtAlgorithmMap[type]],
       });
     }
 
     edgeMutations.push({
-      id: edgeId,
+      key: edgeId,
       source: v0,
       target: v1,
     });
@@ -108,8 +105,7 @@ export function calculatePrimsMST<TGraph extends Graph>({
 }: Context<TGraph>): ComputeResult<TGraph> {
   const edgeMutations: EdgeMutation[] = [];
   const graphCopy = graph.copy();
-  // toCompleteGraph(graphCopy);
-  calcEdgeWeights(graphCopy);
+  toCompleteWeightedGraph(graphCopy);
   const mst = primsMST(graphCopy, (edge) => {
     edgeMutations.push(edge);
   }) as TGraph;

@@ -9,7 +9,9 @@ import { createDefaultGraph } from "@/lib/graph-utils";
 import { replaceGraph } from "@/lib/graph-utils";
 import Graph from "graphology";
 import { useImmer } from "use-immer";
-import { useGraphContext } from "../graph/GraphContext";
+import { useGraphPubSub } from "@/features/canvas/hooks/useGraphPubSub";
+import { useFormSettings } from "../form-settings/FormSettingsContext";
+import { useFormContext } from "react-hook-form";
 
 interface CanvasProviderProps {
   children: React.ReactNode;
@@ -29,7 +31,10 @@ const CanvasProvider = ({ children }: CanvasProviderProps) => {
   const [solutions, setSolutions] = useImmer<AlgorithmSolution[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const controlRef = useRef<CanvasControl>(null);
-  const { graphPubSub } = useGraphContext();
+  const { publishGraphUpdated } = useGraphPubSub();
+  const {
+    formState: { isDirty },
+  } = useFormContext();
   /**
    * Sigma.js does not support graph instance replacements, so instead we
    * merge the new graph into the cleared existing graph instance.
@@ -41,7 +46,7 @@ const CanvasProvider = ({ children }: CanvasProviderProps) => {
     setCanvasImageUrl(null);
     setGraphDirty(true);
     setSolutions([]);
-    graphPubSub.publishGraphUpdated();
+    publishGraphUpdated();
     controlRef.current?.animatedCameraFit();
   };
 
@@ -61,7 +66,7 @@ const CanvasProvider = ({ children }: CanvasProviderProps) => {
     initialGraphRef,
     canvasMode,
     setCanvasMode,
-    graphDirty,
+    graphDirty: graphDirty || isDirty,
     setGraphDirty,
     solutions,
     setSolutions,

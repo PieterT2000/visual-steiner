@@ -3,7 +3,7 @@ import { useUpdatedSolutionLengths } from "../hooks/useUpdatedSolutionLengths";
 import { SupportedAlgorithms } from "@/types";
 import { describe, it, expect } from "vitest";
 import { GraphProvider } from "@/providers/graph/GraphProvider";
-import { calculateGraphLength, createDefaultGraph } from "@/lib/graph-utils";
+import { createDefaultGraph } from "@/lib/graph-utils";
 import Graph from "graphology";
 import { useGraphContext } from "@/providers/graph/GraphContext";
 import userEvent from "@testing-library/user-event";

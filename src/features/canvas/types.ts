@@ -9,7 +9,6 @@ export enum CanvasMode {
 
 export type CanvasControl = {
   computeSolutions: () => void;
-  triggerUpdateGraphThumbnail: () => void;
   animatedCameraFit: (duration?: number) => void;
   getSigma: () => Sigma | null;
 };

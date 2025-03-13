@@ -1,5 +1,5 @@
 export type Edge = {
-  id: string;
+  key: string;
   source: string;
   target: string;
 };
@@ -27,7 +27,7 @@ export enum SupportedAlgorithms {
   /**
    * Uniformly oriented Steiner minimal tree
    */
-  UOSMT = "uniformlyOrientedSteinerMinimalTree",
+  // UOSMT = "uniformlyOrientedSteinerMinimalTree",
   /**
    * Euclidean Steiner minimal tree
    */

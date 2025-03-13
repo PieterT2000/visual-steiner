@@ -1,7 +1,7 @@
 import Graph, { UndirectedGraph } from "graphology";
 import { random } from "graphology-layout";
 import { Attributes } from "graphology-types";
-import { complete } from "graphology-generators/classic";
+import { empty } from "graphology-generators/classic";
 import { AlgorithmDisplaySettings } from "@/features/canvas/types";
 import { GRAPH_DEFAULT_SETTINGS } from "@/features/canvas/consts";
 import { SupportedAlgorithms, Node } from "@/types";
@@ -36,8 +36,11 @@ function mergeStringOrArrayAttribute(
 export function mergeGraphs<TGraph extends Graph>(
   graph1: TGraph,
   graph2: TGraph
-): void {
+): Map<string, string> {
   const dest = graph1;
+  // Keeps track of the edges that we tried to merge but for which source->target already exists
+  // Format: graph2EdgeId -> graph1EdgeId
+  const mergedEdgesMap = new Map<string, string>();
   graph2.forEachNode((node, nodeAttrs) => {
     if (dest.hasNode(node)) {
       const existingNodeAttrs = dest.getNodeAttributes(node);
@@ -63,6 +66,9 @@ export function mergeGraphs<TGraph extends Graph>(
       : hasEdgeWithSourceTarget
       ? dest.getEdgeAttributes(source, target)
       : null;
+    if (hasEdgeWithSourceTarget) {
+      mergedEdgesMap.set(edgeId, dest.edge(source, target)!);
+    }
     if (existingEdgeAttrs) {
       const { key, ...rest } = edgeAttrs;
       Object.assign(existingEdgeAttrs, {
@@ -80,6 +86,7 @@ export function mergeGraphs<TGraph extends Graph>(
       });
     }
   });
+  return mergedEdgesMap;
 }
 
 export function replaceGraph(graph: Graph, newGraph: Graph): void {
@@ -88,42 +95,12 @@ export function replaceGraph(graph: Graph, newGraph: Graph): void {
 }
 
 export function generateRandomGraph(size: number): Graph {
-  const newGraph = complete(UndirectedGraph, size);
+  const newGraph = empty(UndirectedGraph, size);
   random.assign(newGraph, {
     dimensions: ["x", "y"],
   });
-  const defaultEdgeAttrs = {
-    algorithm: [],
-    hidden: true,
-    initialEdge: true,
-    size: GRAPH_DEFAULT_SETTINGS.edgeWidth,
-    color: GRAPH_DEFAULT_SETTINGS.edgeColor,
-  };
-  const defaultNodeAttrs = {
-    size: GRAPH_DEFAULT_SETTINGS.nodeSize,
-    color: GRAPH_DEFAULT_SETTINGS.nodeColor,
-  };
-  const newEdges = newGraph.mapEdges((key, attrs, source, target) => ({
-    key,
-    source,
-    target,
-    attributes: Object.assign(attrs, defaultEdgeAttrs),
-  }));
-  const newNodes = newGraph.mapNodes((key, attrs) => ({
-    key,
-    attributes: Object.assign(attrs, defaultNodeAttrs),
-  }));
 
-  return UndirectedGraph.from({
-    nodes: newNodes,
-    edges: newEdges,
-    attributes: newGraph.getAttributes(),
-    options: {
-      type: "undirected",
-      multi: false,
-      allowSelfLoops: false,
-    },
-  });
+  return newGraph;
 }
 
 export function graphFromNodes(nodes: Node[]) {
@@ -132,47 +109,17 @@ export function graphFromNodes(nodes: Node[]) {
     graph.addNode(node.key, {
       x: node.x,
       y: node.y,
-      size: GRAPH_DEFAULT_SETTINGS.nodeSize,
-      color: GRAPH_DEFAULT_SETTINGS.nodeColor,
     });
   });
-  const defaultEdgeAttrs = {
-    algorithm: [],
-    // Hide all initial edges in complete graph by default
-    hidden: true,
-    initialEdge: true,
-    size: GRAPH_DEFAULT_SETTINGS.edgeWidth,
-    color: GRAPH_DEFAULT_SETTINGS.edgeColor,
-  };
-  toCompleteGraph(graph, defaultEdgeAttrs);
-  // graph.forEachEdge((_, attributes) => {
-  //   Object.assign(attributes, {
-  //     algorithm: [],
-  //     // Hide all initial edges in complete graph by default
-  //     hidden: true,
-  //     initialEdge: true,
-  //     size: GRAPH_DEFAULT_SETTINGS.edgeWidth,
-  //     color: GRAPH_DEFAULT_SETTINGS.edgeColor,
-  //   });
-  // graph.updateEdgeAttributes(edge, (attrs) => ({
-  //   ...attrs,
-  //   algorithm: [],
-  //   // Hide all initial edges in complete graph by default
-  //   hidden: true,
-  //   initialEdge: true,
-  //   size: GRAPH_DEFAULT_SETTINGS.edgeWidth,
-  //   color: GRAPH_DEFAULT_SETTINGS.edgeColor,
-  // }));
-  // });
   return graph;
 }
 
 /**
- * Converts an existing undirected graph to a complete undirected graph in-place
+ * Converts an existing undirected graph to a complete, weighted, undirected graph in-place
  * @param graph undirected graph
  * @returns complete undirected graph
  */
-export function toCompleteGraph<TGraph extends UndirectedGraph>(
+export function toCompleteWeightedGraph<TGraph extends UndirectedGraph>(
   graph: TGraph,
   defaultEdgeAttrs: Attributes = {}
 ) {
@@ -184,8 +131,14 @@ export function toCompleteGraph<TGraph extends UndirectedGraph>(
       if (graph.hasEdge(nodes[i], nodes[j])) {
         continue;
       }
+      const x1 = graph.getNodeAttribute(nodes[i], "x");
+      const y1 = graph.getNodeAttribute(nodes[i], "y");
+      const x2 = graph.getNodeAttribute(nodes[j], "x");
+      const y2 = graph.getNodeAttribute(nodes[j], "y");
+      const weight = Math.hypot(x1 - x2, y1 - y2);
       graph.addUndirectedEdge(nodes[i], nodes[j], {
         ...defaultEdgeAttrs,
+        weight,
       });
     }
   }
@@ -196,19 +149,18 @@ export function toCompleteGraph<TGraph extends UndirectedGraph>(
  * @param graph undirected graph
  * @param node node
  */
-export function addAdjacentEdges<TGraph extends UndirectedGraph>(
-  graph: TGraph,
-  nodeKey: string
-) {
-  const otherNodes = graph.nodes().filter((n) => n !== nodeKey);
-  otherNodes.forEach((neighbor) => {
-    graph.addUndirectedEdge(nodeKey, neighbor, {
-      algorithm: [],
-      hidden: true,
-      initialEdge: true,
-    });
-  });
-}
+// export function addAdjacentEdges<TGraph extends UndirectedGraph>(
+//   graph: TGraph,
+//   nodeKey: string
+// ) {
+//   const otherNodes = graph.nodes().filter((n) => n !== nodeKey);
+//   otherNodes.forEach((neighbor) => {
+//     graph.addUndirectedEdge(nodeKey, neighbor, {
+//       algorithm: [],
+//       initialEdge: true,
+//     });
+//   });
+// }
 
 /**
  * Computes the edge weights (Euclidean distance) in-place and stores them in the `weight` attribute of each edge
@@ -229,41 +181,30 @@ export function calcEdgeWeights<TGraph extends UndirectedGraph>(graph: TGraph) {
  */
 export function createDefaultGraph() {
   const defaultGraph = new UndirectedGraph();
-  defaultGraph.addNode(1, {
-    label: "Node 1",
-    x: 0,
-    y: 0,
-    size: 10,
+  const nodes = [
+    {
+      x: 0,
+      y: 0,
+    },
+    {
+      x: 1,
+      y: 1,
+    },
+    {
+      x: 0,
+      y: 1,
+    },
+    {
+      x: 1,
+      y: 0,
+    },
+  ];
+  nodes.forEach((attrs, idx) => {
+    defaultGraph.addNode(idx + 1, {
+      ...attrs,
+      label: `Node ${idx + 1}`,
+    });
   });
-  defaultGraph.addNode(2, {
-    label: "Node 2",
-    x: 1,
-    y: 1,
-    size: 10,
-  });
-  defaultGraph.addNode(3, {
-    label: "Node 3",
-    x: 0,
-    y: 1,
-    size: 10,
-  });
-  defaultGraph.addNode(4, {
-    label: "Node 4",
-    x: 1,
-    y: 0,
-    size: 10,
-  });
-  const edgeAttrs = {
-    hidden: true,
-    initialEdge: true,
-    algorithm: [],
-  };
-  defaultGraph.addEdge(1, 2, edgeAttrs);
-  defaultGraph.addEdge(1, 3, edgeAttrs);
-  defaultGraph.addEdge(1, 4, edgeAttrs);
-  defaultGraph.addEdge(2, 3, edgeAttrs);
-  defaultGraph.addEdge(2, 4, edgeAttrs);
-  defaultGraph.addEdge(3, 4, edgeAttrs);
   return defaultGraph;
 }
 
@@ -272,27 +213,33 @@ export function isSteinerNode(nodeAttrs: Attributes) {
 }
 
 export function isRectSteinerNode(nodeAttrs: Attributes) {
-  return nodeAttrs.steinerType === "rectilinear";
+  return (
+    !!nodeAttrs.isSteiner &&
+    nodeAttrs.algorithm.includes(SupportedAlgorithms.RSMT)
+  );
 }
 
 export function isEuclidSteinerNode(nodeAttrs: Attributes) {
-  return nodeAttrs.steinerType === "euclidean";
+  return (
+    !!nodeAttrs.isSteiner &&
+    nodeAttrs.algorithm.includes(SupportedAlgorithms.ESMT)
+  );
 }
 
 export function getNodeColor(
   nodeAttrs: Attributes,
-  settings: AlgorithmDisplaySettings,
+  settings: {
+    vertex: string;
+    steinerVertex?: string;
+  },
   isDrawMode: boolean
 ) {
   if (isSteinerNode(nodeAttrs)) {
-    return isDrawMode
+    return isDrawMode || !settings.steinerVertex
       ? GRAPH_DEFAULT_SETTINGS.steinerNodeColor
-      : (settings as AlgorithmDisplaySettings<SupportedAlgorithms.ESMT>)?.colors
-          .steinerVertex;
+      : settings.steinerVertex;
   }
-  return isDrawMode
-    ? GRAPH_DEFAULT_SETTINGS.nodeColor
-    : settings?.colors?.vertex;
+  return isDrawMode ? GRAPH_DEFAULT_SETTINGS.nodeColor : settings.vertex;
 }
 
 export function isDrawNode(nodeAttrs: Attributes) {

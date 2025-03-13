@@ -49,7 +49,7 @@
     --sidebar-width: 425px;
     --dotted-pattern-size: 364px;
 
-    --loader-size: 60px;
+    --loader-size: 50px;
     --loader-color: hsl(var(--selected-text));
 
     @media (max-width: 1024px) {

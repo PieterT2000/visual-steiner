@@ -1,6 +1,9 @@
 import { SupportedAlgorithms } from "@/types.ts";
 import { createContext, useContext } from "react";
 import { Updater } from "use-immer";
+import { UseFormReturn } from "react-hook-form";
+import { algorithmsFormSchema } from "@/features/sidebar/components/form/schema.ts";
+import { z } from "zod";
 export interface AlgorithmVisibility {
   algorithm: SupportedAlgorithms;
   visible: boolean;
@@ -12,6 +15,7 @@ export interface FormSettingsContext {
   formRef: React.RefObject<HTMLFormElement>;
   algorithmVisibility: AlgorithmVisibility[];
   setAlgorithmVisibility: Updater<AlgorithmVisibility[]>;
+  form: UseFormReturn<z.infer<typeof algorithmsFormSchema>>;
 }
 
 export const FormSettingsContext = createContext<

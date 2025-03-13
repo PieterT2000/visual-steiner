@@ -2,26 +2,17 @@ import { themeHexColors } from "@/theme";
 import { GraphCanvasStyle } from "./types";
 
 export const GRAPH_DEFAULT_SETTINGS = {
-  nodeSize: 8,
-  nodeColor: themeHexColors.black,
-  steinerNodeColor: themeHexColors.primary,
+  nodeColor: themeHexColors.primary,
+  steinerNodeColor: themeHexColors.layer2,
+  nodeSize: 6,
   labelSize: 14,
   labelFont: "Inter",
   labelWeight: "normal",
   labelColor: themeHexColors.black,
-  edgeWidth: 1,
+  edgeWidth: 2,
   edgeColor: themeHexColors.black,
   cameraFitDuration: 500,
   cameraFitRatio: 1.5,
-};
-
-export const IMPORT_TAB_CANVAS_PREVIEW_STYLE: GraphCanvasStyle = {
-  canvasWidth: 256,
-  canvasHeight: 256,
-  nodeSize: 6,
-  edgeSize: 4,
-  nodeColor: themeHexColors.primary,
-  edgeColor: themeHexColors.primary,
 };
 
 export const EXPORT_TAB_CANVAS_PREVIEW_STYLE: GraphCanvasStyle = {

@@ -13,16 +13,17 @@ import {
 } from "@/components/ui/select";
 import { capitalize, cn } from "@/lib/utils";
 import { SupportedAlgorithms } from "@/types";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useCanvas } from "@/providers/canvas/CanvasContext";
 import {
   addWhiteBackground,
   graphCanvasToImageUrl,
 } from "@/features/canvas/utils/dom-utils";
-import { useAsyncFn, useMountedState } from "react-use";
+import { useAsyncFn } from "react-use";
 import { EXPORT_TAB_CANVAS_PREVIEW_STYLE } from "@/features/canvas/consts";
 import useOnMountOnce from "@/hooks/useOnMountOnce";
 import { toast } from "react-hot-toast";
+import { useGraphPubSub } from "@/features/canvas/hooks/useGraphPubSub";
 
 enum ExportFormat {
   PNG = "PNG",
@@ -84,9 +85,16 @@ const ExportTab = () => {
     return Object.keys(layers).filter((layer) => layers[layer as ExportLayer]);
   };
 
-  const isMounted = useMountedState();
+  const handleGraphUpdates = useCallback(() => {
+    console.log("rerender export preview");
+    renderPreview({
+      algorithm: selectedAlgorithm,
+      layers: getLayerList(selectedLayers),
+    });
+  }, [selectedAlgorithm, selectedLayers]);
 
-  // const loading = false;
+  useGraphPubSub(handleGraphUpdates);
+
   useOnMountOnce(() => {
     renderPreview({
       algorithm: selectedAlgorithm,
@@ -114,14 +122,6 @@ const ExportTab = () => {
   };
 
   const handleDownload = async () => {
-    if (
-      exportFormat === ExportFormat.CSV ||
-      exportFormat === ExportFormat.TXT
-    ) {
-      toast.error("CSV and TXT formats are not supported for export.");
-      return;
-    }
-
     let imageUrl = previewImageUrl;
     let filename;
     if (exportFormat === ExportFormat.PNG) {
@@ -149,7 +149,6 @@ const ExportTab = () => {
     <div className="flex flex-col gap-y-6 h-[inherit]">
       <div className="flex flex-col gap-y-1">
         <p className="font-semibold text-base text-black">Export graph</p>
-        {/* <p className="text-text text-sm">Export the current graph to a file.</p> */}
         <div className="space-y-4">
           <div className="flex flex-col gap-y-2">
             <p className="text-sm font-medium">Select layers</p>
@@ -263,7 +262,7 @@ const ExportTab = () => {
       </div>
 
       <div className="flex justify-end">
-        <Button disabled={!previewImageUrl} onClick={handleDownload}>
+        <Button disabled={!previewImageUrl || loading} onClick={handleDownload}>
           Download
         </Button>
       </div>

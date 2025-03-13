@@ -41,6 +41,8 @@ const CanvasNavigation = () => {
   const {
     trigger,
     formState: { errors },
+    reset,
+    getValues,
     setFocus,
   } = useFormContext<z.infer<typeof algorithmsFormSchema>>();
 
@@ -71,6 +73,9 @@ const CanvasNavigation = () => {
       handleFormInvalid();
       return;
     }
+    // reset form dirty state
+    const values = getValues();
+    reset(values);
 
     // If running the algorithms again, don't include the dynamic Steiner nodes
     if (canvasMode === CanvasMode.Draw) {

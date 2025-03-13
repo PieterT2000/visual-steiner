@@ -46,14 +46,14 @@ export function primsMST(
       if (!edgeId) {
         throw new Error("PrimMST: Attempting to add non-existent edge to MST");
       }
-      tree.addEdge(parent[v], v, {
-        id: edgeId,
+      tree.addEdgeWithKey(edgeId, parent[v], v, {
         ...graph.getEdgeAttributes(edgeId),
+        key: edgeId,
         algorithm: [SupportedAlgorithms.PRIMS_MST],
       });
       onTreeUpdate?.({
         edge: {
-          id: edgeId,
+          key: edgeId,
           source: parent[v],
           target: v,
         },

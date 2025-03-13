@@ -4,8 +4,6 @@ import { nanoid as generateId } from "nanoid";
 import { useCanvas } from "@/providers/canvas/CanvasContext";
 import { useValueRef } from "@/hooks/useValueRef";
 import { useGraphContext } from "@/providers/graph/GraphContext";
-import { GRAPH_DEFAULT_SETTINGS } from "../consts";
-import { addAdjacentEdges } from "@/lib/graph-utils";
 
 const noop = () => {};
 
@@ -66,6 +64,7 @@ const GraphEventsController = ({
         const nodeId = evt.node;
         if (!nodeId) return;
         graph.dropNode(nodeId);
+        isHoveringNode = false;
         if (!isGraphDirtyRef.current) {
           setGraphDirty(true);
         }
@@ -94,13 +93,9 @@ const GraphEventsController = ({
         const id = generateId();
         const node = {
           ...graphCoord,
-          size: GRAPH_DEFAULT_SETTINGS.nodeSize,
-          color: GRAPH_DEFAULT_SETTINGS.nodeColor,
-          hidden: false,
           isTemp: true,
         };
         graph.addNode(id, node);
-        addAdjacentEdges(graph, id);
         if (!isGraphDirtyRef.current) {
           setGraphDirty(true);
         }
