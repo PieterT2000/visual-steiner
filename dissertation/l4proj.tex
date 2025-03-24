@@ -11,8 +11,13 @@
 %
 \usepackage{svg}
 \usepackage{wrapstuff}
-
-
+\usepackage{tikz}
+\usepackage{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.15}
+\usepackage{mathrsfs}
+\usetikzlibrary{arrows}
+\newcommand{\degre}{\ensuremath{^\circ}}
 \begin{document}
 
 %==============================================================================
@@ -153,9 +158,70 @@ Lastly, the interface should be able to dynamically update the solution when the
 %==================================================================================================================================
 
 \chapter{Background}
-Let's start with the theoretical background. Then we will proceed to talk about existing tools and how they compare to our aims.
 
-Start with explaining why the SMT is a NP hard problem. State what algorithms exist and why they are not polynomial time algorithms.
+\section{Formal definition}
+The Euclidian Minimum Steiner tree problem is concerned with finding the shortest tree that contains a set of vertices in the Euclidian plane.
+
+More formally:
+\begin{itemize}
+      \item Let $N$ be a finite set of $n$ points in $\mathbb{R}^2$ (Euclidean plane)
+      \item Let $V$ be the set that contains all points in $N$. ($V \supseteq N$)
+      \item Let $S = V \setminus N$ be the set of additional points called \textit{Steiner points} where $|S| \geq 0$
+      \item Let $T = (V, E)$ be a tree that connects all points in $V$ with exactly $E = |V| - 1$ edges
+\end{itemize}
+
+Then, the Euclidian Minimum Steiner tree problem seeks to find $T$ such that $\sum_{e \in E} |e|$ is minimised, where $|e|$ is the Euclidean length of edge $e \in E$ \citep{Brazil2014}.
+
+Steiner trees have specific properties, which are enumerated in the seminal paper by \cite{Gilbert1968SteinerMT}. We list the ones important for our discussion below and refer the reader to the mentioned paper for other properties.
+
+Properties of Steiner trees:
+\begin{itemize}
+      \item Angle property: every pair of lines meet at $\theta \geq 120^\circ$.
+      \item Degree property: every Steiner point has exactly 3 incident edges.
+      \item A Steiner tree with $n$ terminals has at most $s \leq n - 2$ Steiner points.
+      \item A tree has $n - 1$ edges, hence a Steiner tree with $n$ terminals has at most $2n - 3$ edges.
+\end{itemize}
+
+Next, we clarify the following terms:
+\begin{itemize}
+      \item A topology is defined as the adjancy matrix which only specifies the connections between points (i.e. how points are interconnected). \ref{fig:sub4} displays three different topologies for the same set of points, where \ref{fig:sub2} and \ref{fig:sub3} share the same topology.
+      \item A relatively minimal tree (RMT) is the minimal tree for a given topology. All figures in \ref{fig:grid_figure} are RMTs except for \ref{fig:sub2}. A relatively minimal tree is obtained when small pertubations (displacements) of the Steiner points no longer result in a smaller tree.
+      \item  A Steiner tree (ST) is always a RMT, but the converse does not hold. For instance, \ref{fig:sub1} is a RMT but the angle $\angle S_1A_1A_2 = \theta < 120^\circ$ and therefore does not satisfy the angle property.
+      \item A Steiner minimal tree (SMT) is a Steiner tree and is minimal for all its vertices (i.e. terminals + Steiner points). In other words, the SMT is the minimal tree across all possible topologies for a given set of points. See Figure \ref{fig:sub4} for an example.
+\end{itemize}
+
+\begin{figure}
+      \begin{subfigure}[b]{0.48\textwidth}
+            \centering
+            \includestandalone[width=\textwidth]{figures/rmt_1}
+            \caption{Relatively minimal tree for its topology}
+            \label{fig:sub1}
+      \end{subfigure}
+      \hfill
+      \begin{subfigure}[b]{0.48\textwidth}
+            \centering
+            \includestandalone[width=\textwidth]{figures/rmt_2}
+            \caption{Splitting at $A_1$ to add a Steiner point}
+            \label{fig:sub2}
+      \end{subfigure}
+      \vskip\baselineskip
+      \begin{subfigure}[b]{0.48\textwidth}
+            \centering
+            \includestandalone[width=\textwidth]{figures/rmt_3}
+            \caption{Steiner tree obtained from \ref{fig:sub2} by perturbing $S_2$ until tree length is minimal for its topology}
+            \label{fig:sub3}
+      \end{subfigure}
+      \hfill
+      \begin{subfigure}[b]{0.48\textwidth}
+            \centering
+            \includestandalone[width=\textwidth]{figures/esmt_1}
+            \caption{Steiner minimal tree for all its vertices}
+            \label{fig:sub4}
+      \end{subfigure}
+      \caption{Figures above illustrate how adding and perturbing Steiner points results in increasingly smaller trees. The sub figures are ordered in descending order of tree length. It further shows how the minimal tree for a given topology is not necessarily a Steiner tree, and that a Steiner tree though minimal for its topology is not necessarily minimal for all its vertices. }
+      \label{fig:grid_figure}
+\end{figure}
+
 
 \section{Existing visualisation tools}
 

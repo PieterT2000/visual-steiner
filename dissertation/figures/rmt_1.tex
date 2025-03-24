@@ -1,0 +1,36 @@
+\documentclass{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.15}
+\usepackage{mathrsfs}
+\usetikzlibrary{arrows}
+\newcommand{\degre}{\ensuremath{^\circ}}
+\pagestyle{empty}
+\begin{document}
+\definecolor{zttcfw}{rgb}{0.5764705882352941,0.23529411764705882,0.9647058823529412}
+\begin{tikzpicture}[line cap=round,line join=round,>=triangle 45,x=1cm,y=1cm]
+    \clip(-0.5882623610558796,-0.6382072431776696) rectangle (4.173633992296714,2.578644992402381);
+    \draw [shift={(0.4778,0.532)},line width=0.4pt] (0,0) -- (-131.92765473311243:0.16511429796645608) arc (-131.92765473311243:-11.91063772611399:0.16511429796645608) -- cycle;
+    \draw [shift={(0.4778,0.532)},line width=0.4pt] (0,0) -- (108.02886893898992:0.16511429796645608) arc (108.02886893898992:228.0723452668876:0.16511429796645608) -- cycle;
+    \draw [line width=0.4pt] (3,2)-- (0,2);
+    \draw [shift={(0.4778,0.532)},line width=0.4pt] (-131.92765473311243:0.16511429796645608) arc (-131.92765473311243:-11.91063772611399:0.16511429796645608);
+    \draw[line width=0.4pt] (0.5262262156503138,0.3836719772262048) -- (0.5318631296413554,0.3664062814535938);
+    \draw [shift={(0.4778,0.532)},line width=0.4pt] (108.02886893898992:0.16511429796645608) arc (108.02886893898992:228.0723452668876:0.16511429796645608);
+    \draw[line width=0.4pt] (0.3251480896943549,0.5643062684665298) -- (0.3073790842619518,0.5680667864890886);
+    \draw [line width=0.4pt] (0,2)-- (0.4778,0.532);
+    \draw [line width=0.4pt] (0.4778,0.532)-- (0,0);
+    \draw [line width=0.4pt] (0.4778,0.532)-- (3,0);
+    \begin{scriptsize}
+        \draw [fill=black] (0,2) circle (2.5pt);
+        \draw[color=black] (-0.15896518634309378,2.253444083341009) node {$A_1$};
+        \draw [fill=black] (3,2) circle (2.5pt);
+        \draw[color=black] (3.1433207729860277,2.2956323093814035) node {$A_2$};
+        \draw [fill=black] (3,0) circle (2.5pt);
+        \draw[color=black] (3.1369546737044445,-0.25) node {$A_3$};
+        \draw [fill=black] (0,0) circle (2.5pt);
+        \draw[color=black] (-0.09771366285505911,-0.25) node {$A_4$};
+        \draw [fill=zttcfw] (0.4778,0.532) circle (1pt);
+        \draw[color=zttcfw] (0.6930245911638195,0.7170895183699909) node {$S_1$};
+        \draw[color=black] (0.6203743000585789,0.1) node {$120\textrm{\degre}$};
+    \end{scriptsize}
+\end{tikzpicture}
+\end{document}
