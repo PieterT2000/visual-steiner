@@ -31,12 +31,12 @@
 %==============================================================================
 %% ABSTRACT
 \begin{abstract}
-      Every abstract follows a similar pattern. Motivate; set aims; describe work; explain results.
-      \vskip 0.5em
-      ``XYZ is bad. This project investigated ABC to determine if it was better.
-      ABC used XXX and YYY to implement ZZZ. This is particularly interesting as XXX and YYY have
-      never been used together. It was found that
-      ABC was 20\% better than XYZ, though it caused rabies in half of subjects.''
+    Every abstract follows a similar pattern. Motivate; set aims; describe work; explain results.
+    \vskip 0.5em
+    ``XYZ is bad. This project investigated ABC to determine if it was better.
+    ABC used XXX and YYY to implement ZZZ. This is particularly interesting as XXX and YYY have
+    never been used together. It was found that
+    ABC was 20\% better than XYZ, though it caused rabies in half of subjects.''
 \end{abstract}
 
 %==============================================================================
@@ -164,28 +164,28 @@ The Euclidean Steiner problem has a long history, with roots in the 17th century
 
 In 1643, Fermat posed the problem of given three points, finding a fourth point such that when connecting the three points to the fourth point, the sum of the distances is minimal. This problem has two cases:
 \begin{itemize}
-      \item All the interior angles of the triangle formed by the three points are $\le 120^\circ$
-      \item One of the interior angles is $\geq 120^\circ$
+    \item All the interior angles of the triangle formed by the three points are $\le 120^\circ$
+    \item One of the interior angles is $\geq 120^\circ$
 \end{itemize}
 
 \begin{figure}
-      \begin{subfigure}[b]{0.5\textwidth}
-            \centering
-            \includestandalone[width=\textwidth]{figures/torricelli}
-            \caption{Torricelli's and Simpson's constructions for case 1 }
-            \label{fig:fermat_1}
-      \end{subfigure}
-      \hfill
-      \begin{subfigure}[b]{0.48\textwidth}
-            \centering
-            \includestandalone[width=\textwidth]{figures/fermat_2}
-            \caption{Case 2 where $\theta \geq 120^\circ$}
-            \label{fig:fermat_2}
-      \end{subfigure}
-      \vskip\baselineskip
+    \begin{subfigure}[b]{0.5\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/torricelli}
+        \caption{Torricelli's and Simpson's constructions for case 1 }
+        \label{fig:fermat_1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/fermat_2}
+        \caption{Case 2 where $\theta \geq 120^\circ$}
+        \label{fig:fermat_2}
+    \end{subfigure}
+    \vskip\baselineskip
 
-      \caption{Solutions to the two cases of Fermat's 3-point problem. \ref{fig:fermat_1} shows two Simpson lines, $EA$ and $DC$, intersecting at the Torricelli point $F$.}
-      \label{fig:fermat_problem}
+    \caption{Solutions to the two cases of Fermat's 3-point problem. \ref{fig:fermat_1} shows two Simpson lines, $EA$ and $DC$, intersecting at the Torricelli point $F$.}
+    \label{fig:fermat_problem}
 \end{figure}
 
 For the first case, Torricelli proposed the following construction. Given $\triangle ABC$, first draw the equilateral triangles $\triangle ABD$ and $\triangle BCE$. Then, for each of these equilateral triangles, draw the circumcircle. The position where the two circles intersect is the point where the sum of the distances is minimal, the so-called \textit{Torricelli point} (point $F$ in Figure \ref{fig:fermat_1}).
@@ -200,15 +200,18 @@ The Fermat-Torricelli problem was later generalised to an $n$-point problem by G
 
 Another contribution to the problem was made by Gauss in a letter to Schumacher in 1836. He considered the 4-point problem, and noted that using just one extra point does not result in a minimal tree (compare \ref{fig:sub1} with \ref{fig:sub2}) as in the case of the 3-point problem. He went on to illustrate the problem with the example of connecting German cities by railroad with minimal total length.
 \begin{quote}
-      I have on occasion considered the rail- road connection between Harburg, Bremen, Hannover and Braunschweig, and I myself have thought that this problem would be an excellent prize problem for our students
+    I have on occasion considered the rail- road connection between Harburg, Bremen, Hannover and Braunschweig, and I myself have thought that this problem would be an excellent prize problem for our students
 \end{quote}
 
 The last sentence of the quote proved correct, because two attempts were later made by Bopp in 1879 and Hoffman in 1890 to come up with a solution. Bopp considered all full topologies and used the constructions developed by Gergonne and Simpson to find the Full Steiner Tree (FST) for each full topology (if it exists). Importantly, he generalised the problem to the $n$-point Steiner tree problem and enumerated properties of the Steiner trees, which were later rediscovered and proven by \cite{Gilbert1968SteinerMT}.
 
 Then, in 1934, two Czech mathematicians, Jarník and Kössler, wrote a rigorous treatment on the problem and proved important properties, such as the degree property and the angle property (See \ref{sec:esmt_properties}). They further proved that even if the problem is extended to higher dimensions, the degree and angle properties still hold.
 
-Another 20th-century contribution worth mentioning is the illustration used by Choquet in 1938, where he compares the Steiner tree problem to a network of cities connected by roads where there are no junctions available between the roads except outside the cities. (Another variant is the case where junctions are allowed inside the cities, which is the minimum spanning tree problem). In their influential book \textit{What is Mathematics?}, Courant and Robbins (1941) later used a similar illustration, which they called the "street network problem". Interestingly, they incorrectly attributed the original Fermat-Torricelli problem to Jakob Steiner. As a consequence, the generalised Fermat-Torricelli problem (i.e. the street network problem) has since been known as the Steiner tree problem despite the fact that Steiner did not originally consider this generalisation.
+Another 20th-century contribution worth mentioning is the illustration used by Choquet in 1938, where he compares the Steiner tree problem to a network of cities connected by roads where there are no junctions available between the roads except outside the cities. (Another variant is the case where junctions are allowed inside the cities, which is the minimum spanning tree problem). In their influential book \textit{What is Mathematics?}, Courant and Robbins (1941) later used a similar illustration, which they called the "street network problem". Interestingly, they incorrectly attributed the original Fermat-Torricelli problem to Jakob Steiner. As a consequence, the generalised Fermat-Torricelli problem (i.e. the street network problem) has since been known as the Steiner tree problem in the literature despite the fact that Steiner did not originally consider this generalisation.
 
+Finally, \cite{Gilbert1968SteinerMT} provided a comprehensive survey of the Steiner tree problem, and derived many of its properties that have since been the basis for much of the modern literature on the topic. (more on this in \ref{sec:esmt_properties}) From the sixties onwards, the Steiner tree problem has seen a surge in popularity, partly due to the formalisation of computer algorithms for the related minimum spanning tree problem and partly due to real practical applications, such as minimum-length telephone networks and efficient routing in chips. The latter application was presciently predicted by Hanan (1966) in his paper on the rectilinear variant of the Steiner tree problem.
+
+The tool that has been developed as part of this project supports the visualisation of both the Euclidian and rectilinear Steiner minimal trees. The following section will deal with the formal definitions of these two variants and lists some of their properties.
 \section{Euclidian Steiner Minimal Tree}
 
 \subsection{Formal definition}
@@ -216,10 +219,10 @@ The Euclidian Steiner minimal tree problem is concerned with finding the shortes
 
 More formally:
 \begin{itemize}
-      \item Let $N$ be a finite set of $n$ points in $\mathbb{R}^2$ (Euclidean plane)
-      \item Let $V$ be the set that contains all points in $N$. ($V \supseteq N$)
-      \item Let $S = V \setminus N$ be the set of additional points called \textit{Steiner points} where $|S| \geq 0$
-      \item Let $T = (V, E)$ be a tree that connects all points in $V$ with exactly $E = |V| - 1$ edges
+    \item Let $N$ be a finite set of $n$ points in $\mathbb{R}^2$ (Euclidean plane)
+    \item Let $V$ be the set that contains all points in $N$. ($V \supseteq N$)
+    \item Let $S = V \setminus N$ be the set of additional points called \textit{Steiner points} where $|S| \geq 0$
+    \item Let $T = (V, E)$ be a tree that connects all points in $V$ with exactly $E = |V| - 1$ edges
 \end{itemize}
 
 Then, the Euclidian Steiner minimal tree problem seeks to find $T$ such that $\sum_{e \in E} |e|$ is minimised, where $|e|$ is the Euclidean length of edge $e \in E$ \citep{Brazil2014}.
@@ -228,20 +231,20 @@ Then, the Euclidian Steiner minimal tree problem seeks to find $T$ such that $\s
 \label{sec:esmt_properties}
 Euclidian Steiner trees have specific properties, which are enumerated in the comprehensive paper by \cite{Gilbert1968SteinerMT}. We list the ones important for our discussion below and refer the reader to the mentioned paper for other properties.
 \begin{itemize}
-      \item Angle property: every pair of lines meets at $\theta \geq 120^\circ$.
-      \item Degree property: every Steiner point has exactly 3 incident edges.
-      \item A Steiner tree with $n$ terminals has at most $s \leq n - 2$ Steiner points. Since a tree has $n - 1$ edges, a Steiner tree with $n$ terminals has at most $2n - 3$ edges.
-      \item At most one relatively minimal tree exists for a given topology.
-      \item A Steiner minimal tree is a union of Full Steiner Trees (FSTs). And every non-full Steiner tree can be decomposed into a union of FSTs.
+    \item Angle property: every pair of lines meets at $\theta \geq 120^\circ$.
+    \item Degree property: every Steiner point has exactly 3 incident edges.
+    \item A Steiner tree with $n$ terminals has at most $s \leq n - 2$ Steiner points. Since a tree has $n - 1$ edges, a Steiner tree with $n$ terminals has at most $2n - 3$ edges.
+    \item At most one relatively minimal tree exists for a given topology.
+    \item A Steiner minimal tree is a union of Full Steiner Trees (FSTs). And every non-full Steiner tree can be decomposed into a union of FSTs.
 \end{itemize}
 
 Next, we clarify the following terms, used across the literature and first defined by \cite{Gilbert1968SteinerMT}:
 \begin{itemize}
-      \item A topology is defined as the adjancy matrix which only specifies the connections between points (i.e. how points are interconnected). \ref{fig:sub4} displays three different topologies for the same set of points, where \ref{fig:sub2} and \ref{fig:sub3} share the same topology.
-      \item A full topology has $n - 2$ Steiner points. A Full Steiner Tree (FST) is the relatively minimal tree for a full topology, where the terminals are leaves and the Steiner points are internal nodes with degree 3.
-      \item A relatively minimal tree (RMT) is the minimal tree for a given topology. All figures in \ref{fig:grid_figure} are RMTs except for \ref{fig:sub2}. A relatively minimal tree is obtained when small pertubations (displacements) of the Steiner points no longer result in a smaller tree.
-      \item  A Steiner tree (ST) is always a RMT, but the converse does not hold. For instance, \ref{fig:sub1} is a RMT but the angle $\angle S_1A_1A_2 = \theta < 120^\circ$ and therefore does not satisfy the angle property.
-      \item A Steiner minimal tree (SMT) is a Steiner tree and is minimal for all its vertices (i.e. terminals + Steiner points). In other words, the SMT is the minimal tree across all possible topologies for a given set of points. See Figure \ref{fig:sub4} for an example.
+    \item A topology is defined as the adjancy matrix which only specifies the connections between points (i.e. how points are interconnected). \ref{fig:sub4} displays three different topologies for the same set of points, where \ref{fig:sub2} and \ref{fig:sub3} share the same topology.
+    \item A full topology has $n - 2$ Steiner points. A Full Steiner Tree (FST) is the relatively minimal tree for a full topology, where the terminals are leaves and the Steiner points are internal nodes with degree 3.
+    \item A relatively minimal tree (RMT) is the minimal tree for a given topology. All figures in \ref{fig:grid_figure} are RMTs except for \ref{fig:sub2}. A relatively minimal tree is obtained when small pertubations (displacements) of the Steiner points no longer result in a smaller tree.
+    \item  A Steiner tree (ST) is always a RMT, but the converse does not hold. For instance, \ref{fig:sub1} is a RMT but the angle $\angle S_1A_1A_2 = \theta < 120^\circ$ and therefore does not satisfy the angle property.
+    \item A Steiner minimal tree (SMT) is a Steiner tree and is minimal for all its vertices (i.e. terminals + Steiner points). In other words, the SMT is the minimal tree across all possible topologies for a given set of points. See Figure \ref{fig:sub4} for an example.
 \end{itemize}
 
 Given a topology, its Steiner tree (if it exists) can be seen as a local minimum. Only by enumerating all possible topologies and their corresponding Steiner trees can the global minimum (i.e. the SMT) be found. This concept forms the basis of the algorithms we will discuss in the algorithms section.
@@ -252,7 +255,7 @@ An ESMT without Steiner points is equivalent to the Euclidian minimum spanning t
 
 SMTs are shorter or at worst equal in length to MSTs. The ratio between the length of the SMT and the MST has received much attention in the literature. \cite{Gilbert1968SteinerMT} famously conjectured that the lowest possible ratio is $\frac{\sqrt{3}}{2} \approx 0.866025...$ for any set of points.
 $$
-      \text{Steiner ratio} = \frac{L_{ESMT}}{L_{EMST}} = \frac{\sqrt{3}}{2}
+    \text{Steiner ratio} = \frac{L_{ESMT}}{L_{EMST}} = \frac{\sqrt{3}}{2}
 $$
 
 \cite{Steiner_ratio_proof} submitted a proof for this conjecture which was later shown to contain a flaw which invalidated the proof \citep{Steiner_ratio_proof_invalidated}. Hence, the Steiner ratio conjecture remains open to this day.
@@ -260,36 +263,36 @@ Nevertheless, attempts have been made to find proofs where $n$ is bounded. For e
 
 
 \begin{figure}
-      \begin{subfigure}[b]{0.48\textwidth}
-            \centering
-            \includestandalone[width=\textwidth]{figures/rmt_1}
-            \caption{Relatively minimal tree for its topology}
-            \label{fig:sub1}
-      \end{subfigure}
-      \hfill
-      \begin{subfigure}[b]{0.48\textwidth}
-            \centering
-            \includestandalone[width=\textwidth]{figures/rmt_2}
-            \caption{Splitting at $A_1$ to add a Steiner point}
-            \label{fig:sub2}
-      \end{subfigure}
-      \vskip\baselineskip
-      \begin{subfigure}[b]{0.48\textwidth}
-            \centering
-            \includestandalone[width=\textwidth]{figures/rmt_3}
-            \caption{Steiner tree obtained from \ref{fig:sub2} by perturbing $S_2$ until tree length is minimal for its topology}
-            \label{fig:sub3}
-      \end{subfigure}
-      \hfill
-      \begin{subfigure}[b]{0.48\textwidth}
-            \centering
-            \includestandalone[width=\textwidth]{figures/esmt_1}
-            \caption{Steiner minimal tree for all its vertices}
-            \label{fig:sub4}
-      \end{subfigure}
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/rmt_1}
+        \caption{Relatively minimal tree for its topology}
+        \label{fig:sub1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/rmt_2}
+        \caption{Splitting at $A_1$ to add a Steiner point}
+        \label{fig:sub2}
+    \end{subfigure}
+    \vskip\baselineskip
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/rmt_3}
+        \caption{Steiner tree obtained from \ref{fig:sub2} by perturbing $S_2$ until tree length is minimal for its topology}
+        \label{fig:sub3}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/esmt_1}
+        \caption{Steiner minimal tree for all its vertices}
+        \label{fig:sub4}
+    \end{subfigure}
 
-      \caption{Figures above illustrate how adding and perturbing Steiner points results in increasingly smaller trees. The sub figures a...d are ordered in descending order of tree length. It further shows how the minimal tree for a given topology is not necessarily a Steiner tree, and that a Steiner tree, though minimal for its topology, is not necessarily minimal for all its vertices. b, c, and d are examples of full topologies since they have $n - 2$ Steiner points.}
-      \label{fig:grid_figure}
+    \caption{Figures above illustrate how adding and perturbing Steiner points results in increasingly smaller trees. The sub figures a...d are ordered in descending order of tree length. It further shows how the minimal tree for a given topology is not necessarily a Steiner tree, and that a Steiner tree, though minimal for its topology, is not necessarily minimal for all its vertices. b, c, and d are examples of full topologies since they have $n - 2$ Steiner points.}
+    \label{fig:grid_figure}
 \end{figure}
 
 \section{Rectilinear Steiner Minimal Tree}
@@ -299,9 +302,9 @@ $$|x_1 - x_2| + |y_1 - y_2|.$$
 \subsection{Properties}
 \cite{Brazil2015} provides a list of properties of rectilinear Steiner trees including:
 \begin{itemize}
-      \item Degree property: every Steiner point $s$ has exactly 3 or 4 incident edges. A Steiner point of degree 3 is called a \textit{T-point}, whilst a Steiner point of degree 4 is called a \textit{cross}.
-      \item Every edge has at most 1 horizontal and 1 vertical segment. An edge with exactly 1 horizontal and 1 vertical component is called a \textit{bent edge} whilst an edge with only 1 horizontal component or 1 vertical component is called a \textit{straight edge}.
-      \item If $s$ is a T-point, at most one of its incident edges is a bent edge. If $s$ is a cross, then all of its incident edges are straight edges.
+    \item Degree property: every Steiner point $s$ has exactly 3 or 4 incident edges. A Steiner point of degree 3 is called a \textit{T-point}, whilst a Steiner point of degree 4 is called a \textit{cross}.
+    \item Every edge has at most 1 horizontal and 1 vertical segment. An edge with exactly 1 horizontal and 1 vertical component is called a \textit{bent edge} whilst an edge with only 1 horizontal component or 1 vertical component is called a \textit{straight edge}.
+    \item If $s$ is a T-point, at most one of its incident edges is a bent edge. If $s$ is a cross, then all of its incident edges are straight edges.
 \end{itemize}
 
 \subsection{Steiner ratio}
@@ -309,13 +312,28 @@ As before, a RSMT without Steiner points is equivalent to a rectilinear minimum 
 
 The Steiner ratio in the rectilinear case is the smallest ratio between the length of the RSMT and the RMST. It has been proven to be exactly $2/3$ \cite{Brazil2015}.
 $$
-      \text{Steiner ratio} = \frac{L_{RSMT}}{L_{RMST}} = \frac{2}{3}
+    \text{Steiner ratio} = \frac{L_{RSMT}}{L_{RMST}} = \frac{2}{3}
 $$
 
-\section{Algorithms}
+In other words, the rectilinear minimum spanning tree is at most 1.5 times the length of the rectilinear Steiner minimal tree.
 
-Talk about how the naive algorithm based on Melzak, that enumerates all possible topologies. Show derivation of the formula for number of topologies. Mention how Geosteiner algorithm is an improvement and does implicit enumeration, vastly
-reducing the number of topologies for consideration.
+\section{Algorithms}
+The Steiner tree problem is easy to understand but hard to actually solve. \cite{Garey1977} proved that the Euclidian and Rectilinear Steiner tree problems are NP-hard. This means that there exist no polynomial-time algorithms for these problems (unless P = NP).
+However, approximation schemes can be used to find near-optimal solutions in a reasonable amount of time. In this project, however, we have chosen to use exact algorithms, in order to demonstrate that despite the hardness of the problem in theory, the actual performance in practise is suprisingly good.
+
+There exists two main exact algorithms for the Steiner tree problem:
+\begin{itemize}
+    \item The (naive) Melzak algorithm \cite{MelzakAlgo}.
+    \item The efficient Geosteiner algorithm developed by \cite{geosteiner96}, which is based on the Melzak algorithm.
+\end{itemize}
+
+\subsection{The Melzak (naive) algorithm}
+As mentioned at the end of \ref{sec:esmt_properties} there can exists local minimal solutions for the Steiner tree problem. Hence, in order to find the global minimal solution, we need to consider all possible full (Steiner) topologies. The Melzak algorithm does not explicitly deal with this, but assumes an existing full topology and finds the relatively minimal Steiner tree if it exists. We will later see how to generate all full topologies for a given set of points.
+
+
+
+The proof in \citep{Garey1977} is very technical so we attempt to give a more intuitive, non-rigorous explanation based on the workings of the naive algorithm.
+\subsection{The Melzak (naive) algorithm}
 
 \section{Existing visualisation tools}
 
@@ -323,16 +341,19 @@ During the research phase, we found three related projects on Github whose featu
 
 \subsection{Steiner-Tree-Visualisation (STV)}
 STV is a Python-based GUI tool developed by \cite{Steiner-Tree-Visualisation}. It provides a simple interface for visualising Euclidian MSTs and SMTs, displaying their lengths and allowing for direct comparison. However, the tool is limited by a few factors.
-\\
-First, a brute-force approximation algorithm is used to find the SMT, and despite the ${O(n^4 \log(n))}$ complexity, the tool freezes for instances larger than 40 nodes.
-Additionally, the GUI is not very flexible. For example, you cannot overlay the MST and SMT simultaneously and the canvas does not support zooming or resizing. It is also not possible to import a graph from an external file or export the results.
-Lastly, the tool does not work out of the box and requires code patching to run in modern Python environments.
+\begin{itemize}
+    \item First, a brute-force approximation algorithm is used to find the SMT, and despite the ${O(n^4 \log(n))}$ complexity, the tool freezes for instances larger than 40 nodes.
+    \item Additionally, the GUI is not very flexible. For example, you cannot overlay the MST and SMT simultaneously and the canvas does not support zooming or resizing. It is also not possible to import a graph from an external file or export the results.
+    \item Lastly, the tool does not work out of the box and requires code patching to run in modern Python environments.
+\end{itemize}
 
 \subsection{ESteiner-3D (E3D)}
-E3D is another Python-based tool developed by \cite{ESteiner-3D}. It is a program that can be used to find the Euclidian SMT of a graph and supports 2D and 3D graphs. However, the tool is limited due to a lack of an interface, whether it a GUI or CLI. It also does not support the simultaneous visualisation of MSTs and SMTs and the comparison of their lengths.
+E3D is another Python-based tool developed by \cite{ESteiner-3D}. It is a program that can be used to find the Euclidian SMT of a graph and supports 2D and 3D graphs. However, use of the software is limited by the fact that no graphical nor command-line interface is provided. It also does not support the simultaneous visualisation of MSTs and SMTs and the visualisation of the Steiner ratio.
 
 \subsection{Steiner-Tree (ST)}
-ST is a Javascript-based tool developed by \cite{Steiner-Tree}. It is a web page that can be used to find the Rectilinear SMT of a graph. Although the tool has a nice interface and provides a flexible canvas, it does not support MSTs or SMTs in the Euclidian plane (L2-norm). Furthermore, it is not possible to import a graph from an external file or export the results.
+ST is a Javascript-based tool developed by \cite{Steiner-Tree}. It is a web page that can be used to find the Rectilinear SMT of a graph. Although the tool has a nice interface and uses an interactive canvas, it does not support visualisation of the MST or SMT in the Euclidian plane. And even for the rectilinear case, it is only possible to place the nodes on grid lines instead of anywhere on the canvas. This makes it possible to use a polynomial-time algorithm, but it makes the tool unsuitable for imported graph instances. Exporting the visualisation results is also not possible.
+
+Overall, we have found that the existing tools are limited by a lack of smooth, user-friendly interfaces, visualisation options, flexible import/export capabilities, and platform independence.
 
 \chapter{Analysis/Requirements}
 What is the problem that you want to solve, and how did you arrive at it?
@@ -351,11 +372,11 @@ sensibly narrowed down to what you have done.
 \chapter{Implementation}
 Having given a high-level design of the proposed solution in the previous chapter, this chapter will discuss the practicalities of our implementation and address topics such as:
 \begin{itemize}
-      \item Why we chose to build a web app over a native app.
-      \item What tech stack we used and why.
-      \item What the big picture architecture is and how different parts are connected.
-      \item How the codebase is structured, in order to support extensibility and maintainability.
-      \item How we implemented the algorithms and integrated them with the UI, including a in-depth look at the use of WebAssembly (WASM).
+    \item Why we chose to build a web app over a native app.
+    \item What tech stack we used and why.
+    \item What the big picture architecture is and how different parts are connected.
+    \item How the codebase is structured, in order to support extensibility and maintainability.
+    \item How we implemented the algorithms and integrated them with the UI, including a in-depth look at the use of WebAssembly (WASM).
 \end{itemize}
 
 \section{Building for the web}
@@ -376,25 +397,25 @@ Moreover, React code is declarative (i.e. we tell what the UI should look like, 
 
 Other dependencies include:
 \begin{itemize}
-      \item Shadcn/ui\footnote{https://ui.shadcn.com/} for base UI components, such as buttons, inputs, dropdowns, etc.
-      \item Sigma.js\footnote{https://sigmajs.org/} for drawing graphs on the canvas.
-      \item Graphology\footnote{https://graphology.github.io/} for the graph data model
+    \item Shadcn/ui\footnote{https://ui.shadcn.com/} for base UI components, such as buttons, inputs, dropdowns, etc.
+    \item Sigma.js\footnote{https://sigmajs.org/} for drawing graphs on the canvas.
+    \item Graphology\footnote{https://graphology.github.io/} for the graph data model
 \end{itemize}
 
 \subsection{Application architecture}
 % See \ref{fig:architecture} for the architecture diagram.
 The application has been developed as a client-only application, with no need for a backend API. Figure \ref{fig:architecture} shows the various high-level components of the application. The top-layer (i.e. the frontend) is divided into three main parts:
 \begin{itemize}
-      \item The views part, which handles user interaction (controls) and the visual appearance
-      \item The algorithms part, which handles the computation of the algorithms supported by the application.
-      \item The graph datastructure as a global state, which can be read and mutated by the views and algorithms.
+    \item The views part, which handles user interaction (controls) and the visual appearance
+    \item The algorithms part, which handles the computation of the algorithms supported by the application.
+    \item The graph datastructure as a global state, which can be read and mutated by the views and algorithms.
 \end{itemize}
 
 \begin{figure}[h]
-      \centering
-      \includesvg[width=0.8\linewidth]{images/architecture_diagram.svg}
-      \caption{Architecture of the application. The arrows indicate the flow of data and control.}
-      \label{fig:architecture}
+    \centering
+    \includesvg[width=0.8\linewidth]{images/architecture_diagram.svg}
+    \caption{Architecture of the application. The arrows indicate the flow of data and control.}
+    \label{fig:architecture}
 \end{figure}
 
 The controls allow the user to modify the graph instance, either directly by adding a new graph or by editing the existing one, or indirectly by triggering the computation of an algorithm.
@@ -406,10 +427,10 @@ We discuss the use of WebAssembly in more detail in section \ref{sec:webassembly
 \section{Algorithm implementations}
 
 \begin{wrapstuff}[r,width=0.3\textwidth,type=figure]
-      \centering
-      \caption{Interface of the algorithm computational output.}
-      \includesvg[width=1\textwidth]{images/algorithm_output.svg}
-      \label{fig:algorithm_interface}
+    \centering
+    \caption{Interface of the algorithm computational output.}
+    \includesvg[width=1\textwidth]{images/algorithm_output.svg}
+    \label{fig:algorithm_interface}
 \end{wrapstuff}
 Each algorithm is implemented as an isolated, pure function that takes an undirected graph as input and returns a computation.
 Figure \ref{fig:algorithm_interface} specifies the interface of the computational output. The tree is returned as new graph instance, alongside the length of the tree. The list of edge mutations keeps track of all the edges that were added to the tree in order of insertion. Some algorithms, such as the ESMT and the RSMT also pass additional metadata, such as the list of Steiner nodes.
@@ -423,30 +444,30 @@ Merging the tree with the existing graph is done by adding all the tree edges an
 The EMST is implemented using Prim's algorithm \citep[pp. 194--195]{Skiena2008}. Since the algorithm operates in Euclidian space, the input graph is first preprocessed to be a complete undirected graph. See pseudocode \ref{alg:emst} for the implementation.
 
 \begin{algorithm}
-      \caption{Prim's $O(n^2)$ algorithm for the EMST}
-      \label{alg:emst}
-      \SetAlgoLined
-      \KwIn{Graph $G = (V, E)$}
-      \KwOut{Tree $T = (V', E')$}
-      \SetKwFunction{Prim}{Prim}
-      initialize tree $T$, parent vector $p$, distance vector $d$\;
-      Set $v$ to startNode\;
-      \While{$v$ not in $T$}{
-            E = v.edges()\;
-            \ForEach{edge $e \in E$}{
-                  $u \leftarrow$ edge.target()\;
-                  $w \leftarrow$ edge.weight()\;
-                  \If{distance[$u$] > $w$ and $u$ not in $T$}{
-                        distance[$u$] = $w$\;
-                        parent[$u$] = $v$\;
-                  }
+    \caption{Prim's $O(n^2)$ algorithm for the EMST}
+    \label{alg:emst}
+    \SetAlgoLined
+    \KwIn{Graph $G = (V, E)$}
+    \KwOut{Tree $T = (V', E')$}
+    \SetKwFunction{Prim}{Prim}
+    initialize tree $T$, parent vector $p$, distance vector $d$\;
+    Set $v$ to startNode\;
+    \While{$v$ not in $T$}{
+        E = v.edges()\;
+        \ForEach{edge $e \in E$}{
+            $u \leftarrow$ edge.target()\;
+            $w \leftarrow$ edge.weight()\;
+            \If{distance[$u$] > $w$ and $u$ not in $T$}{
+                distance[$u$] = $w$\;
+                parent[$u$] = $v$\;
             }
-            $fringe$ = $V \setminus V'$\;
-            $v$ = node $u$ in $fringe$ with smallest distance to $v$\;
-            T.addNode($v$)\;
-            T.addEdge(p[$v$], $v$)\;
-      }
-      \Return{$T$}\;
+        }
+        $fringe$ = $V \setminus V'$\;
+        $v$ = node $u$ in $fringe$ with smallest distance to $v$\;
+        T.addNode($v$)\;
+        T.addEdge(p[$v$], $v$)\;
+    }
+    \Return{$T$}\;
 \end{algorithm}
 
 \subsection{Euclidean \& Rectilinear Steiner Minimal Tree}
@@ -504,16 +525,16 @@ How good is your solution? How well did you solve the general problem, and what 
 
 \section{Guidance}
 \begin{itemize}
-      \item
-            Ask specific questions that address the general problem.
-      \item
-            Answer them with precise evidence (graphs, numbers, statistical
-            analysis, qualitative analysis).
-      \item
-            Be fair and be scientific.
-      \item
-            The key thing is to show that you know how to evaluate your work, not
-            that your work is the most amazing product ever.
+    \item
+          Ask specific questions that address the general problem.
+    \item
+          Answer them with precise evidence (graphs, numbers, statistical
+          analysis, qualitative analysis).
+    \item
+          Be fair and be scientific.
+    \item
+          The key thing is to show that you know how to evaluate your work, not
+          that your work is the most amazing product ever.
 \end{itemize}
 
 \section{Evidence}
@@ -527,8 +548,8 @@ You can use \texttt{siunitx} to define units, space numbers neatly, and set the 
 
 % setup siunitx to have two decimal places
 \sisetup{
-      round-mode = places,
-      round-precision = 2
+    round-mode = places,
+    round-precision = 2
 }
 
 For example, these numbers will appear with two decimal places: \num{3.141592}, \num{2.71828}, and this one will appear with reasonable spacing \num{1000000}.
@@ -540,26 +561,26 @@ and that you check the required assumptions hold in your case.
 
 If you visualise, follow the basic rules, as illustrated in Figure \ref{fig:boxplot}:
 \begin{itemize}
-      \item Label everything correctly (axis, title, units).
-      \item Caption thoroughly.
-      \item Reference in text.
-      \item \textbf{Include appropriate display of uncertainty (e.g. error bars, Box plot)}
-      \item Minimize clutter.
+    \item Label everything correctly (axis, title, units).
+    \item Caption thoroughly.
+    \item Reference in text.
+    \item \textbf{Include appropriate display of uncertainty (e.g. error bars, Box plot)}
+    \item Minimize clutter.
 \end{itemize}
 
 See the file \texttt{guide\_to\_visualising.pdf} for further information and guidance.
 
 \begin{figure}[htb]
-      \centering
-      \includegraphics[width=1.0\linewidth]{images/boxplot_finger_distance.pdf}
+    \centering
+    \includegraphics[width=1.0\linewidth]{images/boxplot_finger_distance.pdf}
 
-      \caption{Average number of fingers detected by the touch sensor at different heights above the surface, averaged over all gestures. Dashed lines indicate
-            the true number of fingers present. The Box plots include bootstrapped uncertainty notches for the median. It is clear that the device is biased toward
-            undercounting fingers, particularly at higher $z$ distances.
-      }
+    \caption{Average number of fingers detected by the touch sensor at different heights above the surface, averaged over all gestures. Dashed lines indicate
+        the true number of fingers present. The Box plots include bootstrapped uncertainty notches for the median. It is clear that the device is biased toward
+        undercounting fingers, particularly at higher $z$ distances.
+    }
 
-      % use the notation fig:name to cross reference a figure
-      \label{fig:boxplot}
+    % use the notation fig:name to cross reference a figure
+    \label{fig:boxplot}
 \end{figure}
 
 
@@ -568,17 +589,17 @@ See the file \texttt{guide\_to\_visualising.pdf} for further information and gui
 Summarise the whole project for a lazy reader who didn't read the rest (e.g. a prize-awarding committee). This chapter should be short in most dissertations; maybe one to three pages.
 \section{Guidance}
 \begin{itemize}
-      \item
-            Summarise briefly and fairly.
-      \item
-            You should be addressing the general problem you introduced in the
-            Introduction.
-      \item
-            Include summary of concrete results (``the new compiler ran 2x
-            faster'')
-      \item
-            Indicate what future work could be done, but remember: \textbf{you
-                  won't get credit for things you haven't done}.
+    \item
+          Summarise briefly and fairly.
+    \item
+          You should be addressing the general problem you introduced in the
+          Introduction.
+    \item
+          Include summary of concrete results (``the new compiler ran 2x
+          faster'')
+    \item
+          Indicate what future work could be done, but remember: \textbf{you
+              won't get credit for things you haven't done}.
 \end{itemize}
 
 \section{Summary}
@@ -598,29 +619,29 @@ Discuss what you would do if you could take this further -- where would the inte
 
 \begin{appendices}
 
-      \chapter{Appendices}
+    \chapter{Appendices}
 
-      Use separate appendix chapters for groups of ancillary material that support your dissertation.
-      Typical inclusions in the appendices are:
+    Use separate appendix chapters for groups of ancillary material that support your dissertation.
+    Typical inclusions in the appendices are:
 
-      \begin{itemize}
-            \item
-                  Copies of ethics approvals (you must include these if you needed to get them)
-            \item
-                  Copies of questionnaires etc. used to gather data from subjects. Don't include
-                  voluminous data logs; instead submit these electronically alongside your source code.
-            \item
-                  Extensive tables or figures that are too bulky to fit in the main body of
-                  the report, particularly ones that are repetitive and summarised in the body.
-            \item Outline of the source code (e.g. directory structure),
-                  or other architecture documentation like class diagrams.
-            \item User manuals, and any guides to starting/running the software.
-                  Your equivalent of \texttt{readme.md} should be included.
+    \begin{itemize}
+        \item
+              Copies of ethics approvals (you must include these if you needed to get them)
+        \item
+              Copies of questionnaires etc. used to gather data from subjects. Don't include
+              voluminous data logs; instead submit these electronically alongside your source code.
+        \item
+              Extensive tables or figures that are too bulky to fit in the main body of
+              the report, particularly ones that are repetitive and summarised in the body.
+        \item Outline of the source code (e.g. directory structure),
+              or other architecture documentation like class diagrams.
+        \item User manuals, and any guides to starting/running the software.
+              Your equivalent of \texttt{readme.md} should be included.
 
-      \end{itemize}
+    \end{itemize}
 
-      \textbf{Don't include your source code in the appendices}. It will be
-      submitted separately.
+    \textbf{Don't include your source code in the appendices}. It will be
+    submitted separately.
 
 
 
