@@ -1,0 +1,25 @@
+\documentclass[10pt]{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.15}
+\usepackage{mathrsfs}
+\usetikzlibrary{arrows, calc}
+\newcommand{\degre}{\ensuremath{^\circ}}
+\pagestyle{empty}
+\begin{document}
+\begin{tikzpicture}[line cap=round,line join=round,x=1cm,y=1cm]
+    \clip(-2.356121150361604,-1.2340045234142278) rectangle (2.0007878366051752,1.3479719811677626);
+    \begin{scriptsize}
+        % Define points using nodes instead of direct coordinates
+        \draw (0.49703331699251324,-0.8098555292822381) node[circle,draw, fill=black, scale=0.5] (A) [label={[xshift=0.4cm, yshift=-0.25cm]\tiny$A$}] {};
+        \draw (-0.28,-0.21) node[circle,draw, fill=black, scale=0.5] (B) [label={[xshift=-0.4cm, yshift=-0.25cm]\tiny$B$}] {};
+        \draw (-0.16171849989899856,0.7367791712456592) node[circle,draw, fill=black, scale=0.5] (C) [label={[yshift=0.2cm]\tiny$C$}] {};
+        % \draw[color=black] (-0.6,0.1) node {$\theta = 120.55\textrm{\degre}$};
+        \draw [shift={(B)},ultra thin] (0,0) -- (-37.667484911340296:0.18) arc (-37.667484911340296:82.:0.18) -- cycle;
+        \draw [shift={(B),color=black}] node [label={[xshift=0.28cm,yshift=-0.18cm]\tiny$\theta$}] {};
+
+        \draw [ultra thin, dashed] (A) -- (C);
+        \draw [thin] (B) -- (C);
+        \draw [thin] (A) -- (B);
+    \end{scriptsize}
+\end{tikzpicture}
+\end{document}

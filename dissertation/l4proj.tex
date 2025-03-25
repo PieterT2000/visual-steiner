@@ -159,8 +159,60 @@ Lastly, the interface should be able to dynamically update the solution when the
 
 \chapter{Background}
 
-\section{Formal definition}
-The Euclidian Minimum Steiner tree problem is concerned with finding the shortest tree that contains a set of vertices in the Euclidian plane.
+\section{Historical context}
+The Euclidean Steiner problem has a long history, with roots in the 17th century. The following section will provide a summary of the history as expertly given by \cite{Brazil2014}.
+
+In 1643, Fermat posed the problem of given three points, finding a fourth point such that when connecting the three points to the fourth point, the sum of the distances is minimal. This problem has two cases:
+\begin{itemize}
+      \item All the interior angles of the triangle formed by the three points are $\le 120^\circ$
+      \item One of the interior angles is $\geq 120^\circ$
+\end{itemize}
+
+\begin{figure}
+      \begin{subfigure}[b]{0.5\textwidth}
+            \centering
+            \includestandalone[width=\textwidth]{figures/torricelli}
+            \caption{Torricelli's and Simpson's constructions for case 1 }
+            \label{fig:fermat_1}
+      \end{subfigure}
+      \hfill
+      \begin{subfigure}[b]{0.48\textwidth}
+            \centering
+            \includestandalone[width=\textwidth]{figures/fermat_2}
+            \caption{Case 2 where $\theta \geq 120^\circ$}
+            \label{fig:fermat_2}
+      \end{subfigure}
+      \vskip\baselineskip
+
+      \caption{Solutions to the two cases of Fermat's 3-point problem. \ref{fig:fermat_1} shows two Simpson lines, $EA$ and $DC$, intersecting at the Torricelli point $F$.}
+      \label{fig:fermat_problem}
+\end{figure}
+
+For the first case, Torricelli proposed the following construction. Given $\triangle ABC$, first draw the equilateral triangles $\triangle ABD$ and $\triangle BCE$. Then, for each of these equilateral triangles, draw the circumcircle. The position where the two circles intersect is the point where the sum of the distances is minimal, the so-called \textit{Torricelli point} (point $F$ in Figure \ref{fig:fermat_1}).
+To borrow some terminology from \cite{geosteiner96}, we will call the 3rd point for each of the equilateral triangles an \textit{equilateral point} denoted as $e_{XY}$ where $X$ and $Y$ are the base points from which the equilateral triangle is constructed. So, in figure \ref{fig:fermat_1}, $e_{AB} = D$ and $e_{BC} = E$.
+
+For the second case, Cavalieri proved that the the optimal position of the 4th point is just the point with the obtuse angle. (point $B$ in Figure \ref{fig:fermat_2})
+
+In 1750, Simpson discovered an alternative construction for the first case, where a straight line is drawn from each of the equilateral points to the opposite vertex. The intersection of these lines coincides with the Torricelli point. These "Simpson lines" are demonstrated in Figure \ref{fig:fermat_1}.
+Later, in 1834 Heinen proved that a Simpson line has the same length as the sum of the distances to the Torricelli point.
+
+The Fermat-Torricelli problem was later generalised to an $n$-point problem by Gergonne in 1811. Furthermore, Gergonne was also among the first to consider the case where more than one extra point is allowed. He further discovered that there can exist multiple local minimal solutions for the same set of points, and that all have to be constructed in order to find the global minimum. We will return to this concept in the next section.
+
+Another contribution to the problem was made by Gauss in a letter to Schumacher in 1836. He considered the 4-point problem, and noted that using just one extra point does not result in a minimal tree (compare \ref{fig:sub1} with \ref{fig:sub2}) as in the case of the 3-point problem. He went on to illustrate the problem with the example of connecting German cities by railroad with minimal total length.
+\begin{quote}
+      I have on occasion considered the rail- road connection between Harburg, Bremen, Hannover and Braunschweig, and I myself have thought that this problem would be an excellent prize problem for our students
+\end{quote}
+
+The last sentence of the quote proved correct, because two attempts were later made by Bopp in 1879 and Hoffman in 1890 to come up with a solution. Bopp considered all full topologies and used the constructions developed by Gergonne and Simpson to find the Full Steiner Tree (FST) for each full topology (if it exists). Importantly, he generalised the problem to the $n$-point Steiner tree problem and enumerated properties of the Steiner trees, which were later rediscovered and proven by \cite{Gilbert1968SteinerMT}.
+
+Then, in 1934, two Czech mathematicians, Jarník and Kössler, wrote a rigorous treatment on the problem and proved important properties, such as the degree property and the angle property (See \ref{sec:esmt_properties}). They further proved that even if the problem is extended to higher dimensions, the degree and angle properties still hold.
+
+Another 20th-century contribution worth mentioning is the illustration used by Choquet in 1938, where he compares the Steiner tree problem to a network of cities connected by roads where there are no junctions available between the roads except outside the cities. (Another variant is the case where junctions are allowed inside the cities, which is the minimum spanning tree problem). In their influential book \textit{What is Mathematics?}, Courant and Robbins (1941) later used a similar illustration, which they called the "street network problem". Interestingly, they incorrectly attributed the original Fermat-Torricelli problem to Jakob Steiner. As a consequence, the generalised Fermat-Torricelli problem (i.e. the street network problem) has since been known as the Steiner tree problem despite the fact that Steiner did not originally consider this generalisation.
+
+\section{Euclidian Steiner Minimal Tree}
+
+\subsection{Formal definition}
+The Euclidian Steiner minimal tree problem is concerned with finding the shortest tree that contains a set of vertices in the Euclidian plane.
 
 More formally:
 \begin{itemize}
@@ -170,25 +222,42 @@ More formally:
       \item Let $T = (V, E)$ be a tree that connects all points in $V$ with exactly $E = |V| - 1$ edges
 \end{itemize}
 
-Then, the Euclidian Minimum Steiner tree problem seeks to find $T$ such that $\sum_{e \in E} |e|$ is minimised, where $|e|$ is the Euclidean length of edge $e \in E$ \citep{Brazil2014}.
+Then, the Euclidian Steiner minimal tree problem seeks to find $T$ such that $\sum_{e \in E} |e|$ is minimised, where $|e|$ is the Euclidean length of edge $e \in E$ \citep{Brazil2014}.
 
-Steiner trees have specific properties, which are enumerated in the seminal paper by \cite{Gilbert1968SteinerMT}. We list the ones important for our discussion below and refer the reader to the mentioned paper for other properties.
-
-Properties of Steiner trees:
+\subsection{Properties}
+\label{sec:esmt_properties}
+Euclidian Steiner trees have specific properties, which are enumerated in the comprehensive paper by \cite{Gilbert1968SteinerMT}. We list the ones important for our discussion below and refer the reader to the mentioned paper for other properties.
 \begin{itemize}
-      \item Angle property: every pair of lines meet at $\theta \geq 120^\circ$.
+      \item Angle property: every pair of lines meets at $\theta \geq 120^\circ$.
       \item Degree property: every Steiner point has exactly 3 incident edges.
-      \item A Steiner tree with $n$ terminals has at most $s \leq n - 2$ Steiner points.
-      \item A tree has $n - 1$ edges, hence a Steiner tree with $n$ terminals has at most $2n - 3$ edges.
+      \item A Steiner tree with $n$ terminals has at most $s \leq n - 2$ Steiner points. Since a tree has $n - 1$ edges, a Steiner tree with $n$ terminals has at most $2n - 3$ edges.
+      \item At most one relatively minimal tree exists for a given topology.
+      \item A Steiner minimal tree is a union of Full Steiner Trees (FSTs). And every non-full Steiner tree can be decomposed into a union of FSTs.
 \end{itemize}
 
-Next, we clarify the following terms:
+Next, we clarify the following terms, used across the literature and first defined by \cite{Gilbert1968SteinerMT}:
 \begin{itemize}
       \item A topology is defined as the adjancy matrix which only specifies the connections between points (i.e. how points are interconnected). \ref{fig:sub4} displays three different topologies for the same set of points, where \ref{fig:sub2} and \ref{fig:sub3} share the same topology.
+      \item A full topology has $n - 2$ Steiner points. A Full Steiner Tree (FST) is the relatively minimal tree for a full topology, where the terminals are leaves and the Steiner points are internal nodes with degree 3.
       \item A relatively minimal tree (RMT) is the minimal tree for a given topology. All figures in \ref{fig:grid_figure} are RMTs except for \ref{fig:sub2}. A relatively minimal tree is obtained when small pertubations (displacements) of the Steiner points no longer result in a smaller tree.
       \item  A Steiner tree (ST) is always a RMT, but the converse does not hold. For instance, \ref{fig:sub1} is a RMT but the angle $\angle S_1A_1A_2 = \theta < 120^\circ$ and therefore does not satisfy the angle property.
       \item A Steiner minimal tree (SMT) is a Steiner tree and is minimal for all its vertices (i.e. terminals + Steiner points). In other words, the SMT is the minimal tree across all possible topologies for a given set of points. See Figure \ref{fig:sub4} for an example.
 \end{itemize}
+
+Given a topology, its Steiner tree (if it exists) can be seen as a local minimum. Only by enumerating all possible topologies and their corresponding Steiner trees can the global minimum (i.e. the SMT) be found. This concept forms the basis of the algorithms we will discuss in the algorithms section.
+
+\subsection{Steiner ratio}
+\label{sec:esmt_steiner_ratio}
+An ESMT without Steiner points is equivalent to the Euclidian minimum spanning tree (EMST). Formally, the EMST is defined as the network that connects a set of points $N$, such that the sum of the edge weights is minimal, where the edge weights are the Euclidean distances between the points.
+
+SMTs are shorter or at worst equal in length to MSTs. The ratio between the length of the SMT and the MST has received much attention in the literature. \cite{Gilbert1968SteinerMT} famously conjectured that the lowest possible ratio is $\frac{\sqrt{3}}{2} \approx 0.866025...$ for any set of points.
+$$
+      \text{Steiner ratio} = \frac{L_{ESMT}}{L_{EMST}} = \frac{\sqrt{3}}{2}
+$$
+
+\cite{Steiner_ratio_proof} submitted a proof for this conjecture which was later shown to contain a flaw which invalidated the proof \citep{Steiner_ratio_proof_invalidated}. Hence, the Steiner ratio conjecture remains open to this day.
+Nevertheless, attempts have been made to find proofs where $n$ is bounded. For example, \cite{Steiner_ratio_proof_8_points} submitted a proof for the case where $n \leq 8$.
+
 
 \begin{figure}
       \begin{subfigure}[b]{0.48\textwidth}
@@ -218,10 +287,35 @@ Next, we clarify the following terms:
             \caption{Steiner minimal tree for all its vertices}
             \label{fig:sub4}
       \end{subfigure}
-      \caption{Figures above illustrate how adding and perturbing Steiner points results in increasingly smaller trees. The sub figures are ordered in descending order of tree length. It further shows how the minimal tree for a given topology is not necessarily a Steiner tree, and that a Steiner tree though minimal for its topology is not necessarily minimal for all its vertices. }
+
+      \caption{Figures above illustrate how adding and perturbing Steiner points results in increasingly smaller trees. The sub figures a...d are ordered in descending order of tree length. It further shows how the minimal tree for a given topology is not necessarily a Steiner tree, and that a Steiner tree, though minimal for its topology, is not necessarily minimal for all its vertices. b, c, and d are examples of full topologies since they have $n - 2$ Steiner points.}
       \label{fig:grid_figure}
 \end{figure}
 
+\section{Rectilinear Steiner Minimal Tree}
+\subsection{Formal definition}
+The Rectilinear Steiner Minimal Tree (RSMT) problem is similar to the ESMT problem in that by allowing extra Steiner points, it seeks to find the minimal tree for a given set of points, except that the rectilinear distance, also known as the Manhattan distance, is used. The rectilinear distance between two points $p_1 = (x_1, y_1)$ and $p_2 = (x_2, y_2)$ is defined as
+$$|x_1 - x_2| + |y_1 - y_2|.$$
+\subsection{Properties}
+\cite{Brazil2015} provides a list of properties of rectilinear Steiner trees including:
+\begin{itemize}
+      \item Degree property: every Steiner point $s$ has exactly 3 or 4 incident edges. A Steiner point of degree 3 is called a \textit{T-point}, whilst a Steiner point of degree 4 is called a \textit{cross}.
+      \item Every edge has at most 1 horizontal and 1 vertical segment. An edge with exactly 1 horizontal and 1 vertical component is called a \textit{bent edge} whilst an edge with only 1 horizontal component or 1 vertical component is called a \textit{straight edge}.
+      \item If $s$ is a T-point, at most one of its incident edges is a bent edge. If $s$ is a cross, then all of its incident edges are straight edges.
+\end{itemize}
+
+\subsection{Steiner ratio}
+As before, a RSMT without Steiner points is equivalent to a rectilinear minimum spanning tree (RMST). The definition of the RMST is similar to the definition of the ESMT in \ref{sec:esmt_steiner_ratio} except that the rectilinear metric is used.
+
+The Steiner ratio in the rectilinear case is the smallest ratio between the length of the RSMT and the RMST. It has been proven to be exactly $2/3$ \cite{Brazil2015}.
+$$
+      \text{Steiner ratio} = \frac{L_{RSMT}}{L_{RMST}} = \frac{2}{3}
+$$
+
+\section{Algorithms}
+
+Talk about how the naive algorithm based on Melzak, that enumerates all possible topologies. Show derivation of the formula for number of topologies. Mention how Geosteiner algorithm is an improvement and does implicit enumeration, vastly
+reducing the number of topologies for consideration.
 
 \section{Existing visualisation tools}
 
@@ -240,18 +334,6 @@ E3D is another Python-based tool developed by \cite{ESteiner-3D}. It is a progra
 \subsection{Steiner-Tree (ST)}
 ST is a Javascript-based tool developed by \cite{Steiner-Tree}. It is a web page that can be used to find the Rectilinear SMT of a graph. Although the tool has a nice interface and provides a flexible canvas, it does not support MSTs or SMTs in the Euclidian plane (L2-norm). Furthermore, it is not possible to import a graph from an external file or export the results.
 
-\section{Theoretical background}
-
-\section{Algorithms}
-
-\section{Problem definition}
-
-Given a graph $G = (V, E)$ and a set of Steiner points $S \subseteq V$, find the SMT $T$ of $G$ with respect to $S$.`
-
-% $$f(k) = \frac{(2k - 4)!}{2^{k-2} \cdot (k-2)!}$$
-
-% $$r(x) = \frac{L_{T}}{L_{MST}}$$
-%==================================================================================================================================
 \chapter{Analysis/Requirements}
 What is the problem that you want to solve, and how did you arrive at it?
 \section{Guidance}
@@ -264,20 +346,6 @@ derived requirements.
 In research projects, it will involve developing a design drawing on
 the work established in the background, and stating how the space of possible projects was
 sensibly narrowed down to what you have done.
-
-%==================================================================================================================================
-\chapter{Design}
-How is this problem to be approached, without reference to specific implementation details?
-\section{Guidance}
-Design should cover the abstract design in such a way that someone else might be able to do what you did,
-but with a different language or library or tool. This might include overall system architecture diagrams,
-user interface designs (wireframes/personas/etc.), protocol specifications, algorithms, data set design choices,
-among others. Specific languages, technical choices, libraries and such like should not usually appear in the design. These are implementation details.
-
-What did you do to implement this idea, and what technical achievements did you make?
-Cover high level first, then cover important, or impressive details.
-Don't mix levels of abstraction and start with abstract thoughts and general structures and then refine into details.
-Keep a logical ordering.
 
 %==================================================================================================================================
 \chapter{Implementation}
