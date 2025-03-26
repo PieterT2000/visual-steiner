@@ -14,10 +14,12 @@
 \usepackage{tikz}
 \usepackage{standalone}
 \usepackage{pgfplots}
+\usepackage{cancel}
 \pgfplotsset{compat=1.15}
 \usepackage{mathrsfs}
 \usetikzlibrary{arrows}
 \newcommand{\degre}{\ensuremath{^\circ}}
+\newcommand{\arc}[1]{\stackrel{\frown}{#1}}
 \begin{document}
 
 %==============================================================================
@@ -111,6 +113,9 @@
 % forget to take them out!)
 
 \section{Context}
+Imagine you are an engineer tasked with designing a network of roads connecting a set of cities. At most two roads may meet in a city and all cities must be connected with the least amount of total distance. This is a classic problem in graph theory, and the solution is known as the minimum spanning tree (MST).
+
+Now, imagine that a new constraint is added to the problem. Junctions (where three or more roads meet) are allowed, provided that they are built outside the cities. You are allowed to use as many such junctions as needed, as long as the total distance of the road network is minimal. The solution to this problem is known as the Steiner minimal tree (SMT).
 
 Algorithms drive much of our digital world. They are used in everything from search engines to social media to self-driving cars. Algorithms operate on data and both the data and the operations can be complex and difficult to visualise without good tools. This is particularly the case for spatial data.
 
@@ -196,7 +201,8 @@ For the second case, Cavalieri proved that the the optimal position of the 4th p
 In 1750, Simpson discovered an alternative construction for the first case, where a straight line is drawn from each of the equilateral points to the opposite vertex. The intersection of these lines coincides with the Torricelli point. These "Simpson lines" are demonstrated in Figure \ref{fig:fermat_1}.
 Later, in 1834 Heinen proved that a Simpson line has the same length as the sum of the distances to the Torricelli point.
 
-The Fermat-Torricelli problem was later generalised to an $n$-point problem by Gergonne in 1811. Furthermore, Gergonne was also among the first to consider the case where more than one extra point is allowed. He further discovered that there can exist multiple local minimal solutions for the same set of points, and that all have to be constructed in order to find the global minimum. We will return to this concept in the next section.
+\label{sec:gergonne}
+The Fermat-Torricelli problem was later generalised to an $n$-point problem by Gergonne in 1811. Furthermore, Gergonne was also among the first to consider the case where more than one extra point is allowed. He further discovered that there can exist multiple local minimal solutions for the same set of points, and that all have to be constructed in order to find the global minimum. Lastly, he came up with an iterative, though incomplete, algorithm for finding a local minimum, given a full topology. We will further illustrate and discuss these concepts in \ref{sec:algorithms}.
 
 Another contribution to the problem was made by Gauss in a letter to Schumacher in 1836. He considered the 4-point problem, and noted that using just one extra point does not result in a minimal tree (compare \ref{fig:sub1} with \ref{fig:sub2}) as in the case of the 3-point problem. He went on to illustrate the problem with the example of connecting German cities by railroad with minimal total length.
 \begin{quote}
@@ -230,13 +236,14 @@ Then, the Euclidian Steiner minimal tree problem seeks to find $T$ such that $\s
 \subsection{Properties}
 \label{sec:esmt_properties}
 Euclidian Steiner trees have specific properties, which are enumerated in the comprehensive paper by \cite{Gilbert1968SteinerMT}. We list the ones important for our discussion below and refer the reader to the mentioned paper for other properties.
-\begin{itemize}
+
+\begin{enumerate}
     \item Angle property: every pair of lines meets at $\theta \geq 120^\circ$.
     \item Degree property: every Steiner point has exactly 3 incident edges.
     \item A Steiner tree with $n$ terminals has at most $s \leq n - 2$ Steiner points. Since a tree has $n - 1$ edges, a Steiner tree with $n$ terminals has at most $2n - 3$ edges.
     \item At most one relatively minimal tree exists for a given topology.
-    \item A Steiner minimal tree is a union of Full Steiner Trees (FSTs). And every non-full Steiner tree can be decomposed into a union of FSTs.
-\end{itemize}
+    \item \label{prop:smt_fst} A Steiner minimal tree is a union of Full Steiner Trees (FSTs). And every non-full Steiner tree can be decomposed into a union of FSTs.
+\end{enumerate}
 
 Next, we clarify the following terms, used across the literature and first defined by \cite{Gilbert1968SteinerMT}:
 \begin{itemize}
@@ -301,6 +308,7 @@ The Rectilinear Steiner Minimal Tree (RSMT) problem is similar to the ESMT probl
 $$|x_1 - x_2| + |y_1 - y_2|.$$
 \subsection{Properties}
 \cite{Brazil2015} provides a list of properties of rectilinear Steiner trees including:
+
 \begin{itemize}
     \item Degree property: every Steiner point $s$ has exactly 3 or 4 incident edges. A Steiner point of degree 3 is called a \textit{T-point}, whilst a Steiner point of degree 4 is called a \textit{cross}.
     \item Every edge has at most 1 horizontal and 1 vertical segment. An edge with exactly 1 horizontal and 1 vertical component is called a \textit{bent edge} whilst an edge with only 1 horizontal component or 1 vertical component is called a \textit{straight edge}.
@@ -318,22 +326,170 @@ $$
 In other words, the rectilinear minimum spanning tree is at most 1.5 times the length of the rectilinear Steiner minimal tree.
 
 \section{Algorithms}
+\label{sec:algorithms}
 The Steiner tree problem is easy to understand but hard to actually solve. \cite{Garey1977} proved that the Euclidian and Rectilinear Steiner tree problems are NP-hard. This means that there exist no polynomial-time algorithms for these problems (unless P = NP).
-However, approximation schemes can be used to find near-optimal solutions in a reasonable amount of time. In this project, however, we have chosen to use exact algorithms, in order to demonstrate that despite the hardness of the problem in theory, the actual performance in practise is suprisingly good.
+However, approximation schemes can be used to find near-optimal solutions in a reasonable amount of time. In this project, we have chosen to use exact algorithms in order to demonstrate, that despite the theoretical hardness of the problem, the actual performance in practise is suprisingly good.
 
-There exists two main exact algorithms for the Steiner tree problem:
+There exists two major exact algorithms for the Steiner tree problem:
 \begin{itemize}
-    \item The (naive) Melzak algorithm \cite{MelzakAlgo}.
-    \item The efficient Geosteiner algorithm developed by \cite{geosteiner96}, which is based on the Melzak algorithm.
+    \item The Melzak algorithm \cite{MelzakAlgo} which is largely based on the iterative algorithm by Gergonne \citep{Brazil2014} (see \ref{sec:gergonne}). This algorithm is essentially a brute-force approach and is therefore not practical for large instances.
+    \item The GeoSteiner algorithm developed by \cite{geosteiner96}. This algorithm uses ideas from the Melzak algorithm, but it is much faster and efficient due to the use of geometric properties for pruning the search space, efficient data structures, and other clever optimisations.
 \end{itemize}
+\subsection{The Melzak algorithm}
+\label{sec:melzak_algo}
+As mentioned at the end of \ref{sec:esmt_properties} there can exists local minimal solutions for the Steiner tree problem. Hence, in order to find the global minimal solution, we need to consider all possible full (Steiner) topologies. The Melzak algorithm does not explicitly deal with this, but a full topology as inputand finds the FST if it exists.
 
-\subsection{The Melzak (naive) algorithm}
-As mentioned at the end of \ref{sec:esmt_properties} there can exists local minimal solutions for the Steiner tree problem. Hence, in order to find the global minimal solution, we need to consider all possible full (Steiner) topologies. The Melzak algorithm does not explicitly deal with this, but assumes an existing full topology and finds the relatively minimal Steiner tree if it exists. We will later see how to generate all full topologies for a given set of points.
+Before illustrating the algorithm with a practical example, we use the following definition from \citep{Brazil2015}:
+Let $\mathcal{T_n}$ be a full topology with $n$ points and $n - 2$ Steiner points. Let $S_i$ be a Steiner point in $\mathcal{T_n}$ which is adjacent (connected by an edge) to $A$ and $B$. $\overline{AB}$ shall denote the segment between $A$ and $B$. Let $X$ be the 3rd (equilateral) point of the equilateral triangle $\triangle ABX$.
+
+\begin{figure}[!htb]
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/melzak_init_topol}
+        \caption{Initial full topology, Steiner points are randomly placed for visualisation purposes}
+        \label{fig:melzak_topol}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/melzak_it_0_0}
+        \caption{Start of merging. Replacing ($E$, $D$, $S_3$) with $X$}
+        \label{fig:melzak_0_0}
+    \end{subfigure}
+    \vskip\baselineskip
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/melzak_it_0_1}
+        \caption{Replacing ($X$, $C$, $S_2$) with $Y$, and ($A$, $B$, $S_1$) with $Z$, results in the $n = 2$ base case.}
+        \label{fig:melzak_0_1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/melzak_it_1}
+        \caption{Start of reconstruction. The FST is the segment between $Z$ and $Y$. Positions for $S_1$ and $S_2$ are now found.}
+        \label{fig:melzak_1}
+    \end{subfigure}
+    \vskip\baselineskip
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/melzak_it_2}
+        \caption{FST for $\mathcal{T_4}$}
+        \label{fig:melzak_2}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/melzak_it_3}
+        \caption{Final FST for $\mathcal{T_5}$}
+        \label{fig:melzak_3}
+    \end{subfigure}
+    \vskip\baselineskip
+    \caption{The Melzak algorithm to find the FST for a full topology $\mathcal{T_5}$ (with $n = 5$)}
+    \label{fig:melzak_algo_visualisation}
+\end{figure}
+
+Assume that $S_i$ is positioned on the opposite side of $\overline{AB}$ to $X$ and that it lies on the arc $\arc{AB}$ (Steiner arc) of the circumcircle of the equilateral triangle $\triangle ABX$, subtended by $\overline{AB}$.
+The Simpson segment starts at $X$ and passes through $S_i$ to some other point $v$. By definition, the length of the Simpson segment between $X$ and $S_i$ is $|S_iA| + |S_iB|$. Hence, $A$, $B$, and $S_i$ can be replaced by $X$ with a direct line segment to $v$, without increasing the tree length.
+This process of \textit{merging} is repeated until the base case, $\mathcal{T_2}$, is reached.
+
+Next, the FST can be \textit{reconstructed} by backtracking the merging steps.
+Suppose the FST of $\mathcal{T_{n-1}}$ is defined. This means that the location of $v$ also will be known.
+There exists an FST for $\mathcal{T_n}$ $\iff$ there exists an FST for $\mathcal{T_{n-1}}$ and the Simpson segment between $v$ and $X$ intersects the Steiner arc $\arc{AB}$. $S_i$ is positioned at the point this intersection and and the FST is constructed by deleting the Simpson segment and adding the edges $AS_i$, $BS_i$, and $vS_i$.
+
+The algorithm is visualised in figure \ref{fig:melzak_algo_visualisation}.
+Figure \ref{fig:melzak_topol} shows an instance of the full topology $\mathcal{T_5}$ (with $n = 5$). Please note that the Steiner points are randomly (and incorrectly) positioned, in order to visualise all the connections.
+
+First, $E$, $D$ and $S_3$ are replaced by $X$ which reduces the topology by 1 terminal and 1 Steiner point (figure \ref{fig:melzak_0_0}). It is not yet possible to draw a Simpson segment between $X$ and $S_2$ since the location of $S_2$ is unknown.
+In the next iteration, $C$, $X$ and $S_2$ are replaced by $Y$ which reduces the topology to size $n = 3$. As the location of $S_1$ is also yet unknown, $A$, $B$ and $S_1$ are replaced by $Z$, which reduces the topology to the base case (figure \ref{fig:melzak_0_1}).
+
+The FST is subsequently built up by backtracking the merging steps. By drawing a Simpson segment $\overline{ZY}$, the location of $S_1$ and $S_2$ are found (figure \ref{fig:melzak_1}), after which $\overline{ZY}$ is deleted and the edges $AS_1$, $BS_1$, $S_1S_2$, $CS_2$, with the Simpson segment $\overline{XS_2}$ are added (figure \ref{fig:melzak_2}).
+Subsequently, the position of $S_3$ is the intersection between $\overline{XS_2}$ and the Steiner arc $\arc{ED}$. Finally, $\overline{XS_2}$ is deleted and the edges $S_2S_4$, $ES_3$, and $DS_3$ are added (figure \ref{fig:melzak_3}).
 
 
+\subsection{Complexity analysis for Melzak's algorithm}
+In figure \ref{fig:melzak_algo_visualisation}, we have chosen specific sides for the equilateral points $X = e_{DE}$, $Y = e_{CX}$, and $Z = e_{AB}$.
+The original Melzak algorithm, however, accounts for the fact that each equilateral point $e_{xy}$ can be placed on either side of the segment $\overline{xy}$. Hence, the algorithm has a worst-case complexity of $O(2^n)$.
+An improved, $O(n)$ version of the algorithm was proposed by \cite{Melzak_linear_time}, which picks the correct side for each equilateral point $e_{xy}$ in constant time.
 
-The proof in \citep{Garey1977} is very technical so we attempt to give a more intuitive, non-rigorous explanation based on the workings of the naive algorithm.
-\subsection{The Melzak (naive) algorithm}
+In the example in figure \ref{fig:melzak_algo_visualisation}, the final FST happens to also be the SMT. However, this is not always the case. From property \ref{prop:smt_fst}, we know the the SMT is a union of FSTs, hence the SMT can be found by enumerating all possible full topologies, applying the Melzak algorithm to each, and taking the union of the resulting FSTs such that the length of minimal. \cite{geosteiner96} state that the total number of full topologies for a set of $n$ points is given by
+$$
+    F^*(n) = \sum_{k=2}^{n} \binom{n}{k}\frac{(2k - 4)!}{2^{k-2}(k-2)!}
+$$
+
+We will now show a derivation of this formula based on Property 7 in \cite{Gilbert1968SteinerMT}.
+
+Let $f(s)$ be the number of full topologies for the case of $s$ Steiner points.
+Let $F(n, s)$ be the number of (non-full) topologies for the case of $n$ terminals and $s$ Steiner points. $F(n, s)$ can be written in terms of $f(s)$ as follows.
+
+If we assume that Steiner points are unlabelled, there are $\binom{n}{s+2}$ ways to choose the terminals from which the full topology will be constructed. For each chosen set of terminals, there are $f(s)$ possible full topologies. Hence, there are a total of$\binom{n}{s+2}f(s)$ possible full topologies.
+
+There are still $n - (s + 2)$ points left, though, which can be added to the currently full topology to make it non-full. A tree has $n - 1$ edges, hence the current full topology has $((s + 2) + s) - 1 = 2s + 1$ edges. The leftover points can be added by splitting existing edges into two, resulting in the net addition of 1 edge.
+
+For the first leftover point, we have $2s + 1$ possible edges to split, for the second $2s + 2$, and so on. This is repeated until the last leftover point is added, at which point our topology has $n + s - 1$ edges. This can be written as
+\begin{equation*}
+    \begin{aligned}
+        F(n, s) & = \binom{n}{s+2}f(s)(2s + 1)(2s + 2)\cdots(n + s - 2) \\
+                & = \binom{n}{s+2}f(s)\frac{(n + s - 2)!}{(2s)!}
+    \end{aligned}
+\end{equation*}
+
+The formula for $f(s)$ can be defined recursively as follows:
+\begin{equation*}
+    \begin{aligned}
+        f(0)   & = 1            \\
+        f(s+1) & = (2s + 1)f(s)
+    \end{aligned}
+\end{equation*}
+In other words, when all $f(s)$ full topologies are found, adding one more Steiner point by the same edge-splitting technique to each of the $f(s)$ topologies, results in $(2s + 1)f(s)$ new topologies.
+This recurrence relation can be solved by using the double-factorial form for an odd integer $n = 2k - 1$, with $k \ge 0$ \citep{Double_factorial}.
+$$
+    (2k - 1)!! = \frac{(2k)!}{2^k k!}
+$$
+Rewriting $f(s)$ in terms of the double-factorial, we get
+$$
+    f(s) = \frac{(2s)!}{2^{s}(s)!}
+$$
+
+Finally,
+\begin{equation*}
+    \begin{aligned}
+        F(n, s) & = \binom{n}{s+2}\frac{\cancel{(2s)!}}{2^s(s)!}\frac{(n + s - 2)!}{\cancel{(2s)!}} \\
+                & = \binom{n}{s+2}\frac{(n + s - 2)!}{2^s(s)!}
+    \end{aligned}
+\end{equation*}
+
+In the case of the Melzak algorithm, only full topologies are considered. We therefore let $n = k$ and $s = k - 2$, and rewrite $F(n, s)$ to $F(n)$.
+\begin{equation*}
+    \begin{aligned}
+        F(n) = \binom{n}{k}\frac{(2k - 4)!}{2^{k-2}(k-2)!}
+    \end{aligned}
+\end{equation*}
+
+Since the full topologies are considered for all subsets of $n$ terminals, starting from 2 terminals as the minimum, we arrive at the original expression.
+\begin{equation*}
+    \begin{aligned}
+        F^*(n) = \sum_{k=2}^{n} \binom{n}{k}\frac{(2k - 4)!}{2^{k-2}(k-2)!}
+    \end{aligned}
+\end{equation*}
+
+The reason for showing this derivation is that it gives some insight into the complexity of the problem.
+$F^*(n)$ is huge even for small values of $n$. Due to the factorial in the numerator, it can be said to grow \textit{super-exponentially} in $k$ (i.e. faster than $2^k$). Even though the fast GeoSteiner algorithm is not super-exponential, it is still exponential in the number of FSTs as we will see in the next section. This shows that the exponentiality is not merely due to Melzak's algorithm, but inherent in the Steiner problem itself \cite{Brazil2015}.
+
+\subsection{The GeoSteiner algorithm}
+The GeoSteiner algorithm has been the fastest algorithm for computing the exact Steiner minimal tree for multiple decades.
+It consists of the same two steps as the brute-force algorithm above.
+\begin{enumerate}
+    \item Enumerate all FSTs (i.e. \textit{FST generation})
+    \item Find the subset of FSTs that form the SMT (i.e. \textit{concatenation}).
+\end{enumerate}
+However, instead of enumerating all possible full topologies for all subsets of $n$ terminals, it only enumerates the equilateral points that are used in the construction of the FSTs \citep{geosteiner96}. Equilateral points are often repeated across different full topologies of subsets, so this avoids large redundancies. Secondly, using clever \textit{pruning tests}, many equilateral points are discarded at an early stage of the generation stage, further reducing the number of FSTs that need to be considered in the end. The reader is referred to \cite{geosteiner96} for more details on these pruning tests.
+As a result, the number of FSTs generated in the first stage are linear in $n$. \cite{29ee725d11ac4584b72f7fe66c4326fa} note that on average, the number of generated FSTs is $2.5n$ with only $0.6n$ left after pruning.
+
+The process itself of generating and pruning is quadratic in $n$, but the last stage of concatenation is a major bottleneck. During concatenation, the algorithm has to check every possible subset of FSTs to see which one has the minimal length, which has exponential complexity in the number of FSTs. Hence, it is critical that as few FSTs as possible are generated in the first stage.
+
+The discussion on the GeoSteiner algorithm above has so far assumed the Euclidian version of the problem. It is noteworthy, however, that the algorithm has been extended to the rectilinear case as well \citep{rectilinear_geosteiner}. Interestingly, the generation phase is very fast but the concatenation phase is much slower compared to the Euclidian variant (\citep{29ee725d11ac4584b72f7fe66c4326fa}).
+
 
 \section{Existing visualisation tools}
 

@@ -4,12 +4,6 @@
 \usepackage{mathrsfs}
 \usetikzlibrary{arrows, calc}
 \newcommand{\degre}{\ensuremath{^\circ}}
-
-\makeatletter
-\def\convertto#1#2{\strip@pt\dimexpr #2*65536/\number\dimexpr 1#1}
-\makeatother
-
-
 \pagestyle{empty}
 \begin{document}
 \begin{tikzpicture}[line cap=round,line join=round,x=9cm,y=9cm]
@@ -24,18 +18,18 @@
 
 
     \begin{large}
-        \draw(-0.5902366791082465,0.10759522714775753) node[circle,draw=gray!40, fill=gray!40, scale=0.6] (A) [label={[yshift=-0.8cm]$A$}] {};
-        \draw (-0.5769230701353238,0.30596799149252146) node[circle,draw=gray!40, fill=gray!40, scale=0.6] (B) [label={[yshift=0.15cm]$B$}] {};
+        \draw(-0.5902366791082465,0.10759522714775753) node[circle,draw=black, fill=black, scale=0.6] (A) [label={[yshift=-0.8cm]$A$}] {};
+        \draw (-0.5769230701353238,0.30596799149252146) node[circle,draw=black, fill=black, scale=0.6] (B) [label={[yshift=0.15cm]$B$}] {};
 
-        \draw (-0.3,0.4) node[circle,draw=gray!40, fill=gray!40, scale=0.6] (C) [label={$C$}] {};
+        \draw (-0.3,0.4) node[circle,draw=black, fill=black, scale=0.6] (C) [label={$C$}] {};
         \draw (-0.14023669368546937,0.19679641713412993) node[circle,draw=gray!40, fill=gray!40, scale=0.6] (D) [label={[xshift=0.25cm]$D$}] {};
         \draw (-0.2813609509364418,0.07031712226437783) node[circle,draw=gray!40, fill=gray!40, scale=0.6] (E) [label={[xshift=-0.4cm, yshift=-0.5cm]$E$}] {};
 
-        \draw (-0.10126453990100752,0.01133957782970145) node[circle,draw=black!60, fill=black!60, scale=0.6] (X) [label={[yshift=-0.8cm]$X$}] {};
+        \draw (-0.10126453990100752,0.01133957782970145) node[circle,draw=black, fill=black, scale=0.6] (X) [label={[yshift=-0.8cm]$X$}] {};
 
-        \draw (0.13595752909455952,0.3777797459933668) node[circle,draw=black,fill=black,scale=0.6] (Y) [label={[xshift=0.25cm]$Y$}] {};
+        \draw (0.13595752909455952,0.3777797459933668) node[circle,draw=gray!40, fill=gray!40, scale=0.6] (Y) [label={[xshift=0.25cm]$Y$}] {};
 
-        \draw (-0.7553757279632947,0.21831153290674304) node[circle,draw=black,fill=black,scale=0.6] (Z) [label={[xshift=-0.4cm, yshift=-0.4cm]$Z$}] {};
+        \draw (-0.7553757279632947,0.21831153290674304) node[circle,draw=gray!40, fill=gray!40, scale=0.6] (Z) [label={[xshift=-0.4cm, yshift=-0.4cm]$Z$}] {};
         % Steiner points
         % \draw (-0.45,0.2) node[circle,draw=gray!40, fill=gray!40, scale=0.6] (S1) [label={$S_1$}] {};
         % \draw (-0.34,0.19) node[circle,draw=gray!40, fill=gray!40, scale=0.6] (S2) [label={$S_2$}] {};
@@ -49,17 +43,17 @@
         \draw[dashed,gray!40] (C) -- (Y) -- (X) -- (C) -- cycle;
         \draw[dashed,gray!40] (Z) -- (B) -- (A) -- (Z) -- cycle;
 
-        \draw[black, line width=1.5pt] (Z) -- (Y);
-
         \draw (-0.5360842464231446,0.25754491775962784) node[circle,draw=black,fill=black,scale=0.6] (S1) [label={[xshift=0.1cm]$S_1$}] {};
         \draw (-0.33869215046253665,0.29286028894207927) node[circle,draw=black,fill=black,scale=0.6] (S2) [label={[xshift=-0.2cm]$S_2$}] {};
+        \draw (-0.24227751323256286,0.17854031928720146) node[circle,draw=black,fill=black,scale=0.6] (S3) [label={$S_3$}] {};
 
+        \draw[black, line width=1.5pt] (S1) -- (S2);
+        \draw[black, line width=1.5pt] (S1) -- (B);
+        \draw[black, line width=1.5pt] (S1) -- (A);
+        \draw[gray!40] (Z) -- (S1);
+        \draw[gray!40] (S2) -- (Y);
+        \draw[black, line width=1.5pt] (S2) -- (C);
+        \draw[black, line width=1.5pt] (S2) -- (X);
     \end{large}
-    % \pgfpointanchor{current bounding box}{south west}
-    % \pgfgetlastxy{\cornerx}{\cornery}
-    % \xdef\mycornerx{\cornerx}
-    % \xdef\mycornery{\cornery}
-    % \node at (0,-1) {Bottom left corner: (\convertto{cm}{\mycornerx}, \convertto{cm}{\mycornery})};
-
 \end{tikzpicture}
 \end{document}
