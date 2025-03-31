@@ -1,6 +1,5 @@
 import { useImperativeHandle, useMemo, useRef } from "react";
-import { SupportedAlgorithms } from "@/types.ts";
-import { SMTType } from "@/lib/steiner-utils.ts";
+import { Metric, SupportedAlgorithms } from "@/types.ts";
 import { useCanvas } from "@/providers/canvas/CanvasContext.ts";
 import { calculatePrimsMST, calculateSMT } from "@/lib/algorithm-helpers.ts";
 import { NodePointProgram } from "sigma/rendering";
@@ -14,15 +13,17 @@ import { mergeGraphs, replaceGraph } from "@/lib/graph-utils.ts";
 import ZoomControls from "./components/ZoomControls";
 import "@react-sigma/core/lib/style.css";
 import "./styles/overrides.css";
-import LengthRatioBox from "./components/LengthRatioBox";
+import SteinerRatioBox from "./components/SteinerRatioBox.tsx";
 import { GRAPH_DEFAULT_SETTINGS } from "./consts";
 import { useGraphPubSub } from "./hooks/useGraphPubSub";
 import { Settings } from "sigma/settings";
 
 const createSolutionInitState = (
-  algorithm: SupportedAlgorithms
+  algorithm: SupportedAlgorithms,
+  metric: Metric
 ): AlgorithmSolution => ({
   algorithm,
+  metric,
   highlightedNodes: new Set(),
   highlightedEdges: new Set(),
   meta: {
@@ -92,15 +93,19 @@ export default function Canvas() {
     []
   );
 
-  const computePrimsMST = (problemInstance: Graph) => {
+  const computePrimsMST = (problemInstance: Graph, metric: Metric) => {
     const {
       edgeMutations,
       graph: updatedGraph,
       length,
     } = calculatePrimsMST({
       graph: problemInstance,
+      metric,
     });
-    const algo = SupportedAlgorithms.PRIMS_EMST;
+    const algo =
+      metric === Metric.EUCLIDEAN
+        ? SupportedAlgorithms.PRIMS_EMST
+        : SupportedAlgorithms.PRIMS_RSMT;
 
     const mergedEdgesMap = mergeGraphs(graph, updatedGraph);
     // replace edgeIds with the correct edgeIds
@@ -113,7 +118,7 @@ export default function Canvas() {
     setSolutions((draft) => {
       let solution = draft.find((solution) => solution.algorithm === algo);
       if (!solution) {
-        solution = createSolutionInitState(algo);
+        solution = createSolutionInitState(algo, metric);
         draft.push(solution);
       }
       edgeMutations.forEach((edge) => {
@@ -124,16 +129,16 @@ export default function Canvas() {
     });
   };
 
-  const computeSMT = (type: SMTType, problemInstance: Graph) => {
+  const computeSMT = (problemInstance: Graph, metric: Metric) => {
     const {
       edgeMutations,
       meta: { steinerNodeIds },
       graph: updatedGraph,
       length,
-    } = calculateSMT(type, { graph: problemInstance });
+    } = calculateSMT({ graph: problemInstance, metric });
     steinerNodeIdsRef.current = steinerNodeIds;
     const algorithm =
-      type === "euclidean"
+      metric === Metric.EUCLIDEAN
         ? SupportedAlgorithms.ESMT
         : SupportedAlgorithms.RSMT;
 
@@ -148,7 +153,7 @@ export default function Canvas() {
     setSolutions((draft) => {
       let solution = draft.find((solution) => solution.algorithm === algorithm);
       if (!solution) {
-        solution = createSolutionInitState(algorithm);
+        solution = createSolutionInitState(algorithm, metric);
         draft.push(solution);
       }
       edgeMutations.forEach((mutation) => {
@@ -173,14 +178,19 @@ export default function Canvas() {
     const problemGraph = graph.copy();
 
     setSolutions([]);
+
+    const computationMap: Record<SupportedAlgorithms, () => void> = {
+      [SupportedAlgorithms.PRIMS_EMST]: () =>
+        computePrimsMST(problemGraph, Metric.EUCLIDEAN),
+      [SupportedAlgorithms.PRIMS_RSMT]: () =>
+        computePrimsMST(problemGraph, Metric.RECTILINEAR),
+      [SupportedAlgorithms.ESMT]: () =>
+        computeSMT(problemGraph, Metric.EUCLIDEAN),
+      [SupportedAlgorithms.RSMT]: () =>
+        computeSMT(problemGraph, Metric.RECTILINEAR),
+    };
     Object.values(SupportedAlgorithms).forEach((algorithm) => {
-      if (algorithm === SupportedAlgorithms.PRIMS_EMST) {
-        computePrimsMST(problemGraph);
-      } else if (algorithm === SupportedAlgorithms.ESMT) {
-        computeSMT("euclidean", problemGraph);
-      } else if (algorithm === SupportedAlgorithms.RSMT) {
-        computeSMT("rectilinear", problemGraph);
-      }
+      computationMap[algorithm]();
     });
     publishGraphUpdated();
   };
@@ -199,12 +209,18 @@ export default function Canvas() {
         animationDuration={GRAPH_DEFAULT_SETTINGS.cameraFitDuration}
         sigmaRef={sigmaRef}
       />
-      <LengthRatioBox solutions={solutions} />
+      <SteinerRatioBox solutions={solutions} />
       <GraphSettingsController
         solutions={solutions}
-        isDrawMode={canvasMode === CanvasMode.Draw}
+        isDrawMode={
+          canvasMode === CanvasMode.Draw || canvasMode === CanvasMode.Live
+        }
       />
-      <GraphEventsController isDrawMode={canvasMode === CanvasMode.Draw} />
+      <GraphEventsController
+        isDrawMode={
+          canvasMode === CanvasMode.Draw || canvasMode === CanvasMode.Live
+        }
+      />
     </SigmaContainer>
   );
 }

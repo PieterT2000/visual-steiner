@@ -20,9 +20,6 @@ void calc_esmt(int n, double *terms, double *length, int *nsps, double *sps, int
         exit(1);
     }
     gst_esmt(n, terms, length, nsps, sps, nedges, edges, NULL, NULL);
-    printf("Length: %f\n", *length);
-    printf("Nsps: %d\n", *nsps);
-    printf("Nedges: %d\n", *nedges);
     gst_close_geosteiner();
 }
 

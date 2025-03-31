@@ -1,10 +1,11 @@
-import { SupportedAlgorithms } from "@/types.ts";
+import { Metric, SupportedAlgorithms } from "@/types.ts";
 import { AlgorithmsFormSchema } from "../sidebar/components/form/schema.ts";
 import Sigma from "sigma";
 
 export enum CanvasMode {
   Visualize = "Visualize",
   Draw = "Edit graph",
+  Live = "Live Edit graph",
 }
 
 export type CanvasControl = {
@@ -25,6 +26,7 @@ export type GraphCanvasStyle = {
 
 export type AlgorithmSolution = {
   algorithm: SupportedAlgorithms;
+  metric: Metric;
   /**
    * Set of node ids that are highlighted for the algorithm
    */

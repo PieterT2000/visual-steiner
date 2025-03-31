@@ -1,8 +1,7 @@
 import { wasmApi } from "./wasm-utils.ts";
+import { Metric } from "@/types";
 
-export type SMTType = "euclidean" | "rectilinear";
-
-export function calcSMT(terms: number[], type: SMTType = "euclidean") {
+export function calcSMT(terms: number[], metric: Metric) {
   const api = wasmApi;
 
   // convert numbers array to Float64 array
@@ -27,7 +26,7 @@ export function calcSMT(terms: number[], type: SMTType = "euclidean") {
 
   // copy terminals to WASM memory
   Module.HEAPF64.set(termsFloat64Arr, inputPtr / bytesPerFloat64);
-  const fn = type === "euclidean" ? api.calc_esmt : api.calc_rsmt;
+  const fn = metric === Metric.EUCLIDEAN ? api.calc_esmt : api.calc_rsmt;
   fn(nterms, inputPtr, lengthPtr, nspsPtr, spsPtr, nedgesPtr, edgesPtr);
 
   const length = Module.getValue(lengthPtr, "double");

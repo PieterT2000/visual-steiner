@@ -12,9 +12,9 @@ import { Updater, useImmer } from "use-immer";
 import { defaultAlgorithmVisibilityAndOrder } from "./const";
 
 const FormSettingsProvider = ({ children }: { children: React.ReactNode }) => {
-  const [activeAlgorithmCard, setActiveAlgorithmCard] = useState<
-    SupportedAlgorithms | undefined
-  >(SupportedAlgorithms.ESMT);
+  const [activeAlgorithmCards, setActiveAlgorithmCards] = useState<
+    SupportedAlgorithms[]
+  >([SupportedAlgorithms.ESMT]);
   const form = useAlgorithmsForm(algorithmsFormSchema, defaultValues);
   const [algorithmVisibility, setAlgorithmVisibility] = useImmer<
     AlgorithmVisibility[]
@@ -23,10 +23,10 @@ const FormSettingsProvider = ({ children }: { children: React.ReactNode }) => {
 
   const handleSetMetric = (metric: Metric) => {
     setMetric(metric);
-    setActiveAlgorithmCard(
+    setActiveAlgorithmCards(
       metric === Metric.RECTILINEAR
-        ? SupportedAlgorithms.RSMT
-        : SupportedAlgorithms.ESMT
+        ? [SupportedAlgorithms.RSMT]
+        : [SupportedAlgorithms.ESMT]
     );
   };
 
@@ -40,8 +40,8 @@ const FormSettingsProvider = ({ children }: { children: React.ReactNode }) => {
 
   const context: FormSettingsContext = useMemo(
     () => ({
-      activeAlgorithmCard,
-      setActiveAlgorithmCard,
+      activeAlgorithmCards,
+      setActiveAlgorithmCards,
       formRef,
       form,
       algorithmVisibility,
@@ -49,7 +49,7 @@ const FormSettingsProvider = ({ children }: { children: React.ReactNode }) => {
       metric,
       setMetric: handleSetMetric,
     }),
-    [activeAlgorithmCard, algorithmVisibility, formRef.current, metric]
+    [activeAlgorithmCards, algorithmVisibility, formRef.current, metric]
   );
 
   return (

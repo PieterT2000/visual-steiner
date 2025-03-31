@@ -24,7 +24,10 @@ const CardForm = ({ algorithm }: { algorithm: SupportedAlgorithms }) => {
             {row.map((item) => {
               const key = typeof item === "string" ? item : item.id;
               const formKey = `${algorithm}.${key}`;
-              const fieldSchema = schema._def.shape()[key];
+              const fieldSchema =
+                schema._def.shape()[
+                  key as keyof ReturnType<typeof schema._def.shape>
+                ];
               const label = getLabelFromFieldSchema(fieldSchema);
               return key === "colors" ? (
                 <ColorFields

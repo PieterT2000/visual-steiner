@@ -17,6 +17,9 @@ export default {
   				DEFAULT: 'hsl(var(--primary))',
   				foreground: 'hsl(var(--primary-foreground))'
   			},
+			success: 'hsl(var(--success))',
+			warning: 'hsl(var(--warning))',
+			error: 'hsl(var(--error))',
   			accent: 'hsl(var(--accent))',
   			layer1: 'hsl(var(--layer1))',
   			layer2: 'hsl(var(--layer2))',

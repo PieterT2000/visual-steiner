@@ -26,14 +26,14 @@ const GraphSettingsController = ({
     formState: { defaultValues },
   } = useFormContext<AlgorithmsFormSchema>();
   const sigma = useSigma();
-  const { algorithmVisibility } = useFormSettings();
+  const { algorithmVisibility, metric } = useFormSettings();
   const { initialGraphRef } = useCanvas();
   const renderItems = useMemo(() => {
     // algorithm visibility contains order or display and visibility
     // since the first algorithm should be rendered last for z-index purposes, the order is reversed
     const reversedVisibleAlgorithms = [...algorithmVisibility]
       .reverse()
-      .filter((item) => item.visible);
+      .filter((item) => item.visible && item.metric === metric);
     return reversedVisibleAlgorithms
       .map((item) => {
         const solution = solutions.find(
@@ -50,7 +50,7 @@ const GraphSettingsController = ({
         };
       })
       .filter(Boolean) as AlgorithmRenderItem[];
-  }, [algorithmVisibility, solutions]);
+  }, [algorithmVisibility, solutions, metric]);
 
   useEffect(() => {
     sigma.setSetting("nodeReducer", (node, data) => {

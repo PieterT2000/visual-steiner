@@ -9,25 +9,25 @@ export const algorithmDisplayProps: Record<
   [SupportedAlgorithms.ESMT]: {
     icon: <SteinerIcon />,
     bg: "bg-primary",
-    title: "Euclidian Steiner minimal tree (ESMT)",
+    title: "Euclidian Steiner minimal tree",
     shortTitle: "ESMT",
   },
   [SupportedAlgorithms.RSMT]: {
     icon: <RectangleIcon />,
     bg: "bg-primary",
-    title: "Rectilinear Steiner minimal tree (RSMT)",
+    title: "Rectilinear Steiner minimal tree",
     shortTitle: "RSMT",
   },
   [SupportedAlgorithms.PRIMS_EMST]: {
     icon: <SteinerIcon />,
     bg: "bg-layer2",
-    title: "Euclidean minimum spanning tree (EMST)",
+    title: "Euclidean minimum spanning tree",
     shortTitle: "EMST",
   },
   [SupportedAlgorithms.PRIMS_RSMT]: {
     icon: <RectangleIcon />,
     bg: "bg-layer2",
-    title: "Rectilinear minimum spanning tree (RMST)",
+    title: "Rectilinear minimum spanning tree",
     shortTitle: "RMST",
   },
 };

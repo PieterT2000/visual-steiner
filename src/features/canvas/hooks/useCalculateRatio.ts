@@ -1,34 +1,54 @@
-import { SupportedAlgorithms } from "@/types";
+import { Metric, SupportedAlgorithms } from "@/types";
 import { AlgorithmSolution } from "../types";
 import { useMemo } from "react";
 
-type Input = Pick<AlgorithmSolution, "algorithm" | "meta">;
+type Input = Pick<AlgorithmSolution, "algorithm" | "meta" | "metric">;
 type Return = Input & {
   meta: {
     ratio: number;
   };
 };
 
-const useCalculateRatio = (
+const useCalculateSteinerRatio = (
   solutions: Input[],
-  baseAlgorithm: SupportedAlgorithms = SupportedAlgorithms.PRIMS_EMST
-): Return[] => {
+  metric: Metric
+): Return | undefined => {
   return useMemo(() => {
+    const baseAlgorithm =
+      metric === Metric.EUCLIDEAN
+        ? SupportedAlgorithms.PRIMS_EMST
+        : SupportedAlgorithms.PRIMS_RSMT;
     const base = solutions.find(
       (solution) => solution.algorithm === baseAlgorithm
     );
     // prevent division by zero
     if (!base || base.meta.length === 0) {
-      return [];
+      return undefined;
     }
-    return solutions.map((solution) => ({
-      ...solution,
+
+    const solutionsByMetric = solutions.filter(
+      (solution) => solution.metric === metric
+    );
+    if (solutionsByMetric.length !== 2) {
+      console.warn("Expected 2 solutions, got", solutionsByMetric.length);
+      return undefined;
+    }
+
+    const targetSolution = solutionsByMetric.find(
+      (solution) => solution.algorithm !== baseAlgorithm
+    );
+
+    if (!targetSolution) {
+      return undefined;
+    }
+    return {
+      ...targetSolution,
       meta: {
-        ...solution.meta,
-        ratio: solution.meta.length / base.meta.length,
+        ...targetSolution.meta,
+        ratio: targetSolution.meta.length / base.meta.length,
       },
-    }));
-  }, [solutions, baseAlgorithm]);
+    };
+  }, [solutions, metric]);
 };
 
-export default useCalculateRatio;
+export default useCalculateSteinerRatio;

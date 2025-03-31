@@ -1,8 +1,4 @@
-import {
-  mstFormSchema,
-  steinerFormSchema,
-  uniformOrientSteinerFormSchema,
-} from "./schema.ts";
+import { mstFormSchema, steinerFormSchema } from "./schema.ts";
 
 type FieldConfig<TKeys> = {
   /**
@@ -19,10 +15,6 @@ export type LayoutConfig<T> = RowType<T>[];
 
 const steinerFormFieldKeys = steinerFormSchema.keyof().options;
 type SteinerFormFieldKeys = (typeof steinerFormFieldKeys)[number];
-const uniformlyOrientedFormFieldKeys =
-  uniformOrientSteinerFormSchema.keyof().options;
-type UniformlyOrientedFormFieldKeys =
-  (typeof uniformlyOrientedFormFieldKeys)[number];
 const mstFormFieldKeys = mstFormSchema.keyof().options;
 type MSTFormFieldKeys = (typeof mstFormFieldKeys)[number];
 
@@ -33,11 +25,7 @@ export const steinerFormLayoutConfig: LayoutConfig<SteinerFormFieldKeys> = [
   ["colors"],
 ];
 
-export const uniformlyOrientedFormLayoutConfig: LayoutConfig<UniformlyOrientedFormFieldKeys> =
-  [["lambda"], ["maxCpuTime"], ["edgeWidth"], ["vertexRadius"], ["colors"]];
-
 export const mstFormLayoutConfig: LayoutConfig<MSTFormFieldKeys> = [
-  ["maxCpuTime"],
   ["edgeWidth"],
   ["vertexRadius"],
   ["colors"],

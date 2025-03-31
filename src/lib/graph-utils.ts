@@ -4,6 +4,8 @@ import { Attributes } from "graphology-types";
 import { empty } from "graphology-generators/classic";
 import { GRAPH_DEFAULT_SETTINGS } from "@/features/canvas/consts";
 import { SupportedAlgorithms, Node } from "@/types";
+import { weightFunctions, WeightFunction } from "@/lib/math-utils";
+
 function mergeStringOrArrayAttribute(
   attr1?: string | string[] | undefined,
   attr2?: string | string[] | undefined
@@ -120,25 +122,28 @@ export function graphFromNodes(nodes: Node[]) {
  */
 export function toCompleteWeightedGraph<TGraph extends UndirectedGraph>(
   graph: TGraph,
-  defaultEdgeAttrs: Attributes = {}
+  defaultEdgeAttrs: Attributes = {},
+  weightFn: WeightFunction = weightFunctions.euclidean
 ) {
   let i, j;
   const order = graph.order;
   const nodes = graph.nodes();
   for (i = 0; i < order; i++) {
     for (j = i + 1; j < order; j++) {
-      if (graph.hasEdge(nodes[i], nodes[j])) {
-        continue;
-      }
       const x1 = graph.getNodeAttribute(nodes[i], "x");
       const y1 = graph.getNodeAttribute(nodes[i], "y");
       const x2 = graph.getNodeAttribute(nodes[j], "x");
       const y2 = graph.getNodeAttribute(nodes[j], "y");
-      const weight = Math.hypot(x1 - x2, y1 - y2);
-      graph.addUndirectedEdge(nodes[i], nodes[j], {
-        ...defaultEdgeAttrs,
-        weight,
-      });
+      const weight = weightFn(x1, y1, x2, y2);
+      if (graph.hasEdge(nodes[i], nodes[j])) {
+        const edgeAttrs = graph.getEdgeAttributes(nodes[i], nodes[j]);
+        edgeAttrs.weight = weight;
+      } else {
+        graph.addUndirectedEdge(nodes[i], nodes[j], {
+          ...defaultEdgeAttrs,
+          weight,
+        });
+      }
     }
   }
 }
@@ -147,11 +152,16 @@ export function toCompleteWeightedGraph<TGraph extends UndirectedGraph>(
  * Computes the edge weights (Euclidean distance) in-place and stores them in the `weight` attribute of each edge
  * @param graph undirected graph
  */
-export function calcEdgeWeights<TGraph extends UndirectedGraph>(graph: TGraph) {
+export function calcEdgeWeights<TGraph extends UndirectedGraph>(
+  graph: TGraph,
+  weightFn: WeightFunction = weightFunctions.euclidean
+) {
   graph.forEachEdge((_, edgeAttrs, _v1, _v2, sourceAttrs, targetAttrs) => {
-    const weight = Math.hypot(
-      sourceAttrs.x - targetAttrs.x,
-      sourceAttrs.y - targetAttrs.y
+    const weight = weightFn(
+      sourceAttrs.x,
+      sourceAttrs.y,
+      targetAttrs.x,
+      targetAttrs.y
     );
     edgeAttrs.weight = weight;
   });

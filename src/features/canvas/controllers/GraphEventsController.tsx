@@ -4,6 +4,9 @@ import { nanoid as generateId } from "nanoid";
 import { useCanvas } from "@/providers/canvas/CanvasContext";
 import { useValueRef } from "@/hooks/useValueRef";
 import { useGraphContext } from "@/providers/graph/GraphContext";
+import { CanvasMode } from "../types";
+import toast from "react-hot-toast";
+import { isSteinerNode } from "@/lib/graph-utils";
 
 const noop = () => {};
 
@@ -29,9 +32,10 @@ const GraphEventsController = ({
   const graph = sigma.getGraph();
   const containerRef = sigma.getContainer();
   const registerEvents = useRegisterEvents();
-  const { setGraphDirty, graphDirty } = useCanvas();
+  const { setGraphDirty, graphDirty, canvasMode } = useCanvas();
   const { graphPubSub } = useGraphContext();
   const isGraphDirtyRef = useValueRef(graphDirty);
+  const isLiveMode = useValueRef(canvasMode === CanvasMode.Live);
 
   useEffect(() => {
     if (!isDrawMode) {
@@ -63,6 +67,11 @@ const GraphEventsController = ({
         evt.event.original.stopPropagation();
         const nodeId = evt.node;
         if (!nodeId) return;
+        const isSteiner = isSteinerNode(graph.getNodeAttributes(nodeId));
+        if (isSteiner && isLiveMode.current) {
+          toast.error("Steiner nodes can't be deleted in live mode");
+          return;
+        }
         graph.dropNode(nodeId);
         isHoveringNode = false;
         if (!isGraphDirtyRef.current) {
@@ -134,6 +143,19 @@ const GraphEventsController = ({
       },
       mousemovebody: (evt) => {
         if (!draggingNode) return;
+        const isSteiner = isSteinerNode(
+          graph.getNodeAttributes(draggingNode.id)
+        );
+        if (isSteiner && isLiveMode.current) {
+          if (clickTimer) {
+            clearTimeout(clickTimer);
+            clickTimer = null;
+          }
+          draggingNode = null;
+          isDragging = false;
+          toast.error("Steiner nodes can't be moved in live mode");
+          return;
+        }
         // dist in pixel values
         const pos = sigma.viewportToGraph({
           x: evt.x,
@@ -148,6 +170,10 @@ const GraphEventsController = ({
           isDragging = true;
           graph.setNodeAttribute(draggingNode.id, "x", pos.x);
           graph.setNodeAttribute(draggingNode.id, "y", pos.y);
+
+          // if (!isGraphDirtyRef.current && !isSteiner) {
+          //   setGraphDirty(true);
+          // }
         }
 
         // change cursor to move
@@ -157,10 +183,6 @@ const GraphEventsController = ({
         evt.preventSigmaDefault();
         evt.original.preventDefault();
         evt.original.stopPropagation();
-
-        if (!isGraphDirtyRef.current) {
-          setGraphDirty(true);
-        }
       },
       enterNode: () => {
         if (isHoveringNode) return;

@@ -41,6 +41,9 @@
     --input-border: 203 213 225;
     --layer1: 217 80% 51%;
     --layer2: 186 79% 34%;
+    --success: 159.89 100% 37%; /* emerald-500 */
+    --warning: 36.51 100% 50%; /* amber-500 */
+    --error: 356.94 96% 57.99999999999999%; /* red-500 */
 
     --shadow-icon-bg: 0 0 6px 0 rgba(0, 0, 0, 0.2);
 

@@ -11,8 +11,8 @@ export interface AlgorithmVisibility {
 }
 
 export interface FormSettingsContext {
-  activeAlgorithmCard: SupportedAlgorithms | undefined;
-  setActiveAlgorithmCard: (algorithm: SupportedAlgorithms | undefined) => void;
+  activeAlgorithmCards: SupportedAlgorithms[];
+  setActiveAlgorithmCards: (algorithms: SupportedAlgorithms[]) => void;
   formRef: React.RefObject<HTMLFormElement>;
   algorithmVisibility: AlgorithmVisibility[];
   setAlgorithmVisibility: Updater<AlgorithmVisibility[]>;

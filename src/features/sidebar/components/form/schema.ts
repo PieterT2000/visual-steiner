@@ -12,33 +12,27 @@ export const steinerFormSchema = z.object({
   }),
 });
 
-export const uniformOrientSteinerFormSchema = steinerFormSchema.extend({
-  lambda: z.number().min(2).max(6).describe("Lambda metric λ"),
-});
+export const mstFormSchema = steinerFormSchema
+  .omit({
+    maxCpuTime: true,
+    colors: true,
+  })
+  .extend({
+    colors: steinerFormSchema._def.shape().colors.omit({
+      steinerVertex: true,
+    }),
+  });
 
-export const mstFormSchema = steinerFormSchema.extend({
-  colors: steinerFormSchema._def.shape().colors.omit({
-    steinerVertex: true,
-  }),
-});
-
-type UniformOrientSteinerFormSchema = z.infer<
-  typeof uniformOrientSteinerFormSchema
->;
 type SteinerFormSchema = z.infer<typeof steinerFormSchema>;
 type MSTFormSchema = z.infer<typeof mstFormSchema>;
 
-export type {
-  UniformOrientSteinerFormSchema,
-  SteinerFormSchema,
-  MSTFormSchema,
-};
+export type { SteinerFormSchema, MSTFormSchema };
 
 export const algorithmsFormSchema = z.object({
   [SupportedAlgorithms.ESMT]: steinerFormSchema.optional(),
   [SupportedAlgorithms.RSMT]: steinerFormSchema.optional(),
-  [SupportedAlgorithms.UOSMT]: uniformOrientSteinerFormSchema.optional(),
   [SupportedAlgorithms.PRIMS_EMST]: mstFormSchema.optional(),
+  [SupportedAlgorithms.PRIMS_RSMT]: mstFormSchema.optional(),
 });
 
 export type AlgorithmsFormSchema = z.infer<typeof algorithmsFormSchema>;

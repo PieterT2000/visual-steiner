@@ -1,8 +1,9 @@
-import { EdgeMutation, SupportedAlgorithms } from "@/types.ts";
+import { EdgeMutation, Metric, SupportedAlgorithms } from "@/types.ts";
 import Graph from "graphology";
 
 export function primsMST(
   graph: Graph,
+  metric: Metric,
   onTreeUpdate?: (mutation: EdgeMutation) => void
 ) {
   const tree = new Graph();
@@ -49,7 +50,11 @@ export function primsMST(
       tree.addEdgeWithKey(edgeId, parent[v], v, {
         ...graph.getEdgeAttributes(edgeId),
         key: edgeId,
-        algorithm: [SupportedAlgorithms.PRIMS_EMST],
+        algorithm: [
+          metric === Metric.EUCLIDEAN
+            ? SupportedAlgorithms.PRIMS_EMST
+            : SupportedAlgorithms.PRIMS_RSMT,
+        ],
       });
       onTreeUpdate?.({
         edge: {

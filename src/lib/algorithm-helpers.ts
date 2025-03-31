@@ -1,13 +1,14 @@
 import Graph from "graphology";
 import { calcSMT } from "./steiner-utils.ts";
-import { SMTType } from "./steiner-utils.ts";
-import { EdgeMutation, Edge, SupportedAlgorithms } from "@/types.ts";
+import { EdgeMutation, Edge, SupportedAlgorithms, Metric } from "@/types.ts";
 import { nanoid as generateId } from "nanoid";
 import { primsMST } from "./algorithms/prims.ts";
 import { calculateGraphLength, toCompleteWeightedGraph } from "./graph-utils";
+import { weightFunctions } from "./math-utils";
 
 interface Context<TGraph extends Graph> {
   graph: TGraph;
+  metric: Metric;
 }
 
 type ComputeResult<
@@ -28,20 +29,20 @@ type SteinerMeta = {
   steinerNodeIds: string[];
 };
 
-const smtAlgorithmMap: Record<SMTType, SupportedAlgorithms> = {
-  rectilinear: SupportedAlgorithms.RSMT,
-  euclidean: SupportedAlgorithms.ESMT,
+const smtAlgorithmMap: Record<Metric, SupportedAlgorithms> = {
+  [Metric.RECTILINEAR]: SupportedAlgorithms.RSMT,
+  [Metric.EUCLIDEAN]: SupportedAlgorithms.ESMT,
 };
 
-export const calculateSMT = <TGraph extends Graph>(
-  type: SMTType,
-  { graph }: Context<TGraph>
-): ComputeResult<TGraph, SteinerMeta> => {
+export const calculateSMT = <TGraph extends Graph>({
+  graph,
+  metric,
+}: Context<TGraph>): ComputeResult<TGraph, SteinerMeta> => {
   const graphCopy = graph.copy() as TGraph;
   const nodes = graphCopy.mapNodes((id, attr) => [id, attr.x, attr.y] as const);
   const nodeIds = nodes.map((n) => n[0]);
   const terms = nodes.map((n) => n.slice(1)).flat() as number[];
-  const { length, nsps, nedges, sps, edges } = calcSMT(terms, type);
+  const { length, nsps, nedges, sps, edges } = calcSMT(terms, metric);
 
   // add steiner points to graph
   const steinerNodeIds: string[] = [];
@@ -52,10 +53,9 @@ export const calculateSMT = <TGraph extends Graph>(
       y: sps[i * 2 + 1],
       label: `SP ${i + 1}`,
       isSteiner: true,
-      algorithm: [smtAlgorithmMap[type]],
+      algorithm: [smtAlgorithmMap[metric]],
     });
     steinerNodeIds.push(id);
-    console.log(id, sps[i * 2], sps[i * 2 + 1]);
   }
 
   const allNodeIds = [...nodeIds, ...steinerNodeIds];
@@ -77,10 +77,12 @@ export const calculateSMT = <TGraph extends Graph>(
     const existingEdgeId = graphCopy.edge(v0, v1);
     let edgeId = existingEdgeId;
     if (edgeId) {
-      graphCopy.setEdgeAttribute(edgeId, "algorithm", [smtAlgorithmMap[type]]);
+      graphCopy.setEdgeAttribute(edgeId, "algorithm", [
+        smtAlgorithmMap[metric],
+      ]);
     } else {
       edgeId = graphCopy.addEdge(v0, v1, {
-        algorithm: [smtAlgorithmMap[type]],
+        algorithm: [smtAlgorithmMap[metric]],
       });
     }
 
@@ -103,11 +105,12 @@ export const calculateSMT = <TGraph extends Graph>(
 
 export function calculatePrimsMST<TGraph extends Graph>({
   graph,
+  metric,
 }: Context<TGraph>): ComputeResult<TGraph> {
   const edgeMutations: EdgeMutation[] = [];
   const graphCopy = graph.copy();
-  toCompleteWeightedGraph(graphCopy);
-  const mst = primsMST(graphCopy, (edge) => {
+  toCompleteWeightedGraph(graphCopy, undefined, weightFunctions[metric]);
+  const mst = primsMST(graphCopy, metric, (edge) => {
     edgeMutations.push(edge);
   }) as TGraph;
   const treeLength = calculateGraphLength(mst);
