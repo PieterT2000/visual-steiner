@@ -100,7 +100,7 @@ export default function Canvas() {
     } = calculatePrimsMST({
       graph: problemInstance,
     });
-    const algo = SupportedAlgorithms.PRIMS_MST;
+    const algo = SupportedAlgorithms.PRIMS_EMST;
 
     const mergedEdgesMap = mergeGraphs(graph, updatedGraph);
     // replace edgeIds with the correct edgeIds
@@ -174,7 +174,7 @@ export default function Canvas() {
 
     setSolutions([]);
     Object.values(SupportedAlgorithms).forEach((algorithm) => {
-      if (algorithm === SupportedAlgorithms.PRIMS_MST) {
+      if (algorithm === SupportedAlgorithms.PRIMS_EMST) {
         computePrimsMST(problemGraph);
       } else if (algorithm === SupportedAlgorithms.ESMT) {
         computeSMT("euclidean", problemGraph);

@@ -8,7 +8,7 @@ export const algorithmDisplayProps: Record<
 > = {
   [SupportedAlgorithms.ESMT]: {
     icon: <SteinerIcon />,
-    bg: "bg-layer1",
+    bg: "bg-primary",
     title: "Euclidian Steiner minimal tree (ESMT)",
     shortTitle: "ESMT",
   },
@@ -18,16 +18,16 @@ export const algorithmDisplayProps: Record<
     title: "Rectilinear Steiner minimal tree (RSMT)",
     shortTitle: "RSMT",
   },
-  [SupportedAlgorithms.PRIMS_MST]: {
+  [SupportedAlgorithms.PRIMS_EMST]: {
     icon: <SteinerIcon />,
     bg: "bg-layer2",
-    title: "Minimum spanning tree (Prim's MST)",
-    shortTitle: "MST",
+    title: "Euclidean minimum spanning tree (EMST)",
+    shortTitle: "EMST",
   },
-  [SupportedAlgorithms.UOSMT]: {
-    icon: <SteinerIcon />,
-    bg: "bg-layer1",
-    title: "Uniformly oriented Steiner minimal tree",
-    shortTitle: "UOSMT",
+  [SupportedAlgorithms.PRIMS_RSMT]: {
+    icon: <RectangleIcon />,
+    bg: "bg-layer2",
+    title: "Rectilinear minimum spanning tree (RMST)",
+    shortTitle: "RMST",
   },
 };

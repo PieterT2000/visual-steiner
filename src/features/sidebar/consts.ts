@@ -11,7 +11,7 @@ import {
 } from "./components/form/schema";
 
 export const algorithmCardFormLayoutMap = {
-  [SupportedAlgorithms.PRIMS_MST]: {
+  [SupportedAlgorithms.PRIMS_EMST]: {
     schema: mstFormSchema,
     layout: mstFormLayoutConfig,
   },

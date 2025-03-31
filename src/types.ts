@@ -17,17 +17,17 @@ export type EdgeMutation = {
 
 export enum SupportedAlgorithms {
   /**
-   * Prims minimal spanning tree
+   * Prims minimal spanning tree using the Euclidean metric
    */
-  PRIMS_MST = "primsMinimalSpanningTree",
+  PRIMS_EMST = "primsEuclideanMinimalSpanningTree",
   /**
-   * Rectilinear Steiner minimal tree. This is the same as the Uniformly oriented Steiner minimal tree with lambda = 2
+   * Prims minimal spanning tree using the rectilinear metric
+   */
+  PRIMS_RSMT = "primsRectilinearMinimalSpanningTree",
+  /**
+   * Rectilinear Steiner minimal tree. This is the same as a Uniformly oriented Steiner minimal tree with lambda = 2
    */
   RSMT = "rectilinearSteinerMinimalTree",
-  /**
-   * Uniformly oriented Steiner minimal tree
-   */
-  // UOSMT = "uniformlyOrientedSteinerMinimalTree",
   /**
    * Euclidean Steiner minimal tree
    */
@@ -37,4 +37,9 @@ export enum SupportedAlgorithms {
 export enum GraphSource {
   DEFAULT_GRAPH = "default_graph",
   RANDOM_GRAPH = "random_graph",
+}
+
+export enum Metric {
+  EUCLIDEAN = "euclidean",
+  RECTILINEAR = "rectilinear",
 }

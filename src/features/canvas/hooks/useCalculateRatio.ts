@@ -11,7 +11,7 @@ type Return = Input & {
 
 const useCalculateRatio = (
   solutions: Input[],
-  baseAlgorithm: SupportedAlgorithms = SupportedAlgorithms.PRIMS_MST
+  baseAlgorithm: SupportedAlgorithms = SupportedAlgorithms.PRIMS_EMST
 ): Return[] => {
   return useMemo(() => {
     const base = solutions.find(

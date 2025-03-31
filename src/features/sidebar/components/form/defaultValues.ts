@@ -11,7 +11,7 @@ const commonDefaultValues = {
 };
 
 export const defaultValues = {
-  [SupportedAlgorithms.PRIMS_MST]: {
+  [SupportedAlgorithms.PRIMS_EMST]: {
     ...commonDefaultValues,
   },
   [SupportedAlgorithms.ESMT]: {

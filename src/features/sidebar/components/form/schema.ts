@@ -38,7 +38,7 @@ export const algorithmsFormSchema = z.object({
   [SupportedAlgorithms.ESMT]: steinerFormSchema.optional(),
   [SupportedAlgorithms.RSMT]: steinerFormSchema.optional(),
   [SupportedAlgorithms.UOSMT]: uniformOrientSteinerFormSchema.optional(),
-  [SupportedAlgorithms.PRIMS_MST]: mstFormSchema.optional(),
+  [SupportedAlgorithms.PRIMS_EMST]: mstFormSchema.optional(),
 });
 
 export type AlgorithmsFormSchema = z.infer<typeof algorithmsFormSchema>;

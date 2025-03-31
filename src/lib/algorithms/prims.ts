@@ -49,7 +49,7 @@ export function primsMST(
       tree.addEdgeWithKey(edgeId, parent[v], v, {
         ...graph.getEdgeAttributes(edgeId),
         key: edgeId,
-        algorithm: [SupportedAlgorithms.PRIMS_MST],
+        algorithm: [SupportedAlgorithms.PRIMS_EMST],
       });
       onTreeUpdate?.({
         edge: {

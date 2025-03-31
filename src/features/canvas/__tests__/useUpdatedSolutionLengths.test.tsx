@@ -58,11 +58,11 @@ function renderTestHook(initialSolution: Solutions, graph: Graph) {
 describe("useUpdatedSolutionLengths", () => {
   it("should use initial solution length on first render", () => {
     const initialSolution = [
-      createInitialSolution(SupportedAlgorithms.PRIMS_MST),
+      createInitialSolution(SupportedAlgorithms.PRIMS_EMST),
     ];
     const screen = renderTestHook(initialSolution, createGraph());
     const mstLength = screen.getByTestId(
-      `length_${SupportedAlgorithms.PRIMS_MST}`
+      `length_${SupportedAlgorithms.PRIMS_EMST}`
     ).textContent;
     expect(mstLength).toEqual("0");
     screen.unmount();
@@ -71,7 +71,7 @@ describe("useUpdatedSolutionLengths", () => {
   it("should update solution length when graph is updated or when solution props changes", async () => {
     const user = userEvent.setup();
     const initialSolutions = [
-      createInitialSolution(SupportedAlgorithms.PRIMS_MST),
+      createInitialSolution(SupportedAlgorithms.PRIMS_EMST),
     ];
     const graph = createGraph();
     const edgeIds: string[] = [];
@@ -81,7 +81,7 @@ describe("useUpdatedSolutionLengths", () => {
       graph.updateEdgeAttributes(edge, (attributes) => ({
         ...attributes,
         weight: 1,
-        algorithm: [SupportedAlgorithms.PRIMS_MST],
+        algorithm: [SupportedAlgorithms.PRIMS_EMST],
       }));
     });
     const completeGraphWithUnitWeights = graph.copy();
@@ -100,7 +100,7 @@ describe("useUpdatedSolutionLengths", () => {
      */
     const screen = renderTestHook(initialSolutions, graph);
     const initialMstLength = screen.getByTestId(
-      `length_${SupportedAlgorithms.PRIMS_MST}`
+      `length_${SupportedAlgorithms.PRIMS_EMST}`
     ).textContent;
     expect(initialMstLength).toEqual(maxEdges.toString());
 
@@ -121,7 +121,7 @@ describe("useUpdatedSolutionLengths", () => {
     await user.click(btn);
 
     const updatedMstLength = screen.getByTestId(
-      `length_${SupportedAlgorithms.PRIMS_MST}`
+      `length_${SupportedAlgorithms.PRIMS_EMST}`
     ).textContent;
     expect(updatedMstLength).not.toEqual(initialMstLength);
 
@@ -140,7 +140,7 @@ describe("useUpdatedSolutionLengths", () => {
     // return the value of solution.meta.length instead of a manual recalculation
     await waitFor(() => {
       const updatedMstLength2 = screen.getByTestId(
-        `length_${SupportedAlgorithms.PRIMS_MST}`
+        `length_${SupportedAlgorithms.PRIMS_EMST}`
       ).textContent;
       expect(updatedMstLength2).toEqual(initialMstLength);
     });

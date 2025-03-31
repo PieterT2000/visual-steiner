@@ -10,7 +10,6 @@ import { replaceGraph } from "@/lib/graph-utils";
 import Graph from "graphology";
 import { useImmer } from "use-immer";
 import { useGraphPubSub } from "@/features/canvas/hooks/useGraphPubSub";
-import { useFormSettings } from "../form-settings/FormSettingsContext";
 import { useFormContext } from "react-hook-form";
 
 interface CanvasProviderProps {

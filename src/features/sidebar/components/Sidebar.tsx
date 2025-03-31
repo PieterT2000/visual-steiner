@@ -7,7 +7,7 @@ import {
 import { cn } from "@/lib/utils.ts";
 import ArrowDownFilledIcon from "@/images/icons/arrow_fown_filled.svg?react";
 import { Accordion } from "@/components/ui/accordion";
-import { SupportedAlgorithms } from "@/types.ts";
+import { Metric, SupportedAlgorithms } from "@/types.ts";
 import AlgorithmCard from "./AlgorithmCard.tsx";
 import { useFormContext } from "react-hook-form";
 import { algorithmsFormSchema } from "./form/schema.ts";
@@ -16,8 +16,10 @@ import { useFormSettings } from "@/providers/form-settings/FormSettingsContext.t
 import ImportTab from "./import/ImportTab.tsx";
 import ExportTab from "./export/ExportTab";
 import { defaultAlgorithmVisibilityAndOrder } from "@/providers/form-settings/const.ts";
-import { BaseSyntheticEvent } from "react";
+import { BaseSyntheticEvent, useMemo } from "react";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 enum Tab {
   Import = "Import",
   Algorithm = "Algorithms",
@@ -33,8 +35,19 @@ const tabContentStyles = "mt-1 mr-[3px] ml-[3px]";
 
 const Sidebar = () => {
   const form = useFormContext();
-  const { activeAlgorithmCard, setActiveAlgorithmCard, formRef } =
-    useFormSettings();
+  const {
+    activeAlgorithmCard,
+    setActiveAlgorithmCard,
+    formRef,
+    metric,
+    setMetric,
+  } = useFormSettings();
+
+  const algorithmsFilteredByMetric = useMemo(() => {
+    return defaultAlgorithmVisibilityAndOrder.filter(
+      (algorithm) => algorithm.metric === metric
+    );
+  }, [metric]);
 
   const onSubmit = (
     values: z.infer<typeof algorithmsFormSchema>,
@@ -42,7 +55,6 @@ const Sidebar = () => {
   ) => {
     evt?.preventDefault();
     evt?.stopPropagation();
-    console.log("submitted values", values);
   };
 
   const formKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -78,11 +90,24 @@ const Sidebar = () => {
           ))}
         </TabsList>
         <TabsContent value={Tab.Algorithm} className={tabContentStyles}>
-          <div className="py-4 px-[calc(1rem-3px)] flex flex-col gap-y-4">
+          <div className="py-4 px-[calc(1rem-3px)] flex flex-col gap-y-6">
             {/* TODO: make this a toggle */}
-            <div className="flex gap-x-2 items-center">
-              <ArrowDownFilledIcon />
-              <p className="text-sm">Available algorithms/layers</p>
+            <div className="flex justify-between">
+              <div className="flex gap-x-2 items-center">
+                <ArrowDownFilledIcon />
+                <p className="text-sm">Available algorithms</p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="metric-switch">Euclidean</Label>
+                <Switch
+                  id="metric-switch"
+                  checked={metric === Metric.RECTILINEAR}
+                  onCheckedChange={(value) =>
+                    setMetric(value ? Metric.RECTILINEAR : Metric.EUCLIDEAN)
+                  }
+                />
+                <Label htmlFor="metric-switch">Rectilinear</Label>
+              </div>
             </div>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -99,7 +124,7 @@ const Sidebar = () => {
                   setActiveAlgorithmCard(value as SupportedAlgorithms)
                 }
               >
-                {defaultAlgorithmVisibilityAndOrder.map(({ algorithm }) => (
+                {algorithmsFilteredByMetric.map(({ algorithm }) => (
                   <AlgorithmCard key={algorithm} algorithm={algorithm} />
                 ))}
               </Accordion>

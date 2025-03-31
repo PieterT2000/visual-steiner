@@ -80,7 +80,7 @@ const BoxItem = ({ algorithm, value, idx }: BoxItemProps) => {
         </span>
         <div className="text-sm font-medium text-text">
           {displayProps.shortTitle}{" "}
-          {algorithm === SupportedAlgorithms.PRIMS_MST ? "(base)" : ""}
+          {algorithm === SupportedAlgorithms.PRIMS_EMST ? "(base)" : ""}
         </div>
       </div>
       <div className="flex items-center gap-x-2">

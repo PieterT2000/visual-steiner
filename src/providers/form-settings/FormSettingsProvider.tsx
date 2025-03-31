@@ -3,7 +3,7 @@ import {
   AlgorithmVisibility,
   FormSettingsContext,
 } from "./FormSettingsContext.ts";
-import { SupportedAlgorithms } from "@/types.ts";
+import { Metric, SupportedAlgorithms } from "@/types.ts";
 import { Form } from "@/components/ui/form.tsx";
 import { useAlgorithmsForm } from "@/features/sidebar/components/form/useAlgorithmsForm.tsx";
 import { algorithmsFormSchema } from "@/features/sidebar/components/form/schema.ts";
@@ -19,6 +19,16 @@ const FormSettingsProvider = ({ children }: { children: React.ReactNode }) => {
   const [algorithmVisibility, setAlgorithmVisibility] = useImmer<
     AlgorithmVisibility[]
   >(defaultAlgorithmVisibilityAndOrder);
+  const [metric, setMetric] = useState<Metric>(Metric.EUCLIDEAN);
+
+  const handleSetMetric = (metric: Metric) => {
+    setMetric(metric);
+    setActiveAlgorithmCard(
+      metric === Metric.RECTILINEAR
+        ? SupportedAlgorithms.RSMT
+        : SupportedAlgorithms.ESMT
+    );
+  };
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -36,8 +46,10 @@ const FormSettingsProvider = ({ children }: { children: React.ReactNode }) => {
       form,
       algorithmVisibility,
       setAlgorithmVisibility: handleSetAlgorithmVisibility,
+      metric,
+      setMetric: handleSetMetric,
     }),
-    [activeAlgorithmCard, algorithmVisibility, formRef.current]
+    [activeAlgorithmCard, algorithmVisibility, formRef.current, metric]
   );
 
   return (
