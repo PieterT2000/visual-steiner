@@ -21,13 +21,13 @@
         \draw (-0.2813609509364418,0.07031712226437783) node[circle,draw, fill=black, scale=0.6] (E) [label={[xshift=-0.4cm, yshift=-0.5cm]$E$}] {};
 
         % Steiner points
-        \draw (-0.45,0.2) node[circle,draw=gray!40, fill=gray!40, scale=0.6] (S1) [label={$S_1$}] {};
-        \draw (-0.34,0.19) node[circle,draw=gray!40, fill=gray!40, scale=0.6] (S2) [label={$S_2$}] {};
-        \draw (-0.24,0.22) node[circle,draw=gray!40, fill=gray!40, scale=0.6] (S3) [label={$S_3$}] {};
+        \draw (-0.45,0.2) node[circle,draw=gray!55, fill=gray!55, scale=0.6] (S1) [label={$S_1$}] {};
+        \draw (-0.34,0.19) node[circle,draw=gray!55, fill=gray!55, scale=0.6] (S2) [label={$S_2$}] {};
+        \draw (-0.24,0.22) node[circle,draw=gray!55, fill=gray!55, scale=0.6] (S3) [label={$S_3$}] {};
 
         % Edges
         \foreach \source/\target in {A/S1, B/S1, S1/S2, S2/S3, S2/C, S3/D, S3/E} {
-                \draw[dashed,gray!40] (\source) -- (\target);
+                \draw[dashed,gray!55] (\source) -- (\target);
             }
     \end{large}
 \end{tikzpicture}

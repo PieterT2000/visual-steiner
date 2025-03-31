@@ -22,6 +22,10 @@
 % Monospace font is Fira Mono Sans
 % the body font used is FBB (Bembo)
 
+\usepackage{amssymb,pifont}
+\usepackage{booktabs}
+\usepackage{makecell}
+
 \usepackage{iftex}
 
 \ifPDFTeX

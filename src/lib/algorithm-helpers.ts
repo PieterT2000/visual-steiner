@@ -55,6 +55,7 @@ export const calculateSMT = <TGraph extends Graph>(
       algorithm: [smtAlgorithmMap[type]],
     });
     steinerNodeIds.push(id);
+    console.log(id, sps[i * 2], sps[i * 2 + 1]);
   }
 
   const allNodeIds = [...nodeIds, ...steinerNodeIds];

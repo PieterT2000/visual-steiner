@@ -2,7 +2,6 @@ import Graph, { UndirectedGraph } from "graphology";
 import { random } from "graphology-layout";
 import { Attributes } from "graphology-types";
 import { empty } from "graphology-generators/classic";
-import { AlgorithmDisplaySettings } from "@/features/canvas/types";
 import { GRAPH_DEFAULT_SETTINGS } from "@/features/canvas/consts";
 import { SupportedAlgorithms, Node } from "@/types";
 function mergeStringOrArrayAttribute(
@@ -145,34 +144,16 @@ export function toCompleteWeightedGraph<TGraph extends UndirectedGraph>(
 }
 
 /**
- * Adds edges between passed node and all its neighbors in a complete graph
- * @param graph undirected graph
- * @param node node
- */
-// export function addAdjacentEdges<TGraph extends UndirectedGraph>(
-//   graph: TGraph,
-//   nodeKey: string
-// ) {
-//   const otherNodes = graph.nodes().filter((n) => n !== nodeKey);
-//   otherNodes.forEach((neighbor) => {
-//     graph.addUndirectedEdge(nodeKey, neighbor, {
-//       algorithm: [],
-//       initialEdge: true,
-//     });
-//   });
-// }
-
-/**
  * Computes the edge weights (Euclidean distance) in-place and stores them in the `weight` attribute of each edge
  * @param graph undirected graph
  */
 export function calcEdgeWeights<TGraph extends UndirectedGraph>(graph: TGraph) {
-  graph.forEachEdge((edge, _ea, _v1, _v2, sourceAttrs, targetAttrs) => {
+  graph.forEachEdge((_, edgeAttrs, _v1, _v2, sourceAttrs, targetAttrs) => {
     const weight = Math.hypot(
       sourceAttrs.x - targetAttrs.x,
       sourceAttrs.y - targetAttrs.y
     );
-    graph.setEdgeAttribute(edge, "weight", weight);
+    edgeAttrs.weight = weight;
   });
 }
 

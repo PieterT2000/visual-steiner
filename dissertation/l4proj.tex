@@ -7,24 +7,39 @@
 % the overall format (e.g. don't change the margins or the reference style).
 %
 \usepackage{pdfpages} % if you want to include a PDF for an ethics checklist, for example
-%
-%
+\usepackage{multirow}  % For cells spanning multiple rows
+
 \usepackage{svg}
 \usepackage{wrapstuff}
 \usepackage{tikz}
 \usepackage{standalone}
 \usepackage{pgfplots}
 \usepackage{cancel}
+\usepackage{enumitem} 
 \pgfplotsset{compat=1.15}
 \usepackage{mathrsfs}
 \usetikzlibrary{arrows}
 \newcommand{\degre}{\ensuremath{^\circ}}
 \newcommand{\arc}[1]{\stackrel{\frown}{#1}}
+
+
+% Define custom labeled lists
+\newlist{requirements}{enumerate}{1}
+\setlist[requirements]{label=\textbf{E\arabic*},leftmargin=*,align=left,itemsep=0.75em}
+
+\newlist{desirables}{enumerate}{1}
+\setlist[desirables]{label=\textbf{D\arabic*},leftmargin=*,align=left,itemsep=0.75em}
+
+\tikzset{
+  pics/handler/.style={perp},
+  perp/.pic={                    
+    \draw[black,line width=0.4pt](0,-0.05)--(0,.05);
+  }
+}
+
 \begin{document}
 
-%==============================================================================
-%% METADATA
-\title{Level 4 Project Report Template} % change this to your title
+\title{Visualising Steiner Minimal Trees}
 \author{Pieter van Tuijl}
 \date{February 21, 2025}
 
@@ -33,6 +48,8 @@
 %==============================================================================
 %% ABSTRACT
 \begin{abstract}
+    \todo{Add abstract here}
+
     Every abstract follows a similar pattern. Motivate; set aims; describe work; explain results.
     \vskip 0.5em
     ``XYZ is bad. This project investigated ABC to determine if it was better.
@@ -44,114 +61,98 @@
 %==============================================================================
 %% ACKNOWLEDGEMENTS
 \chapter*{Acknowledgements}
-% Enter any acknowledgements here. This is optional; you may leave this blank if you wish,
-% or remove the entire chapter
-%
-% We give thanks to the Gods of LaTeX, who in their eternal graciousness, 
-% have granted that this document may compile without errors or overfull hboxes.
-%
+\todo{Add acknowledgements here}
 
-%==============================================================================
 
-% EDUCATION REUSE CONSENT FORM
-% If you consent to your project being shown to future students for educational purposes
-% then insert your name and the date below to  sign the education use form that appears in the front of the document. 
-% You must explicitly give consent if you wish to do so.
-% If you sign, your project may be included in the Hall of Fame if it scores particularly highly.
-%
-% Please note that you are under no obligation to sign 
-% this declaration, but doing so would help future students.
-%
-%\def\consentname {My Name} % your full name
-%\def\consentdate {20 March 2018} % the date you agree
-%
+\def\consentname {Pieter van Tuijl}
+\def\consentdate {27 March 2025}
 \educationalconsent
 
 
-%==============================================================================
 \tableofcontents
 
-%==============================================================================
-%% Notes on formatting
-%==============================================================================
-% The first page, abstract and table of contents are numbered using Roman numerals and are not
-% included in the page count. 
-%
-% From now on pages are numbered
-% using Arabic numerals. Therefore, immediately after the first call to \chapter we need the call
-% \pagenumbering{arabic} and this should be called once only in the document. 
-%
-%
-% The first Chapter should then be on page 1. 
-
-% PAGE LIMITS
-% You are allowed 40 pages for a 40 credit project and 30 pages for a 
-% 20 credit report. 
-% This includes everything numbered in Arabic numerals (excluding front matter) up
-% to but *excluding the appendices and bibliography*.
-%
-% FORMATTING
-% You must not alter text size (it is currently 10pt) or alter margins or spacing.
-% Do not alter the bibliography style. 
-%
-%==================================================================================================================================
-%
-% IMPORTANT
-% The chapter headings and structure here are **suggestions**. You don't have to follow this model if
-% it doesn't fit your project. Every project should have an introduction and conclusion,
-% however.  If in doubt, your supervisor can give you specific guidance; their view takes precedence over
-% the structure suggested here.
-%
-%==================================================================================================================================
 \chapter{Introduction}
 
 % reset page numbering. Don't remove this!
 \pagenumbering{arabic}
 
-% You can use \todo{} to mark text that needs to be fixed. Anything inside will appear as highlighted 
-% text in the final copy, and you will also get warnings when you compile (so you don't
-% forget to take them out!)
+\section{Designing minimal networks}
+\subsection{Minimum spanning tree vs Steiner minimal tree}
+Imagine you are an engineer tasked with designing a network of roads connecting a set of cities. At most two roads may meet in a city and all cities must be connected with the least amount of total distance. This is a classic problem in graph theory, and the solution is known as the minimum spanning tree (abbreviated as MST). There exists well-established and fast algorithms for finding the MST of a set of points.
 
-\section{Context}
-Imagine you are an engineer tasked with designing a network of roads connecting a set of cities. At most two roads may meet in a city and all cities must be connected with the least amount of total distance. This is a classic problem in graph theory, and the solution is known as the minimum spanning tree (MST).
+Now, imagine that a new constraint is added to the problem. Junctions (where three or more roads meet) are allowed, provided that they are built outside the cities. You are allowed to use as many such junctions as needed, as long as the total distance of the road network is minimal. The solution to this problem is known as the Steiner minimal tree (abbreviated as SMT) \citep{MelzakAlgo}.
+In a nutshell, the Steiner minimal tree achieves a total length that is $\leq$ than the length of the MST, by adding extra points called Steiner points.
+It is worth noting that besides roads and telecommunication networks, the Steiner problem has applications in other fields, such as wire routing on printed circuit boards.
 
-Now, imagine that a new constraint is added to the problem. Junctions (where three or more roads meet) are allowed, provided that they are built outside the cities. You are allowed to use as many such junctions as needed, as long as the total distance of the road network is minimal. The solution to this problem is known as the Steiner minimal tree (SMT).
+\subsection{Steiner minimal tree problem is NP-hard}
+Though the constraint or the description of the SMT problem is easy to state and understand, it is actually quite hard to find the optimal solution.
+Since the late 1960s, effort has been put into finding an efficient algorithm for computing the SMT, but in contrast to the MST problem, no polynomial time algorithm has been found so far. The fastest and best known algorithm for the SMT problem runs in exponential time \citep{geosteiner96}.
 
-Algorithms drive much of our digital world. They are used in everything from search engines to social media to self-driving cars. Algorithms operate on data and both the data and the operations can be complex and difficult to visualise without good tools. This is particularly the case for spatial data.
+\subsection{Lack of great visualisation tools}
+Historically, the exponential nature of the SMT problem has imposed serious limits on the instance sizes that can be solved on an average computer, thus limiting the practicality and usefulness of visualisation tools for this problem.
 
-Graph data structures are a common way to represent spatial data, where locations are modelled as nodes and connections between the locations as edges. Trees are a type of graph that connect all nodes in a single, connected network. In other words, for each node in the network, there exists exactly one path to all other nodes \citep{tree_graph_theory}.
-\\
-Here, we will discuss the visualisation of two types of trees: minimum spanning trees and Steiner minimal trees. Additionally, in this project, we only consider the Euclidian variants of these trees. This means that the Euclidian distance between two nodes is used as the edge weight.
-
-\subsection{Minimum Spanning Tree}
-A minimum spanning tree (MST) is a tree that connects all nodes in a network with the least amount of total distance.
-There exist well-established algorithms for finding the MST of a graph, such as Kruskal's or Prim's algorithm. These algorithms run in polynomial time and work by building up the MST one edge at a time.
-\subsection{Steiner Minimal Tree}
-A Steiner minimal tree (SMT) is a variant of the MST.
-Apart from connecting all nodes in the network with minimal total distance, other nodes may be added to potentially further reduce the total distance. These additional nodes are called Steiner points.
-A SMT with zero Steiner points is equivalent to an MST. In contrast to the MST algorithm, finding the optimal SMT is a NP-hard problem, meaning, there exists no polynomial time algorithm for finding the optimal SMT (more on this later).
-
-\colorbox{yellow}{TODO: show example of MST vs SMT}
+Still, the SMT problem serves as a good example of the power of Moore's Law. The exponential growth in the processing power of computers over the last decades has been followed by similar increases in the size of instances that can be solved in a reasonable amount of time, despite the exponential nature of the problem \citep{29ee725d11ac4584b72f7fe66c4326fa}.
+However, the available tools for visualising the SMT are still very limited in functionality, not easily accessible, and often lack an intuitive, user-friendly interface.
+This project aims to fill that gap.
 
 
+% Besides road networks, the Steiner problem has applications in other fields, such as wire routing on printed circuit boards and the design of telecommunication networks.
 
-\section{Aims}
-Many tools exist for visualising minimum spanning trees. However, few tools exist for visualising Steiner minimal trees. This is related to the earlier-mentioned fact that the optimal SMT for a given set of nodes is computationally hard to find. This has historically imposed serious limits on the instance sizes that can be solved on an average computer, thus limiting the practicality and usefulness of SMT visualisation tools.
-Advances in computer hardware and efficient algorithm implementations, however, have made it possible to solve instances of several orders of magnitude larger than previously possible in reasonable time \citep{29ee725d11ac4584b72f7fe66c4326fa}.
+% The Steiner minimal tree has many interesting geometric properties, which have been extensively studied. However, without great visualisation tools, it is hard to get an intuition for these properties.
 
-The few existing visualisation tools lack flexibility and a user-friendly interface. (see background)
-We aim to fill this gap by developing a user-friendly interface that allows users to visualise SMTs alongside MSTs for graph instances of arbitrary sizes. These instances can be generated randomly or imported from a file.
+% Here, we will discuss the visualisation of two types of trees: minimum spanning trees and Steiner minimal trees. Additionally, in this project, we only consider the Euclidian variants of these trees. This means that the Euclidian distance between two nodes is used as the edge weight.
 
-The interface should be able to display the MST and SMT of a graph simultaneously, allowing for direct comparison of their structures and total length.
-\\
-Comparison of length will be helpful for building intuition for the \textit{Steiner Ratio},  which is defined as the least upper bound (supremum) of the ratio between the length of the MST and the SMT.  \cite{Gilbert1968SteinerMT} conjectured that this ratio is $$\frac{2}{\sqrt{3}} \approx 1.1547$$
-In other words, the \textit{Steiner Ratio} states that the MST is at most 15\% longer than the SMT in the worst case.
+\section{Project aims and requirements}
+This section provides a summary of the project's aims and requirements. Please refer to section \ref{sec:requirements} for a detailed discussion of the requirements.
 
-Lastly, the interface should be able to dynamically update the solution when the user modifies the graph.
+\subsubsection{Aims}
+The aim of this project is to develop a fast, accessible, and user-friendly interface that allows anyone to compute and visualise the Steiner minimal tree solution for arbitrary instance sizes and optionally compare it with the minimum spanning tree solution.
 
-\section{Dissertation Outline}
+\subsubsection{Requirements}
+Specifically, the application shall take a set of points as input, which can be generated randomly, or imported using a range of established file formats, and provide the user with the ability to visualise, compare, and analyse the SMT and MST solutions.
+Furthermore, the application should dynamically update the solutions when the user modifies the graph by adding, moving, or removing points.
+Lastly, the application will provide the user with different export options using both visual (e.g. .png, .jpg) and text-based formats (e.g. .txt, .csv).
 
-\colorbox{yellow}{TODO: write at the end of the project}
+% Apart from simultaneously visualising the SMT and MST solutions, the application will also indicate how the lengths of both trees compare to each other.
+% This will allow users to build an intuition for the so-called \textit{Steiner ratio}, which is the lowest possible ratio between the length of the SMT and the MST. It is currently conjectured that the Steiner ratio is $\frac{\sqrt{3}}{2} \approx 0.866025...$ \citep{Gilbert1968SteinerMT}. In other words, the MST is in the worst case 15.5\% longer than the SMT. We will further discuss this in \ref{sec:esmt_steiner_ratio}.
+It is important to note that the Steiner tree and minimum spanning tree problems are defined for any metric space, but in this project we will only consider the Euclidian and rectilinear (also known as the Manhattan or taxicab distance) variants. The interface will provide the user with the option to toggle between the two variants. Figure \ref{fig:mst_rmst_3point} shows the difference between the two variants for a 3-point example instance.
+
+\begin{figure}[htb]
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/esmt_3point}
+        \caption{Euclidian SMT}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/mst_3point}
+        \caption{Euclidian MST}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/rmt_3point}
+        \caption{Rectilinear SMT}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includestandalone[width=\textwidth]{figures/rmst_3point}
+        \caption{Rectilinear MST}
+    \end{subfigure}
+    % \vskip\baselineskip
+
+    \caption{Comparison of the Euclidian and rectilinear MST and SMT solutions for a 3-point problem instance}
+    \label{fig:mst_rmst_3point}
+\end{figure}
+
+\begin{tcolorbox}[title=Access the end product here, colback=gray!10, colframe=gray!80]
+    \centering
+    \Huge{\textbf{\url{https://steinertree.com}}}
+\end{tcolorbox}
+
+
+\section{Dissertation outline}
+
+\colorbox{yellow}{TODO: fill this section when all other sections are written}
 
 %- What is this thing/problem about?
 %- Why is it important?
@@ -167,6 +168,7 @@ Lastly, the interface should be able to dynamically update the solution when the
 \section{Historical context}
 The Euclidean Steiner problem has a long history, with roots in the 17th century. The following section will provide a summary of the history as expertly given by \cite{Brazil2014}.
 
+\subsection{Fermat-Torricelli (3-point) problem}
 In 1643, Fermat posed the problem of given three points, finding a fourth point such that when connecting the three points to the fourth point, the sum of the distances is minimal. This problem has two cases:
 \begin{itemize}
     \item All the interior angles of the triangle formed by the three points are $\le 120^\circ$
@@ -198,9 +200,11 @@ To borrow some terminology from \cite{geosteiner96}, we will call the 3rd point 
 
 For the second case, Cavalieri proved that the the optimal position of the 4th point is just the point with the obtuse angle. (point $B$ in Figure \ref{fig:fermat_2})
 
+\subsection{Simpson lines}
 In 1750, Simpson discovered an alternative construction for the first case, where a straight line is drawn from each of the equilateral points to the opposite vertex. The intersection of these lines coincides with the Torricelli point. These "Simpson lines" are demonstrated in Figure \ref{fig:fermat_1}.
 Later, in 1834 Heinen proved that a Simpson line has the same length as the sum of the distances to the Torricelli point.
 
+\subsection{Generalising to $n$ points}
 \label{sec:gergonne}
 The Fermat-Torricelli problem was later generalised to an $n$-point problem by Gergonne in 1811. Furthermore, Gergonne was also among the first to consider the case where more than one extra point is allowed. He further discovered that there can exist multiple local minimal solutions for the same set of points, and that all have to be constructed in order to find the global minimum. Lastly, he came up with an iterative, though incomplete, algorithm for finding a local minimum, given a full topology. We will further illustrate and discuss these concepts in \ref{sec:algorithms}.
 
@@ -211,13 +215,21 @@ Another contribution to the problem was made by Gauss in a letter to Schumacher 
 
 The last sentence of the quote proved correct, because two attempts were later made by Bopp in 1879 and Hoffman in 1890 to come up with a solution. Bopp considered all full topologies and used the constructions developed by Gergonne and Simpson to find the Full Steiner Tree (FST) for each full topology (if it exists). Importantly, he generalised the problem to the $n$-point Steiner tree problem and enumerated properties of the Steiner trees, which were later rediscovered and proven by \cite{Gilbert1968SteinerMT}.
 
-Then, in 1934, two Czech mathematicians, Jarník and Kössler, wrote a rigorous treatment on the problem and proved important properties, such as the degree property and the angle property (See \ref{sec:esmt_properties}). They further proved that even if the problem is extended to higher dimensions, the degree and angle properties still hold.
+\subsection{20th-century contributions}
+Then, in 1934, two Czech mathematicians, Jarník and Kössler, proved several important properties of the Steiner tree, such as the degree property and the angle property (See \ref{sec:esmt_properties}). The latter two properties are still valid even if the problem is extended to higher dimensions.
 
-Another 20th-century contribution worth mentioning is the illustration used by Choquet in 1938, where he compares the Steiner tree problem to a network of cities connected by roads where there are no junctions available between the roads except outside the cities. (Another variant is the case where junctions are allowed inside the cities, which is the minimum spanning tree problem). In their influential book \textit{What is Mathematics?}, Courant and Robbins (1941) later used a similar illustration, which they called the "street network problem". Interestingly, they incorrectly attributed the original Fermat-Torricelli problem to Jakob Steiner. As a consequence, the generalised Fermat-Torricelli problem (i.e. the street network problem) has since been known as the Steiner tree problem in the literature despite the fact that Steiner did not originally consider this generalisation.
+\subsubsection{Street network problem}
+Choquet compares the Steiner tree problem to a network of cities connected by roads where there are no junctions available between the roads except outside the cities. (Another variant is the case where junctions are allowed inside the cities, which is the minimum spanning tree problem).
+A similar illustration was later used by Courant and Robbins (1941) in their influential book \textit{What is Mathematics?}, in which they called the generalised Fermat-Torricelli problem the "street network problem". Interestingly, they incorrectly attributed the original Fermat-Torricelli problem to Jakob Steiner. As a consequence, the generalised Fermat-Torricelli problem (i.e. the street network problem) has since been known as the Steiner tree problem in the literature despite the fact that it is unclear whether Steiner ever considered this generalisation.
 
-Finally, \cite{Gilbert1968SteinerMT} provided a comprehensive survey of the Steiner tree problem, and derived many of its properties that have since been the basis for much of the modern literature on the topic. (more on this in \ref{sec:esmt_properties}) From the sixties onwards, the Steiner tree problem has seen a surge in popularity, partly due to the formalisation of computer algorithms for the related minimum spanning tree problem and partly due to real practical applications, such as minimum-length telephone networks and efficient routing in chips. The latter application was presciently predicted by Hanan (1966) in his paper on the rectilinear variant of the Steiner tree problem.
+\subsubsection{Gilbert and Pollak's seminal paper}
+Finally, \cite{Gilbert1968SteinerMT} provided a comprehensive survey of the Steiner tree problem, and derived many of its properties that have since been the basis for much of the modern literature on the topic. (more on this in \ref{sec:esmt_properties})
 
-The tool that has been developed as part of this project supports the visualisation of both the Euclidian and rectilinear Steiner minimal trees. The following section will deal with the formal definitions of these two variants and lists some of their properties.
+\subsubsection{Surging popularity in the sixties}
+From the sixties onwards, the Steiner tree problem has seen a surge in popularity, partly due to the development of formal algorithms for the related minimum spanning tree problem and partly due to the rise of real practical applications, such as minimum-length telephone networks and efficient routing in chips. The latter application was presciently predicted by Hanan (1966) in his paper on the rectilinear variant of the Steiner tree problem.
+
+In this section we have discussed the historical context of the Steiner tree problem and how it has evolved over the centuries. The following section will deal with the formal definitions of the Euclidian and rectilinear Steiner minimal tree problems and lists some of their properties.
+
 \section{Euclidian Steiner Minimal Tree}
 
 \subsection{Formal definition}
@@ -240,7 +252,7 @@ Euclidian Steiner trees have specific properties, which are enumerated in the co
 \begin{enumerate}
     \item Angle property: every pair of lines meets at $\theta \geq 120^\circ$.
     \item Degree property: every Steiner point has exactly 3 incident edges.
-    \item A Steiner tree with $n$ terminals has at most $s \leq n - 2$ Steiner points. Since a tree has $n - 1$ edges, a Steiner tree with $n$ terminals has at most $2n - 3$ edges.
+    \item \label{prop:esmt_fst} A Steiner tree with $n$ terminals has at most $s \leq n - 2$ Steiner points. Since a tree has $n - 1$ edges, a Steiner tree with $n$ terminals has at most $2n - 3$ edges.
     \item At most one relatively minimal tree exists for a given topology.
     \item \label{prop:smt_fst} A Steiner minimal tree is a union of Full Steiner Trees (FSTs). And every non-full Steiner tree can be decomposed into a union of FSTs.
 \end{enumerate}
@@ -314,6 +326,8 @@ $$|x_1 - x_2| + |y_1 - y_2|.$$
     \item Every edge has at most 1 horizontal and 1 vertical segment. An edge with exactly 1 horizontal and 1 vertical component is called a \textit{bent edge} whilst an edge with only 1 horizontal component or 1 vertical component is called a \textit{straight edge}.
     \item If $s$ is a T-point, at most one of its incident edges is a bent edge. If $s$ is a cross, then all of its incident edges are straight edges.
 \end{itemize}
+\label{sec:rsmt_properties}
+Some properties apply to both the ESMT and RSMT, such as the max number of Steiner points and edges in a Steiner tree (property \ref{prop:esmt_fst}).
 
 \subsection{Steiner ratio}
 As before, a RSMT without Steiner points is equivalent to a rectilinear minimum spanning tree (RMST). The definition of the RMST is similar to the definition of the ESMT in \ref{sec:esmt_steiner_ratio} except that the rectilinear metric is used.
@@ -325,7 +339,7 @@ $$
 
 In other words, the rectilinear minimum spanning tree is at most 1.5 times the length of the rectilinear Steiner minimal tree.
 
-\section{Algorithms}
+\section{Steiner tree algorithms}
 \label{sec:algorithms}
 The Steiner tree problem is easy to understand but hard to actually solve. \cite{Garey1977} proved that the Euclidian and Rectilinear Steiner tree problems are NP-hard. This means that there exist no polynomial-time algorithms for these problems (unless P = NP).
 However, approximation schemes can be used to find near-optimal solutions in a reasonable amount of time. In this project, we have chosen to use exact algorithms in order to demonstrate, that despite the theoretical hardness of the problem, the actual performance in practise is suprisingly good.
@@ -339,6 +353,7 @@ There exists two major exact algorithms for the Steiner tree problem:
 \label{sec:melzak_algo}
 As mentioned at the end of \ref{sec:esmt_properties} there can exists local minimal solutions for the Steiner tree problem. Hence, in order to find the global minimal solution, we need to consider all possible full (Steiner) topologies. The Melzak algorithm does not explicitly deal with this, but a full topology as inputand finds the FST if it exists.
 
+\subsubsection{Formal definition}
 Before illustrating the algorithm with a practical example, we use the following definition from \citep{Brazil2015}:
 Let $\mathcal{T_n}$ be a full topology with $n$ points and $n - 2$ Steiner points. Let $S_i$ be a Steiner point in $\mathcal{T_n}$ which is adjacent (connected by an edge) to $A$ and $B$. $\overline{AB}$ shall denote the segment between $A$ and $B$. Let $X$ be the 3rd (equilateral) point of the equilateral triangle $\triangle ABX$.
 
@@ -397,6 +412,7 @@ Next, the FST can be \textit{reconstructed} by backtracking the merging steps.
 Suppose the FST of $\mathcal{T_{n-1}}$ is defined. This means that the location of $v$ also will be known.
 There exists an FST for $\mathcal{T_n}$ $\iff$ there exists an FST for $\mathcal{T_{n-1}}$ and the Simpson segment between $v$ and $X$ intersects the Steiner arc $\arc{AB}$. $S_i$ is positioned at the point this intersection and and the FST is constructed by deleting the Simpson segment and adding the edges $AS_i$, $BS_i$, and $vS_i$.
 
+\subsubsection{Illustrating with an example}
 The algorithm is visualised in figure \ref{fig:melzak_algo_visualisation}.
 Figure \ref{fig:melzak_topol} shows an instance of the full topology $\mathcal{T_5}$ (with $n = 5$). Please note that the Steiner points are randomly (and incorrectly) positioned, in order to visualise all the connections.
 
@@ -417,63 +433,8 @@ $$
     F^*(n) = \sum_{k=2}^{n} \binom{n}{k}\frac{(2k - 4)!}{2^{k-2}(k-2)!}
 $$
 
-We will now show a derivation of this formula based on Property 7 in \cite{Gilbert1968SteinerMT}.
+For the curious reader, a derivation of this formula is given in appendix \ref{app:melzak_complexity}.
 
-Let $f(s)$ be the number of full topologies for the case of $s$ Steiner points.
-Let $F(n, s)$ be the number of (non-full) topologies for the case of $n$ terminals and $s$ Steiner points. $F(n, s)$ can be written in terms of $f(s)$ as follows.
-
-If we assume that Steiner points are unlabelled, there are $\binom{n}{s+2}$ ways to choose the terminals from which the full topology will be constructed. For each chosen set of terminals, there are $f(s)$ possible full topologies. Hence, there are a total of$\binom{n}{s+2}f(s)$ possible full topologies.
-
-There are still $n - (s + 2)$ points left, though, which can be added to the currently full topology to make it non-full. A tree has $n - 1$ edges, hence the current full topology has $((s + 2) + s) - 1 = 2s + 1$ edges. The leftover points can be added by splitting existing edges into two, resulting in the net addition of 1 edge.
-
-For the first leftover point, we have $2s + 1$ possible edges to split, for the second $2s + 2$, and so on. This is repeated until the last leftover point is added, at which point our topology has $n + s - 1$ edges. This can be written as
-\begin{equation*}
-    \begin{aligned}
-        F(n, s) & = \binom{n}{s+2}f(s)(2s + 1)(2s + 2)\cdots(n + s - 2) \\
-                & = \binom{n}{s+2}f(s)\frac{(n + s - 2)!}{(2s)!}
-    \end{aligned}
-\end{equation*}
-
-The formula for $f(s)$ can be defined recursively as follows:
-\begin{equation*}
-    \begin{aligned}
-        f(0)   & = 1            \\
-        f(s+1) & = (2s + 1)f(s)
-    \end{aligned}
-\end{equation*}
-In other words, when all $f(s)$ full topologies are found, adding one more Steiner point by the same edge-splitting technique to each of the $f(s)$ topologies, results in $(2s + 1)f(s)$ new topologies.
-This recurrence relation can be solved by using the double-factorial form for an odd integer $n = 2k - 1$, with $k \ge 0$ \citep{Double_factorial}.
-$$
-    (2k - 1)!! = \frac{(2k)!}{2^k k!}
-$$
-Rewriting $f(s)$ in terms of the double-factorial, we get
-$$
-    f(s) = \frac{(2s)!}{2^{s}(s)!}
-$$
-
-Finally,
-\begin{equation*}
-    \begin{aligned}
-        F(n, s) & = \binom{n}{s+2}\frac{\cancel{(2s)!}}{2^s(s)!}\frac{(n + s - 2)!}{\cancel{(2s)!}} \\
-                & = \binom{n}{s+2}\frac{(n + s - 2)!}{2^s(s)!}
-    \end{aligned}
-\end{equation*}
-
-In the case of the Melzak algorithm, only full topologies are considered. We therefore let $n = k$ and $s = k - 2$, and rewrite $F(n, s)$ to $F(n)$.
-\begin{equation*}
-    \begin{aligned}
-        F(n) = \binom{n}{k}\frac{(2k - 4)!}{2^{k-2}(k-2)!}
-    \end{aligned}
-\end{equation*}
-
-Since the full topologies are considered for all subsets of $n$ terminals, starting from 2 terminals as the minimum, we arrive at the original expression.
-\begin{equation*}
-    \begin{aligned}
-        F^*(n) = \sum_{k=2}^{n} \binom{n}{k}\frac{(2k - 4)!}{2^{k-2}(k-2)!}
-    \end{aligned}
-\end{equation*}
-
-The reason for showing this derivation is that it gives some insight into the complexity of the problem.
 $F^*(n)$ is huge even for small values of $n$. Due to the factorial in the numerator, it can be said to grow \textit{super-exponentially} in $k$ (i.e. faster than $2^k$). Even though the fast GeoSteiner algorithm is not super-exponential, it is still exponential in the number of FSTs as we will see in the next section. This shows that the exponentiality is not merely due to Melzak's algorithm, but inherent in the Steiner problem itself \cite{Brazil2015}.
 
 \subsection{The GeoSteiner algorithm}
@@ -492,6 +453,7 @@ The discussion on the GeoSteiner algorithm above has so far assumed the Euclidia
 
 
 \section{Existing visualisation tools}
+\label{sec:existing_tools}
 
 During the research phase, we found three related projects on Github whose features and limitations will be discussed in this section.
 
@@ -511,77 +473,118 @@ ST is a Javascript-based tool developed by \cite{Steiner-Tree}. It is a web page
 
 Overall, we have found that the existing tools are limited by a lack of smooth, user-friendly interfaces, visualisation options, flexible import/export capabilities, and platform independence.
 
-\chapter{Analysis/Requirements}
-What is the problem that you want to solve, and how did you arrive at it?
-\section{Guidance}
-Make it clear how you derived the constrained form of your problem via a clear and logical process.
+\chapter{Requirements analysis}
+\label{sec:requirements}
 
-The analysis chapter explains the process by which you arrive at a concrete design. In software
-engineering projects, this will include a statement of the requirement capture process and the
-derived requirements.
-
-In research projects, it will involve developing a design drawing on
-the work established in the background, and stating how the space of possible projects was
-sensibly narrowed down to what you have done.
-
-%==================================================================================================================================
-\chapter{Implementation}
-Having given a high-level design of the proposed solution in the previous chapter, this chapter will discuss the practicalities of our implementation and address topics such as:
+The visualisation requirements given in this section are an expansion of the project aims laid out in the introduction. This section is important because:
 \begin{itemize}
-    \item Why we chose to build a web app over a native app.
-    \item What tech stack we used and why.
-    \item What the big picture architecture is and how different parts are connected.
-    \item How the codebase is structured, in order to support extensibility and maintainability.
-    \item How we implemented the algorithms and integrated them with the UI, including a in-depth look at the use of WebAssembly (WASM).
+    \item all design decisions and implementation choices discussed in the following chapters derive from these requirements.
+    \item it demonstrates how the shortcomings of existing tools (as highlighted in section \ref{sec:existing_tools}) are addressed and forms the basis for evaluation of the end product.
+\end{itemize}
+As earlier stated in the introduction, the project's aim was to develop a fast, accessible, user-friendly interface for visualising Steiner minimal trees and some of their properties.
+To satisfy this aim, the software must have the following \textbf{essential requirements}:
+\begin{requirements}
+    \item The software must feature a well-designed, clean, and intuitive user interface.
+    \item The software must support visualisation of the Steiner minimal tree (SMT) and the minimum spanning tree (MST), specifically the Euclidian and rectilinear variants.
+    \item Include a canvas for graph visualisation that supports zooming and panning, and can render large graphs.
+    \item The computation of the SMT and MST must be fast and snappy for instances of up to 200 nodes (< 1 second).
+    \item The user can create a graph instance of any size, by importing from an external file, drawing on the canvas, or by generating a random instance.
+    \item The user can add, move, or remove nodes of an existing graph instance by direct manipulation of the canvas.
+    \item If the user updates a graph instance after the SMT and MST have been computed, both trees must be dynamically recalculated and reflected on the canvas.
+    \item The SMT and MST can be directly compared in terms of length (Steiner ratio) and tree structure.
+    \item The software must be deployed as a web app in order to be accessible and platform-independent.
+
+\end{requirements}
+
+In addition, the following \textbf{desirable requirements} have been identified:
+\begin{desirables}
+    \item The user can customise the appearance of the visualisation, such as the node size, edge thickness, and colors.
+    \item The results are exportable in useful formats, such as image (PNG, JPG) or text-based formats (TXT, CSV).
+    \item The user can toggle the display of algorithm outputs.
+    \item The software must be modular and extensible, allowing for straightforward integration of other graph algorithms.
+\end{desirables}
+
+\chapter{Software design and implementation}
+This section serves as a guide to the implementation of the software.
+\begin{itemize}
+    \item First, justification is given for the selected tech stack and design choices.
+    \item Then, the application's big-picture architecture is discussed along with the codebase's structure.
+    \item After that, the implementation of core features is discussed, with a focus on the integration with the GeoSteiner algorithms library.
+    \item Lastly, aspects of the software design, such as modularity, type-safety, separation of concerns, extensibility, and immutability, are highlighted.
 \end{itemize}
 
-\section{Building for the web}
-The first implementation decision was to build a web app instead of a native app. As stated in the problem description, our aim was to make a visually-appealing and accessible tool that does not require technical expertise or custom tooling for use. Browsers are ubiquitous nowadays and provide a platform-independent way to run and distribute applications. Updates can easily be deployed without the need for users to install them manually.
-Futhermore, differences between browser vendors have become less pronounced due to the development of standards and the rise of frameworks that abstract away some of the most jarring differences.
-
-% The constraining factor for web apps has been the performance of computationally intensive tasks. However, this has been mitigated by the development of WebAssembly (WASM), a technology that allows for near-native performance while still being platform-independent.
+\section{Technologies / Design choices}
+\subsection{Web vs native}
+The first implementation decision was to build a web app instead of a native app (see requirement E9 in section \ref{sec:requirements}). Browsers are ubiquitous nowadays and provide a cross-platform way to run and distribute applications. Updates can easily be deployed without the need for users to install them manually. Further, differences between browser vendors have become less pronounced due to the development of standards and the rise of frameworks that abstract away some of the most jarring differences.
 
 \subsection{Tech stack}
 
-The application is built using Typescript\footnote{https://www.typescriptlang.org/} (TS) as the main programming language, which is a statically-typed superset of Javascript (JS) that compiles to JS \citep{typescript}.
-JS, the web's main language, is dynamically typed and has some loose features that can make it prone to bugs. For example, invalid references are not detected until runtime, in contrast to TS which adds compile-time type checking.
-Empirical evidence has shown that TS is effective at detecting bugs and improving code maintainability \citep{typescript_bugs_paper}.
+The web app is built using \textbf{Typescript}\footnote{https://www.typescriptlang.org/} (TS) as the main programming language, which is a statically-typed superset of Javascript (JS) that compiles to JS \citep{typescript}. Type-safety makes the application more robust and easier to reason about. In addition, Typescript has a great developer experience (e.g. for refactoring and code completion). Empirical evidence suggests that it is effective at detecting bugs and improving code maintainability \citep{typescript_bugs_paper}.
 
-Interactive web applications often rely on something called DOM manipulation. This is the process of mutating HTML elements in the DOM, the tree of HTML elements that make up the UI. DOM manipulation is costly and is a major performance bottleneck for web apps.
-We have used React\footnote{https://react.dev/} (which makes use of a virtual DOM) to build an interactive UI whilst still ensuring that the real DOM gets mutated as little as possible.
-Moreover, React code is declarative (i.e. we tell what the UI should look like, not how to achieve it) and therefore easier to reason about and maintain.
+\textbf{React}\footnote{https://react.dev/} has been used for the core UI logic. React is a popular library for building interactive frontends and has a large ecosystem of component libraries. React code is declarative (i.e. you only define what the UI should look like, not how to achieve it) and therefore easier to reason about and maintain.
 
 Other dependencies include:
 \begin{itemize}
-    \item Shadcn/ui\footnote{https://ui.shadcn.com/} for base UI components, such as buttons, inputs, dropdowns, etc.
-    \item Sigma.js\footnote{https://sigmajs.org/} for drawing graphs on the canvas.
-    \item Graphology\footnote{https://graphology.github.io/} for the graph data model
+    \item \textbf{Shadcn/ui}\footnote{https://ui.shadcn.com/}: a React component library that provides a set of accessible components, such as buttons, inputs, dropdowns, color-pickers, etc.
+    \item \textbf{Sigma.js}\footnote{https://sigmajs.org/}: a popular canvas library for visualising graphs.
+    \item \textbf{Graphology}\footnote{https://graphology.github.io/}: a library that provides a graph data model, which is required by Sigma.js.
 \end{itemize}
 
-\subsection{Application architecture}
-% See \ref{fig:architecture} for the architecture diagram.
-The application has been developed as a client-only application, with no need for a backend API. Figure \ref{fig:architecture} shows the various high-level components of the application. The top-layer (i.e. the frontend) is divided into three main parts:
+% !TEX region-formatter-ignore-begin
+\input{tables/canvas_libs}
+% !TEX region-formatter-ignore-end
+
+\subsection{Graph drawing library}
+As specified above, the app uses the open source library Sigma.js for graph drawing with Graphology as its graph data model. Table \ref{tab:canvas_libs} shows how Sigma.js compares to other popular Javascript graph drawing libraries. Sigma.js was chosen because it ticked most of the boxes in terms of required features and quality metrics.
+Sigma.js is one of the most performant graph drawing libraries\footnote{https://www.youtube.com/watch?v=JGN9dejWjAk\&ab\_channel=DominikMaszczyk} because it uses WebGL instead of SVG or the HTML 2D Canvas for rendering. Besides, it makes use of a separate, lightweight and very flexible data model (Graphology) for storing and manipulating graph data, which helps with keeping the views separate from the data manipulation logic.
+Lastly, it satisfies the essential requirement of supporting direct interaction with the graph through the canvas (see E6 in section \ref{sec:requirements}) by exposing user-interaction events, such as the clicking or dragging of nodes.
+
+\subsection{WebAssembly + Emscripten}
+As this project uses the GeoSteiner C library for the computation of the Steiner minimal tree, it is necessary to use WebAssembly in order to run the algorithm in the browser. The browser cannot natively execute C code, but WebAssembly provides a way to run languages, other than JS, directly in the browser at near-native performance.
+\subsubsection{WebAssembly}
+WebAssembly\footnote{https://webassembly.org/} (WASM) is a binary instruction format for a stack-based virtual machine that can be executed in the browser. It is designed to be a portable target for the compilation of languages, such as C and C++, into a compact binary format.
+Due to its compact format, executing WASM code is much faster than executing optimised JS code \citep{WebAssemblyIntro}.
+WASM is supported by most browsers, with the exception of Internet Explorer and Opera Mini \footnote{https://caniuse.com/wasm}.
+
+\subsubsection{Empscripten}
+\label{sec:emscripten}
+Emscripten\footnote{https://emscripten.org/} is a compiler toolchain that can compile C and C++ code to WASM. It consists of a designated compiler frontend (emcc) and LLVM backend optimised for the generation of WASM binaries.
+The output from the Empscripten compiler is a .wasm file (module) and a .js file containing "glue code". This code serves as an interface between the WASM binary and the Javascript environment \citep{Emscripten_tutorial}. The frontend only needs to load the glue code, which in turn loads and instantiates the WASM module.
+
+\subsubsection{Communication between JS and WASM}
+\label{sec:js_wasm_communication}
+In order for JS to call functions in the WASM module, the WASM module must explicitly export these functions (by default no functions from a compiled C/C++ library are exported).
+Moreover, it is not possible to pass complex data structures to a WASM function or return such data from it since WASM only supports 4 basic data types (i.e. 32/64 bit ints and floats).
+Instead, the shared contiguous memory space between JS and WASM can be used to pass pointers to memory locations that contain the data.
+The glue code provides special "views" of the same memory space. For instance, it can be viewed as an array of 64-bit floats or an array of 8-bit unsigned chars depending on the type of data that needs to be accessed or written.
+This avoids the need to manually handle different offsets and strides.
+
+
+\section{Software architecture}
+\label{sec:software_architecture}
+The application is developed as a client-only application, with no need for a backend API. Figure \ref{fig:architecture} shows the various high-level components of the application. The top-layer (i.e. the frontend) is divided into three main parts:
 \begin{itemize}
     \item The views part, which handles user interaction (controls) and the visual appearance
-    \item The algorithms part, which handles the computation of the algorithms supported by the application.
-    \item The graph datastructure as a global state, which can be read and mutated by the views and algorithms.
+    \item The algorithms part, which handles the computation of the Minimum Spanning Tree (MST) and Steiner Minimal Tree (SMT) algorithms.
+    \item The graph datastructure as a global state, which can be read and updated by the views and algorithms. The state containing the graph instance is immutable (see section \ref{sec:immutability}).
 \end{itemize}
 
 \begin{figure}[h]
     \centering
     \includesvg[width=0.8\linewidth]{images/architecture_diagram.svg}
-    \caption{Architecture of the application. The arrows indicate the flow of data and control.}
+    \caption{Architecture of the web application. It consists of the frontend (top layer) and the WebAssembly module (bottom layer) compiled with Emscripten from the GeoSteiner C library. The WASM module is loaded by the frontend at runtime. The flow of data and control is indicated by the arrows.}
     \label{fig:architecture}
 \end{figure}
 
-The controls allow the user to modify the graph instance, either directly by adding a new graph or by editing the existing one, or indirectly by triggering the computation of an algorithm.
+Through the relevant UI controls, the user can modify the graph instance, either directly, by adding a new graph or by editing the existing one, or indirectly, by triggering the computation of an algorithm. In the latter case, the algorithm's output is merged with the existing graph datastructure. This is important because it keeps the graph instance immutable (see section \ref{sec:immutability}).
 Updates to the graph datastructure are reflected in the the canvas component.
 
-The lower layer contains the WebAssembly module that contains the WASM byte code of the compiled Geosteiner C-library, which is used for computing the Euclidian and Rectilinear variants of the Steiner minimal tree. The WebAssembly module is dynamically imported by the frontend during runtime.
-We discuss the use of WebAssembly in more detail in section \ref{sec:webassembly}.
+The lower layer contains the WebAssembly module that is compiled with Emscripten from the GeoSteiner C library. The WebAssembly module is dynamically imported by the frontend during runtime.
+
+See appendix \ref{app:repository_structure} for the organisation and code distribution of the codebase.
 
 \section{Algorithm implementations}
-
+This section briefly discusses which algorithms were implemented and how they were integrated into the application.
 \begin{wrapstuff}[r,width=0.3\textwidth,type=figure]
     \centering
     \caption{Interface of the algorithm computational output.}
@@ -589,94 +592,247 @@ We discuss the use of WebAssembly in more detail in section \ref{sec:webassembly
     \label{fig:algorithm_interface}
 \end{wrapstuff}
 Each algorithm is implemented as an isolated, pure function that takes an undirected graph as input and returns a computation.
-Figure \ref{fig:algorithm_interface} specifies the interface of the computational output. The tree is returned as new graph instance, alongside the length of the tree. The list of edge mutations keeps track of all the edges that were added to the tree in order of insertion. Some algorithms, such as the ESMT and the RSMT also pass additional metadata, such as the list of Steiner nodes.
+Figure \ref{fig:algorithm_interface} specifies the interface of the computational output. Each algorithm returns a tree and its length. The list of edge mutations keeps track of all the edges that were added to the tree in order of insertion. Some algorithms, such as the ESMT and the RSMT also pass additional metadata, such as the list of Steiner node identifiers.
 By coding to an interface as opposed to a concrete implementation, algorithm implementations can be swapped out and new algorithms can be added easily.
 
-The output from the algorithm is used to update the global graph datastructure by a \textit{merge} operation. We can't directly mutate the global graph because of limitations in Sigma.js (the library used for canvas drawing).
-Merging the tree with the existing graph is done by adding all the tree edges and nodes into the existing graph. If an edge or node already exists, its attributes are updated to indicate that it is part of the algorithm-generated tree. By keeping track of which edges/nodes are generated by which algorithm, we can toggle the visibility of each tree separately whilst still using the same graph instance.
+The output from the algorithm is used to update the global graph datastructure by a \textit{merge} operation. This is done by adding all the tree edges and nodes into the existing graph. If an edge or node already exists, its attributes are updated to indicate that it is part of the algorithm-generated tree. By keeping track of which edges/nodes are generated by which algorithm, we can toggle the visibility of each tree separately whilst still using the same graph instance (see section \ref{sec:graph_state_management}).
 
 \wrapstuffclear
-\subsection{Euclidian Minimum Spanning Tree}
-The EMST is implemented using Prim's algorithm \citep[pp. 194--195]{Skiena2008}. Since the algorithm operates in Euclidian space, the input graph is first preprocessed to be a complete undirected graph. See pseudocode \ref{alg:emst} for the implementation.
 
-\begin{algorithm}
-    \caption{Prim's $O(n^2)$ algorithm for the EMST}
-    \label{alg:emst}
-    \SetAlgoLined
-    \KwIn{Graph $G = (V, E)$}
-    \KwOut{Tree $T = (V', E')$}
-    \SetKwFunction{Prim}{Prim}
-    initialize tree $T$, parent vector $p$, distance vector $d$\;
-    Set $v$ to startNode\;
-    \While{$v$ not in $T$}{
-        E = v.edges()\;
-        \ForEach{edge $e \in E$}{
-            $u \leftarrow$ edge.target()\;
-            $w \leftarrow$ edge.weight()\;
-            \If{distance[$u$] > $w$ and $u$ not in $T$}{
-                distance[$u$] = $w$\;
-                parent[$u$] = $v$\;
-            }
-        }
-        $fringe$ = $V \setminus V'$\;
-        $v$ = node $u$ in $fringe$ with smallest distance to $v$\;
-        T.addNode($v$)\;
-        T.addEdge(p[$v$], $v$)\;
-    }
-    \Return{$T$}\;
-\end{algorithm}
+The following algorithms have been used:
+\begin{itemize}
+    \item Prim's $O(n^2)$ algorithm for Euclidean and Rectilinear Minimum Spanning Trees (using \citep[pp. 194--195]{Skiena2008})
+    \item The GeoSteiner algorithms for Euclidean and Rectilinear Steiner Minimal Trees.
+\end{itemize}
 
-\subsection{Euclidean \& Rectilinear Steiner Minimal Tree}
-For the ESMT and RSMT, we make use of the Geosteiner\footnote{http://www.geosteiner.com/} C-library implementation. As highlighted in the background section, efficient exact SMT algorithms are hard to implement and the GeoSteiner library is a well-established library that makes use of many heuristics and clever techniques to find the exact solution in a reasonable time.
-From the frontend perspective therefore, we treat the library as a black box and only care about the input and the output, whilst leaving the implementation details to the library.
+Since Steiner minimal trees are the focus of this project, the details of Prim's algorithm are not discussed here. Section \ref{sec:geosteiner_integration} discusses the integration of the GeoSteiner library in more detail.
 
-We have implemented a wrapper around the library that provides a simplified interface, only exposing the functions that are needed by the frontend. Listing \ref{lst:wrapper_functions} shows the wrapper functions that are exposed to the frontend.
+\section{GeoSteiner integration}
+\label{sec:geosteiner_integration}
+This section is dedicated to explaining how the GeoSteiner library was integrated within the web application. This section is crucial, because to the author's knowledge, this integration is the first of its kind and it is expected to open doors for new levels of interest in the field of Steiner minimal trees. Due to WASM's portable format, it will now be possible to leverage the GeoSteiner algorithms in any language with WASM support, including Python\footnote{https://github.com/wasmerio/wasmer-python}, Java \footnote{https://github.com/wasmerio/wasmer-java}, server-side Javascript runtimes like Node.js\footnote{https://nodejs.org/}, and many more. Please refer to section \ref{sec:discussion_results} for more discussion on implications.
+
+\subsubsection{Outline}
+This section consists of two parts:
+\begin{itemize}
+    \item The first part will explain how the GeoSteiner library was modified and compiled into a WASM module using Emscripten.
+    \item The second part will discuss the integration of the WASM module and the calling code in the frontend.
+\end{itemize}
+
+\subsection{Compiling GeoSteiner to WASM}
+
+The GeoSteiner library consists of the main algorithm implementation and an optimised version of the linear solver, lp\_solve v2.3\footnote{https://sourceforge.net/projects/lpsolve/files/lpsolve/2.3/}, that is used during the FST concatenation stage.
+In order to compile any library to WASM, it is necessary to also compile all its dependencies to WASM.
+
+It was first verified, that the GeoSteiner library and the solver dependency would be portable to WASM but none of the portability guidelines in \cite{Emscripten_portability} were found to be violated.
+Unfortunatly, several problems were encountered during the first compilation attempts.
+
+\subsubsection{Floating point control register (fpcr) settings}
+Depending on the processor architecture, GeoSteiner uses different settings for the floating point registers. However, two settings are common to all architectures:
+\begin{itemize}
+    \item The rounding mode is set to "round to nearest"
+    \item Floating-point exceptions for overflow, divide-by-zero, and invalid operations are trapped.
+\end{itemize}
+
+The rounding mode for the WASM virtual machine is set to "round to nearest" by default, so no special rounding mode settings were needed. However, floating point traps are not implemented in WASM \citep{WASM_faqs}. The GeoSteiner code relies on floating-point traps because most systems will generate and propagate NaNs during floating-point exceptions, which may compromise the numerical stability of the algorithm. At present, this feature is only supported on x86 and ARM64 architectures \citep{Geosteiner_manual}.
+Due to this WASM's limitation, the GeoSteiner code was modified to not rely on floating-point traps. This was achieved by using preprocessor directives to conditionally apply the floating-point traps.
+\todo{Add a link to the modified code here.}
+
+\subsubsection{Makefile modifications}
+The Geosteiner library ships with an autogenerated Makefile. The following changes were made to ensure compatibility with the Emscripten toolchain.
+\begin{itemize}
+    \item A flag was set to create a static library instead of a dynamic, according to Emscripten's recommendation for the best performance\footnote{https://emscripten.org/docs/compiling/Dynamic-Linking.html}.
+    \item The build process was modified to use the \textit{emcc} compiler frontend instead of the default GCC compiler.
+    \item The normal compilation process depends on a locally installed version of the GNU libtool\footnote{https://www.gnu.org/software/libtool/}. Libtool uses the \textit{ar} and \textit{ranlib} utilities for creating static libraries. Emscripten provides a custom version of these tools that is compatible with WASM, called \textit{emar} and \textit{emranlib} respectively. Unfortunately, it is not possible to use environment variables to set custom paths for the \textit{ar} and \textit{ranlib} utilities used by libtool. Therefore, direct changes to the local libtool installation had to be made.
+\end{itemize}
+
+With these changes, a WASM-compatible libgeosteiner.a static library archive file was created and used for the compilation of the WASM module.
+
+\subsubsection{GeoSteiner facade}
+As mentioned in section \ref{sec:js_wasm_communication}, functions that are to be called from JS must be must be explicitly exported from the WASM module, which is done by adding their names to the \textit{EXPORTED\_FUNCTIONS} \textit{emcc} compile flag.
+Since the complexity of interacting with the WASM module grows with the number of exported functions, it was decided to only export a \textbf{simplified API}, using the \textit{facade}\footnote{https://en.wikipedia.org/wiki/Facade\_pattern} design pattern. This facade handles all the underlying GeoSteiner-specific logic that is required for the computation of Steiner minimal trees but irrelevant for the frontend. The facade's interface is shown in listing \ref{lst:wrapper_functions}.
 
 \begin{lstlisting}[language=C,caption=Wrapper functions for the Geosteiner library,label=lst:wrapper_functions]
-      void calc_esmt(int n, double *terms, double *length, int *nsps, double *sps, int *nedges, int *edges);
+    void calc_esmt(int n, double *terms, double *length, int *nsps, double *sps, int *nedges, int *edges);
 
-      void calc_rsmt(int n, double *terms, double *length, int *nsps, double *sps, int *nedges, int *edges);
+    void calc_rsmt(int n, double *terms, double *length, int *nsps, double *sps, int *nedges, int *edges);
 \end{lstlisting}
 
-The browser, however, cannot execute C code directly. Therefore, we need to compile the C code to WebAssembly (WASM) byte code. We do this using the Emscripten\footnote{https://emscripten.org/} toolchain.
-We discuss the details of the compilation process and integration of the WASM module with the frontend in section \ref{sec:webassembly}.
+JS and WASM can share non-primitive data such as arrays by using a shared contiguous memory space (see section \ref{sec:js_wasm_communication}). Hence, the facade functions make heavy use of pointers. This requires explicit memory management, which is why `malloc` and `free` also had to be explicitly exported besides the facade functions.
 
-With WASM, we have to explicitly manage memory allocation and deallocation. From the properties of the Steiner minimum tree, we know that the maximum number of Steiner points is $n - 2$ and the maximum number of edges is $2n - 3$. Using these constraints, we pre-allocate the memory for the Steiner points and edges and pass the pointers to the wrapper functions defined above.
+\subsection{Integrating the GeoSteiner WASM module with the frontend}
+The output from the WASM compilation process is a .wasm file and a .js file containing "glue code" (see section \ref{sec:emscripten}). The .js file is loaded like any other Javascript file, which completely hides the loading and setup process of the WASM module.
+It is worth noting that the Javascript environment is not aware of any functions that are defined in the WASM module. Therefore, the glue code provides a special \textit{cwrap} function to make them available and callable from the Javascript environment. The \textit{cwrap} function takes the name of the function to wrap, the return type, and the argument types.
+
+As noted before, explicit memory management is needed for the passing and returning of non-primitive data. From the properties of the Steiner minimum tree (section \ref{sec:esmt_properties} and \ref{sec:rsmt_properties}) it is known that the maximum number of Steiner points is $n - 2$ and the maximum number of edges is $2n - 3$. Using these constraints, memory is allocated for the Steiner points and edges and their pointers are passed to the facade functions.
+
+\section{Graph State Management}
+\label{sec:graph_state_management}
+Besides the GeoSteiner integration, another core feature is how the graph state is managed. As mentioned in section \ref{sec:software_architecture} and justified in section \ref{sec:immutability}, the graph instance is immutable, but its internal state is mutable.
+As each algorithm outputs a tree as a new graph instance, its nodes and edges must somehow be merged with the existing graph instance without losing track which nodes and edges belong to which algorithm. This section will describe the merging process and the optimisations that were used to make it efficient.
+
+\subsection{Encoding multiple trees in one graph instance}
+The graph's internal state is a undirected graph, which is represented as a map of nodes and edges, mapped by their identifier (key). Each node and edge has a set of attributes that describe its properties. The main attributes are:
+\begin{itemize}
+    \item \textit{algorithm} -> $string[]$: list of algorithms for which the node or edge was part of the output tree.
+    \item \textit{isSteiner} -> $boolean$: indicates if the node is a Steiner node.
+\end{itemize}
+At most one edge can exist between any two nodes in an undirected graph. Edges can be queried for by their key or by the keys of the two nodes they connect.
+
+The graph's internal state can be mutated through the following user interactions:
+\begin{enumerate}
+    \item \label{enum:add_remove_nodes} Adding, moving, or removing nodes (creating a new graph in the UI corresponds to removing all previous nodes and adding the new ones)
+    \item \label{enum:trigger_algorithm} Triggering an algorithm's computation
+\end{enumerate}
+\ref{enum:add_remove_nodes} is trivial.
+\ref{enum:trigger_algorithm} is more complex and requires \textit{merging} the algorithm's output tree (denoted as \textit{source}) with the existing graph instance (denoted as \textit{target}). The following cases must be considered:
+\begin{itemize}
+    \item The \textit{source} has an edge that already exists in the \textit{target}. In this case, the edge attributes of the \textit{source} are merged with the ones of the \textit{target}. Specifically, the \textit{algorithm} attribute is updated to include the algorithm that generated the source tree and the original key of the \textit{target} edge is replaced with the \textit{source} edge's key.
+    \item The \textit{source} has an edge that does not exist in the \textit{target}. In this case, the edge is added to the \textit{target} and its \textit{algorithm} attribute is updated to include the algorithm that generated the source tree.
+    \item The \textit{source} has a node that already exists in the \textit{target}. In this case, the \textit{source} node's attributes are updated in a similar manner as case 1.
+    \item The \textit{source} has a node that does not exist in the \textit{target}. In this case, the node is added to the \textit{target} similar to case 2.
+\end{itemize}
+
+By keeping track which edges/nodes are part of which algorithm output tree, the visibility of each tree can be toggled separately in the UI while using the same graph instance (see requirements E8 and D3 in section \ref{sec:requirements}).
+
+\subsection{Optimisations}
+This section discusses several graph-state-related optimisations to improve the responsiveness of the application as per requirements E3 and E4 in section \ref{sec:requirements}.
+
+\subsubsection{Optimising canvas rerenders}
+It was observed that the initial implementation of the merging process described above was a major bottleneck. Our investigation revealed that this was due to how updates to the graph's internal state were handled.
+For each operation, such as updating node or edge attributes, graphology will trigger an event, which will cause a rerender of the entire graph on the canvas. This makes sense, except in the case of quick successive operations in loops. In the latter case, the browser will freeze due to the number of rerenders. An issue was raised in the Sigma.js GitHub repository\footnote{https://github.com/jacomyal/sigma.js/issues/1046}.
+
+In the mean time, a workaround was developed that prevents events from being triggered for updates to node and edge attributes. Events will still get triggered for adding or removing nodes and edges in batches, but at least no more freezes were noticed.
+
+\subsubsection{Edge optimisation}
+Another optimisation was eliminate unnecessary edges from the graph instance. The input to the MST algorithm is a complete graph with $\frac{n(n-1)}{2}$ edges.
+Hence, the global graph instance was initially maintained as an complete graph by explicitly adding edges between all nodes. These edges were hidden from the user by setting a visibility attribute.
+For graphs of more than 300 nodes, however, rendering started to slow down significantly. It was discovered that the number of edges and their attributes were the culprit. Attributes, such as edge color and thickness, were duplicated across large numbers of edges. Moreover, the render function would still iterate over all edges, including the hidden ones.
+
+To adress this, redudant edge attributes were removed and the global graph instance was modified to only store the edges that are visible to the user at a given time.
+Consequently, the MST algorithm was modified take sparse graphs as input and compute edge weights on the fly.
+
+\section{Software design aspects}
+This section discusses how best practises were applied to the software design of the application. Aspects such as immutability, separation of concerns, modularity, type safety, and extensibility will be discussed.
+\subsection{Immutability of the graph instance}
+\label{sec:immutability}
+As stated before in section \ref{sec:software_architecture}, the state that contains the graph instance is immutable. In other words, the graph instance itself can be modified by adding or removing nodes and edges, but not the state that contains the graph instance (e.g. by creating a new graph instance).
+Even though this is generally not recommended in React \citep{React_update_object_state}, it is a constraint that arises from using Sigma.js with React \citep{React_sigma_js}. Yet, for our scenario, there are notable benefits with this approach:
+\begin{itemize}
+    \item Unnecessary React renders are avoided as the graph's internal state is only tied to the canvas which is handled by Sigma.js. This is partly why Sigma.js is so efficient and performant.
+    \item It provides a guarantee that all parts of the application will always have a consistent view of the graph instance's internal state. Especially in React applications with complex user interactions, inconsistent state due to batch updates can be a major source of bugs.
+\end{itemize}
+
+The only drawback is that components (other than the canvas) that depend on the graph's internal state are not automatically rerendered when the graph state changes. As a workaround, a publish/subscribe design pattern\footnote{https://en.wikipedia.org/wiki/Publish-subscribe\_pattern} has been implemented for the components that need to react to changes in the graph internal state.
 
 
-\section{WebAssembly}
-\label{sec:webassembly}
-Previously, Javascript was the only language that could run in the browser. This meant that native code could not be executed and always had to be manually ported to JS.
-This limitation let to attempts to compile native code to JS, such as ASM.js. It was found that ASM.js was more performant than code that had been manually rewritten in JS \citep{WebAssemblyIntro}.
-In 2015, WebAssembly\footnote{https://webassembly.org/} (WASM) was introduced as new compilation target for the browser. WASM is a binary instruction format that is more performant than JS and can be used to run native code at near native speeds.
-WASM is supported by most browsers, with the exception of Internet Explorer and Opera Mini \footnote{https://caniuse.com/wasm}.
+\subsection{Separation of concerns}
+\subsection{Modularity}
+\subsection{Type safety}
+\subsection{Extensibility}
 
-WASM is designed to be portable (i.e. write once, run everywhere), similar to C in a sense. Code compiled to WASM can run on any platform, both web and off-web (e.g. Node.js).
-The current application is a client-only application, but if we were to decide to run the Geosteiner algorithms on a Node.js backend, WASM would allow us to do so seamlessly.
 
-\subsection{How WASM works}
-The browser features a virtual machine (VM) that can execute JS and WASM binary code. A WASM binary is called a module and can be loaded into the VM by calling the WebAssembly Browser APIs from a JS script.
-In order for JS to call WASM functions, the WASM module must explicitly export these functions. WASM itself only supports 4 basic data types: 32/64 bit ints/floats. This means that we can't pass complex data structures to a WASM function or return such data from it.
-Instead, we can utilise the shared contiguous memory space between JS and WASM to pass pointers to memory locations that contain the data.
 
-\subsection{Emscripten}
+\chapter{Visualisation and product features}
+The core problem solved by the application\footnote{\url{https://steinertree.com}} is visualising Steiner minimal trees and minimum spanning trees together.
+In this section, a high-level overview of the application's design is given, followed by a discussion of the design and interaction details of specific features, such as:
+\begin{itemize}
+    \item Creating and editing graphs: this will discuss how graphs can be created by the user and how existing graphs can be edited directly in the canvas.
+    \item Algorithmic visualisation: this will discuss how algorithmic results are visualised and how the user can customise these visualisations.
+    \item Exporting results: this will discuss how the results can be exported from the application for use in other applications.
+\end{itemize}
 
-As highlighted in the figure \ref{fig:architecture}, the Geosteiner library is compiled to WASM using the Emscripten toolchain. The Emscripten toolchain consists of a designated compiler frontend (emcc) and LLVM backend optimised for the generation of WASM binaries.
-Apart from the compiler, the toolchain also exposes a set of "glue code" that aims to simplify the boilerplate code required to both load the WASM module and interface between the WASM module and JS code \citep{Emscripten_tutorial}.
+\section{High-level design}
+\label{sec:high_level_design}
+\begin{figure}[h]
+    \centering
+    \begin{tcolorbox}[colframe=gray!20, colback=gray!5, boxrule=1pt, arc=0mm, boxsep=0pt, left=0pt, right=0pt, top=0pt, bottom=0pt]
+        \includegraphics[width=\textwidth]{images/app_overview.png}
+    \end{tcolorbox}
 
-The glue code also provides an ergonomic memory management API. We can 'view' the same memory buffer in different ways depending on the data type, such as an array of 32-bit integers or 64-bit floats. This avoids the need to manually handle different offsets and strides when accessing the data.
+    \caption{High-level design of the application.}
+    \label{fig:high_level_design}
+\end{figure}
+Figure \ref{fig:high_level_design} shows the application's design. It features a visual separation between the canvas and the controls (i.e. the sidebar), according to the architecture shown in figure \ref{fig:architecture}.
+The canvas takes up the majority of the screen width since it is expected that most of the user's attention and time will be spent there. The "controls" on the left are partitioned into three sections:
+\begin{itemize}
+    \item \textbf{Import}: This section displays information about the currently active graph and allows to the user to create a new graph, either by importing from a file or by generating a random graph with a specified number of terminals (see section \ref{sec:creating_and_editing_graphs}).
+    \item \textbf{Algorithms}: This section contains visualisation customisation options for output of the algorithms (see section \ref{sec:algorithmic_visualisation}).
+    \item \textbf{Export}: This section allows the user to export the currently active graph instance for use in other applications. (see section \ref{sec:exporting_results})
+\end{itemize}
 
-The output from the Empscripten compiler is a .wasm file and a .js file. The .js file is imported by the frontend and contains the glue code and is used to asynchronously load and instantiate the WASM module.
+As per requirement E1 (see section \ref{sec:requirements}), focus is given to a clean and intuitive design. This is achieved by using a consistent constrastive color schema, incorporating white space, and using familiar icons to indicate the purpose of the controls.
+For example, the two buttons in the center-top of figure \ref{fig:high_level_design} indicate two "modes" of the canvas. As the right button has a pencil icon, which is commonly used for editing or drawing actions, it is clear that the other button must be for the "non-editing" mode.
 
-\section{Structure of the codebase}
+Care has also been taken to ensure that the primary action is always visible and obvious to the user. For instance, the primary action in figure \ref{fig:high_level_design} is the \textit{Execute} button on the top right. Clicking it will recompute the SMT and MST of the currently active graph and lead to the results being displayed on the canvas.
+\section{Creating and editing graphs}
+\label{sec:creating_and_editing_graphs}
 
-\section{Visualisation/design}
+\begin{figure}[hp]
+    \centering
+    \begin{tcolorbox}[colframe=gray!20, colback=gray!5, boxrule=1pt, arc=0mm, boxsep=0pt, left=0pt, right=0pt, top=0pt, bottom=0pt]
+        \includegraphics[width=\textwidth]{images/import_view.png}
+    \end{tcolorbox}
 
-\section{Summary}
+    \caption{Creating a graph instance by importing from a file or generating a random graph.}
+    \label{fig:creating_and_editing_graphs}
+\end{figure}
+As per requirements E5 and E6 (see section \ref{sec:requirements}), flexibility is given to the user to create or edit graphs at any time in the same view.
+At the top of the import tab section in the sidebar (figure \ref{fig:creating_and_editing_graphs}), the currently active graph instance is displayed.
+The application comes with a default 4-point example graph selected by default.
+\subsection{Creating/importing graphs}
+Graphs can be created by importing from a file or by generating a random graph with a specified number of terminals.
+File formats, such as CSV and TXT, containing a list of 2D coordinates are supported. The user can also download an example file to get familiar with the format.
+Again, care has been taken to make sure the primary action is visible and obvious. In the example in figure \ref{fig:creating_and_editing_graphs}, the \textit{Import} button is highlighted as a file has been uploaded and is ready to be imported.
+
+\subsection{Editing graphs}
+The user can edit the active graph by toggling the \textit{Edit} button in the header above the canvas, which will make the graph in the canvas editable. As all supported algortihms take a undirected, complete graph as input, there was no need for supporting edge drawing, so the available edit actions have been limited to adding, moving, and removing nodes.
+
+\section{Algorithmic visualisation}
+Being able to compare the trees of the MST and SMT algorithms is among the application's main features as per requirement E8 (see section \ref{sec:requirements}). Hence, "layering" was naturally a core design aspect for the visualisation of the algorithmic results. Different layers can be toggled on and off independently and each layer can be customised with its own set of options (requirements D1 and D3 in \ref{sec:requirements}).
+\begin{figure}[hp]
+    \centering
+    \begin{tcolorbox}[colframe=gray!20, colback=gray!5, boxrule=1pt, arc=0mm, boxsep=0pt, left=0pt, right=0pt, top=0pt, bottom=0pt]
+        \includegraphics[width=\textwidth]{images/algorithm_visualisation.png}
+    \end{tcolorbox}
+
+    \caption{Algorithmic visualisation customisation options showcasing the "layering" approach.}
+    \label{fig:algorithm_visualisation}
+\end{figure}
+
+\subsection{Layering}
+Figure \ref{fig:algorithm_visualisation} shows an example of the algorithmic visualisation customisation options. Both the MST and SMT trees are visible but their styles can be customised independently. The yellow edges are the MST edges and the black edges belong to the SMT.
+
+Sometimes, edges or nodes of the two trees overlap. In this case, the hierarchical order of the algorithm layers is used to determine which styles take precedence. In figure \ref{fig:algorithm_visualisation}, the SMT layer is above the MST layer. The terminals are therefore painted with the color set in the SMT layer (in this case the color is the same for both layers).
+\subsection{Visualising the Steiner ratio}
+As a reminder, the Steiner Ratio is defined as the smallest ratio of the length of the Steiner minimal tree to the length of the minimum spanning tree.
+A canvas widget has been added (see bottom left of figure \ref{fig:algorithm_visualisation}) to visualise the Steiner ratio of the currently active graph instance.
+This feature is useful to get an intuition (or potentially find counter-examples though this is unlikely) for the Steiner ratio conjecture given by \cite{Gilbert1968SteinerMT}. By dynamically updating the tree and Steiner ratio when the user edits the graph, the user can quickly see how the Steiner ratio changes as the tree changes.
+
+\section{Exporting results}
+\label{sec:exporting_results}
+The application's usefulness is further enhanced by the ability to export the active graph instance for use in other applications. The export view, shown in figure \ref{fig:exporting_results}, allows the user to export the currently active graph to either an image, like PNG or JPG, or text format, like GEXF\footnote{https://gexf.net/}.
+\begin{wrapstuff}[r,width=0.3\textwidth,type=figure]
+    \centering
+    \begin{tcolorbox}[colframe=gray!20, colback=gray!5, boxrule=1pt, arc=0mm, boxsep=0pt, left=0pt, right=0pt, top=0pt, bottom=0pt]
+        \includegraphics[width=\textwidth]{images/export_view.png}
+    \end{tcolorbox}
+
+    \label{fig:exporting_results}
+\end{wrapstuff}
+
+The image-based exports are useful for embedding the visualisation in other documents, while the text-based exports are useful for using the graph in other applications. GEXF has been the export format of choice due to its popularity and support for a wide range of applications.
+
+When exporting to an image, it is possible to choose between the customised style set by the user or the default style which is inspired by how trees are typically visualised in literature. Furter, each algorithm's output tree can be exported separately with the option to render only the edges or nodes or both.
+
+% The constraining factor for web apps has been the performance of computationally intensive tasks. However, this has been mitigated by the development of WebAssembly (WASM), a technology that allows for near-native performance while still being platform-independent.
+
+
+
 
 
 %==================================================================================================================================
-\chapter{Evaluation}
+\chapter{Discussion of the results}
+\label{sec:discussion_results}
 How good is your solution? How well did you solve the general problem, and what evidence do you have to support that?
 
 \section{Guidance}
@@ -693,55 +849,14 @@ How good is your solution? How well did you solve the general problem, and what 
           that your work is the most amazing product ever.
 \end{itemize}
 
-\section{Evidence}
-Make sure you present your evidence well. Use appropriate visualisations,
-reporting techniques and statistical analysis, as appropriate. The point is not
-to dump all the data you have but to present an argument well supported by evidence gathered.
-
-If you use numerical evidence, specify reasonable numbers of significant digits; don't state ``18.41141\% of users were successful'' if you only had 20 users. If you average \textit{anything}, present both a measure of central tendency (e.g. mean, median) \textit{and} a measure of spread (e.g. standard deviation, min/max, interquartile range).
-
-You can use \texttt{siunitx} to define units, space numbers neatly, and set the precision for the whole LaTeX document.
-
-% setup siunitx to have two decimal places
-\sisetup{
-    round-mode = places,
-    round-precision = 2
-}
-
-For example, these numbers will appear with two decimal places: \num{3.141592}, \num{2.71828}, and this one will appear with reasonable spacing \num{1000000}.
-
-
-
-If you use statistical procedures, make sure you understand the process you are using,
-and that you check the required assumptions hold in your case.
-
-If you visualise, follow the basic rules, as illustrated in Figure \ref{fig:boxplot}:
-\begin{itemize}
-    \item Label everything correctly (axis, title, units).
-    \item Caption thoroughly.
-    \item Reference in text.
-    \item \textbf{Include appropriate display of uncertainty (e.g. error bars, Box plot)}
-    \item Minimize clutter.
-\end{itemize}
-
-See the file \texttt{guide\_to\_visualising.pdf} for further information and guidance.
-
-\begin{figure}[htb]
-    \centering
-    \includegraphics[width=1.0\linewidth]{images/boxplot_finger_distance.pdf}
-
-    \caption{Average number of fingers detected by the touch sensor at different heights above the surface, averaged over all gestures. Dashed lines indicate
-        the true number of fingers present. The Box plots include bootstrapped uncertainty notches for the median. It is clear that the device is biased toward
-        undercounting fingers, particularly at higher $z$ distances.
-    }
-
-    % use the notation fig:name to cross reference a figure
-    \label{fig:boxplot}
-\end{figure}
+\todo{fill this chapter}
 
 
 %==================================================================================================================================
 \chapter{Conclusion}
+
+\todo{fill this chapter}
+
 Summarise the whole project for a lazy reader who didn't read the rest (e.g. a prize-awarding committee). This chapter should be short in most dissertations; maybe one to three pages.
 \section{Guidance}
 \begin{itemize}
@@ -767,44 +882,75 @@ Discuss what went well and what didn't and how you would do things differently i
 \section{Future work}
 Discuss what you would do if you could take this further -- where would the interesting directions to go next be? (e.g. you got another year to work on it, or you started a company to work on this, or you pursued a PhD on this topic)
 
-%==================================================================================================================================
-%
-% 
-%==================================================================================================================================
-%  APPENDICES  
+
 
 \begin{appendices}
 
-    \chapter{Appendices}
+    \chapter{Melzak algorithm complexity derivation}
+    \label{app:melzak_complexity}
+    The derivation of the formula for the number of full topologies $F^*(n)$ based on Property 7 in \cite{Gilbert1968SteinerMT} is given below.
 
-    Use separate appendix chapters for groups of ancillary material that support your dissertation.
-    Typical inclusions in the appendices are:
+    Let $f(s)$ be the number of full topologies for the case of $s$ Steiner points.
+    Let $F(n, s)$ be the number of (non-full) topologies for the case of $n$ terminals and $s$ Steiner points. $F(n, s)$ can be written in terms of $f(s)$ as follows.
 
-    \begin{itemize}
-        \item
-              Copies of ethics approvals (you must include these if you needed to get them)
-        \item
-              Copies of questionnaires etc. used to gather data from subjects. Don't include
-              voluminous data logs; instead submit these electronically alongside your source code.
-        \item
-              Extensive tables or figures that are too bulky to fit in the main body of
-              the report, particularly ones that are repetitive and summarised in the body.
-        \item Outline of the source code (e.g. directory structure),
-              or other architecture documentation like class diagrams.
-        \item User manuals, and any guides to starting/running the software.
-              Your equivalent of \texttt{readme.md} should be included.
+    If we assume that Steiner points are unlabelled, there are $\binom{n}{s+2}$ ways to choose the terminals from which the full topology will be constructed. For each chosen set of terminals, there are $f(s)$ possible full topologies. Hence, there are a total of$\binom{n}{s+2}f(s)$ possible full topologies.
 
-    \end{itemize}
+    There are still $n - (s + 2)$ points left, though, which can be added to the currently full topology to make it non-full. A tree has $n - 1$ edges, hence the current full topology has $((s + 2) + s) - 1 = 2s + 1$ edges. The leftover points can be added by splitting existing edges into two, resulting in the net addition of 1 edge.
 
-    \textbf{Don't include your source code in the appendices}. It will be
-    submitted separately.
+    For the first leftover point, we have $2s + 1$ possible edges to split, for the second $2s + 2$, and so on. This is repeated until the last leftover point is added, at which point our topology has $n + s - 1$ edges. This can be written as
+    \begin{equation*}
+        \begin{aligned}
+            F(n, s) & = \binom{n}{s+2}f(s)(2s + 1)(2s + 2)\cdots(n + s - 2) \\
+                    & = \binom{n}{s+2}f(s)\frac{(n + s - 2)!}{(2s)!}
+        \end{aligned}
+    \end{equation*}
+
+    The formula for $f(s)$ can be defined recursively as follows:
+    \begin{equation*}
+        \begin{aligned}
+            f(0)   & = 1            \\
+            f(s+1) & = (2s + 1)f(s)
+        \end{aligned}
+    \end{equation*}
+    In other words, when all $f(s)$ full topologies are found, adding one more Steiner point by the same edge-splitting technique to each of the $f(s)$ topologies, results in $(2s + 1)f(s)$ new topologies.
+    This recurrence relation can be solved by using the double-factorial form for an odd integer $n = 2k - 1$, with $k \ge 0$ \citep{Double_factorial}.
+    $$
+        (2k - 1)!! = \frac{(2k)!}{2^k k!}
+    $$
+    Rewriting $f(s)$ in terms of the double-factorial, we get
+    $$
+        f(s) = \frac{(2s)!}{2^{s}(s)!}
+    $$
+
+    Finally,
+    \begin{equation*}
+        \begin{aligned}
+            F(n, s) & = \binom{n}{s+2}\frac{\cancel{(2s)!}}{2^s(s)!}\frac{(n + s - 2)!}{\cancel{(2s)!}} \\
+                    & = \binom{n}{s+2}\frac{(n + s - 2)!}{2^s(s)!}
+        \end{aligned}
+    \end{equation*}
+
+    In the case of the Melzak algorithm, only full topologies are considered. We therefore let $n = k$ and $s = k - 2$, and rewrite $F(n, s)$ to $F(n)$.
+    \begin{equation*}
+        \begin{aligned}
+            F(n) = \binom{n}{k}\frac{(2k - 4)!}{2^{k-2}(k-2)!}
+        \end{aligned}
+    \end{equation*}
+
+    Since the full topologies are considered for all subsets of $n$ terminals, starting from 2 terminals as the minimum, we arrive at the original expression.
+    \begin{equation*}
+        \begin{aligned}
+            F^*(n) = \sum_{k=2}^{n} \binom{n}{k}\frac{(2k - 4)!}{2^{k-2}(k-2)!}
+        \end{aligned}
+    \end{equation*}
+
+    \chapter{Codebase structure}
+    \label{app:repository_structure}
+    \input{tables/codebase_structure}
 
 
 
 \end{appendices}
-
-%==================================================================================================================================
-%   BIBLIOGRAPHY   
 
 % The bibliography style is agsm (Harvard)
 % The bibliography always appears last, after the appendices.
