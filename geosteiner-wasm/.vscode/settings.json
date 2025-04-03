@@ -1,0 +1,17 @@
+{
+  "files.associations": {
+    ".zsh_aliases": "shellscript",
+    "fputils_arm64_code.h": "c",
+    "fputils.h": "c",
+    "fputils_x86_code.h": "c",
+    "ckpt.h": "c",
+    "channels.h": "c",
+    "callback.h": "c",
+    "fputils_wasm_code.h": "c",
+    "fputils_wasm.h": "c",
+    "string.h": "c",
+    "fenv.h": "c",
+    "fatal.h": "c",
+    "fputils_arm64.h": "c"
+  }
+}
