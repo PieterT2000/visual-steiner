@@ -12,38 +12,38 @@
     \begin{tabular}{|p{5cm}|p{1.5cm}|p{6cm}|p{1cm}|}
         \hline
         \rowcolor{white} % Make sure header row is white
-        \textbf{Asset}                        & \textbf{Type} & \textbf{Description}                                                                                                                                                & \textbf{LOC} \\
+        \textbf{Asset}                        & \textbf{Type} & \textbf{Description}                                                                                                                                               & \textbf{LOC} \\
         \hline
         \rowcolor{reactLight}
-        src/components/*                      & React         & Collection of reusable React components based on Shadcn/UI.                                                                                                         & 1030         \\
+        src/components/*                      & React         & Collection of reusable React components based on Shadcn/UI.                                                                                                        & 1030         \\
         \hline
         \rowcolor{reactLight}
-        src/features/*                        & React         & Features are independent modules that have a specific scope and their own set of components, hooks, types, and tests. Features include the canvas, and the sidebar. & 2210         \\
+        src/features/*                        & React         & Features are independent modules that have a specific scope and their own set of components, hooks, types, and tests. Features include the canvas and the sidebar. & 2210         \\
         \hline
         \rowcolor{reactLight}
-        src/hooks/*                           & React         & Collection of global custom function hooks for functionality such as pub-sub, debouncing, sorted lists, etc.                                                        & 68           \\
+        src/hooks/*                           & React         & Collection of global custom function hooks for functionality such as pub-sub, debouncing, sorted lists, etc.                                                       & 68           \\
         \hline
         \rowcolor{reactLight}
-        src/providers/*                       & React         & Collection of scoped state management providers                                                                                                                     & 231          \\
+        src/providers/*                       & React         & Collection of scoped state management providers                                                                                                                    & 231          \\
         \hline
         \rowcolor{reactLight}
-        index.html, src/main.tsx, src/App.tsx & React         & Entry point for the web application.                                                                                                                                & 53           \\
+        index.html, src/main.tsx, src/App.tsx & React         & Entry point for the web application.                                                                                                                               & 53           \\
 
         \hline
         \rowcolor{typescriptLight}
-        src/lib/*                             & Typescript    & Contains all business logic for the application, such as algorithms, data structures, utilities, input parsers, etc.                                                & 585          \\
+        src/lib/*                             & Typescript    & Contains all business logic for the application, such as algorithms, data structures, utilities, input parsers, etc.                                               & 585          \\
         \hline
         \rowcolor{cLight}
-        geosteiner/*                          & C             & Contains a copy of the open source GeoSteiner library with some modifications for compatibility with WASM.                                                          & n/a          \\
+        geosteiner/*                          & C             & Contains a copy of the open source GeoSteiner library with some modifications for compatibility with WASM.                                                         & n/a          \\
         \hline
         \rowcolor{wasmLight}
-        wasm/*                                & WASM          & Contains the setup for compiling the GeoSteiner library into a WASM module and the simplified GeoSteiner API for the calling code.                                  & 79           \\
+        wasm/*                                & WASM          & Contains the setup for compiling the GeoSteiner library into a WASM module and the simplified GeoSteiner API for the calling code.                                 & 79           \\
         \hline
         \rowcolor{testLight}
-        **/tests/*                            & Typescript    & Integration/unit tests across the codebase.                                                                                                                         & 301          \\
+        **/tests/*                            & Typescript    & Integration/unit tests across the codebase.                                                                                                                        & 301          \\
         \hline
         \rowcolor{staticLight}
-        public/*                              & Static assets & Static assets such as images, icons, examples, and the WASM module.                                                                                                 & N/A          \\
+        public/*                              & Static assets & Static assets such as images, icons, examples, and the WASM module.                                                                                                & N/A          \\
         \hline
     \end{tabular}
     \caption{Repository structure and distribution of code. Only the important folders are listed. The LOC values are accurate as of 28/03/2025.}
