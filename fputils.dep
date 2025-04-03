@@ -1,0 +1,2 @@
+fputils.o fputils.lo fputils.dep : fputils.c fputils.h fputils_wasm.h fputils_wasm_code.h fatal.h \
+  gsttypes.h logic.h

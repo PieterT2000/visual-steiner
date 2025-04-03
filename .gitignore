@@ -1,0 +1,67 @@
+# Ignore the build directory
+/build/
+
+# Ignore configuration files
+/config.log
+/config.status
+/config.cache
+/config.h
+/config.h.in
+/aclocal.m4
+/autom4te.cache/
+/Makefile
+/Makefile.in
+/stamp-h1
+
+# Ignore libtool files
+/ltmain.sh
+/libtool
+/*.la
+/*.lo
+/*.o
+/*.so
+/*.so.*
+
+# Ignore compiled object files
+*.o
+*.lo
+*.la
+*.a
+*.libs/
+*.dep
+
+# Ignore executables
+*.exe
+*.out
+
+# Ignore wasm files
+*.wasm
+
+# Ignore editor and OS-specific files
+*~
+*.swp
+.DS_Store
+Thumbs.db
+
+# Ignore generated documentation
+*.dvi
+*.pdf
+*.ps
+
+# Ignore other generated files
+/depcomp
+/install-sh
+/missing
+/mkinstalldirs
+/compile
+/configure
+
+#Ignore configure files
+configure
+configure.ac
+config.log
+config.status
+config.cache
+config.h
+config.h.in
+aclocal.m4
