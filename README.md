@@ -1,6 +1,6 @@
 # Visual Steiner
 
-[![Build Status][build-img]][build-url]
+[![Deployment Status](https://github.com/PieterT2000/visual-steiner/actions/workflows/deploy.yml/badge.svg)](https://github.com/PieterT2000/visual-steiner/actions/workflows/deploy.yml)
 [![Issues][issues-img]][issues-url]
 [![Commitizen Friendly][commitizen-img]][commitizen-url]
 [![License][license-img]][license-url]
@@ -29,7 +29,5 @@ Modifications were made to the GeoSteiner code to enable the compilation of the 
 [commitizen-url]: http://commitizen.github.io/cz-cli/
 [issues-img]: https://img.shields.io/github/issues/PieterT2000/visual-steiner
 [issues-url]: https://github.com/PieterT2000/visual-steiner/issues
-[build-img]: https://github.com/PieterT2000/visual-steiner/actions/workflows/changeset.yaml/badge.svg
-[build-url]: https://github.com/PieterT2000/visual-steiner/actions/workflows/changeset.yaml
-[license-img]: https://img.shields.io/github/license/PieterT2000/visual-steiner
+[license-img]: https://img.shields.io/badge/license-MIT-green
 [license-url]: https://github.com/PieterT2000/visual-steiner/blob/main/LICENSE
