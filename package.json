@@ -1,5 +1,13 @@
 {
   "name": "visual-steiner",
+  "description": "A web application for visualizing Euclidian and rectilinear Steiner minimal trees and minimum spanning trees",
+  "author": "Pieter van Tuijl",
+  "license": "MIT",
+  "homepage": "https://steinertree.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pietert2000/visual-steiner"
+  },
   "private": true,
   "version": "0.0.0",
   "type": "module",

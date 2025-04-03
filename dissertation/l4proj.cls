@@ -25,6 +25,7 @@
 \usepackage{amssymb,pifont}
 \usepackage{booktabs}
 \usepackage{makecell}
+\usepackage{tabularx}
 
 \usepackage{iftex}
 
