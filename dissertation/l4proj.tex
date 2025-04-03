@@ -144,6 +144,15 @@ It is important to note that the Steiner tree and minimum spanning tree problems
 \end{tcolorbox}
 
 \section{Our contributions}
+This project includes the following new contributions:
+\begin{itemize}
+    \item The first successful (open source) compilation of the GeoSteiner implementation to WebAssembly. With this, the GeoSteiner algorithm is now easily accessible to any programming language that supports WASM.
+    \item The first publicly available online visualisation tool for the Steiner minimal tree and minimum spanning tree. Both the Euclidian and rectilinear variants of said trees can be computed and visualised for graph instances of up to 200 terminals in sub-second times. Furthermore, the application provides a dynamic tree-updating feature that enables the user to observe how the Steiner ratio changes in real time as the graph is edited.
+    \item A detailed illustration of Melzak's algorithm is provided, showing how the algorithm works step-by-step for a 5-point instance (\ref{fig:melzak_algo_visualisation}). The literature seen by the author generally contains illustrations for the 3-point case. However, it is difficult to visualise the recursive nature of the algorithm beyond the 3-point case. Our illustration meets this gap and is believed to be a new contribution.
+    \item A derivation of the formula for the number of full Steiner topologies for a given set of terminals is provided in appendix \ref{app:melzak_complexity}. The derivation is based on \citet{geosteiner96} and \citet{Gilbert1968SteinerMT} but expanded and made complete by the author for an improved understanding.
+\end{itemize}
+
+\subsubsection{Note on the figures} All the graph figures in this dissertation were created by the author using Tikz.
 
 \section{Dissertation outline}
 
@@ -157,7 +166,6 @@ This dissertation presents the development of a web-based visualisation tool for
     \item \textbf{Chapter \ref{sec:conclusion}}: summarises the problem and the main contributions of the project. Future work is suggested for further improvements and extensions to the application.
 \end{itemize}
 
-\subsubsection{Note on the figures} All the graph figures in this dissertation were created by the author using Tikz.
 
 %- How is this dissertation going to be structured.
 
