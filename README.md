@@ -1,11 +1,9 @@
-# Visual Steiner
+![Visual Steiner app](./artifacts/gh_preview.svg)
 
 [![Deployment Status](https://github.com/PieterT2000/visual-steiner/actions/workflows/deploy.yml/badge.svg)](https://github.com/PieterT2000/visual-steiner/actions/workflows/deploy.yml)
 [![Issues][issues-img]][issues-url]
 [![Commitizen Friendly][commitizen-img]][commitizen-url]
 [![License][license-img]][license-url]
-
-> A visualisation tool for Steiner minimal trees and minimum spanning trees (Euclidean and rectilinear).
 
 ## Local development
 
