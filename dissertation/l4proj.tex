@@ -282,20 +282,7 @@ Next, we clarify the following terms used across the literature and first define
 
 In summary, given a topology, its Steiner Tree (if it exists) can be seen as a local minimum. Only by enumerating all possible topologies and their corresponding Steiner Trees can the global Minimum (i.e. the SMT) be found. This concept forms the basis of the algorithms that will be discussed in section \ref{sec:algorithms}.
 
-\subsection{Steiner ratio}
-\label{sec:esmt_steiner_ratio}
-An ESMT without Steiner points is equivalent to the Euclidean  Minimum Spanning Tree (EMST). The EMST is the network that connects a set of points $N$, such that the sum of the edge weights is minimal, where the edge weights are the Euclidean distances between the points.
-
-SMTs are shorter or, at worst, equal in length to MSTs. The ratio between the length of the Euclidean SMT and the MST has received much attention in the literature. \cite{Gilbert1968SteinerMT} famously conjectured that the lowest possible ratio is $\frac{\sqrt{3}}{2} \approx 0.866025...$ for any set of points.
-$$
-    \text{Steiner ratio} = \frac{L_{ESMT}}{L_{EMST}} = \frac{\sqrt{3}}{2}
-$$
-
-\cite{Steiner_ratio_proof} submitted a proof for this conjecture, which was later shown to contain a flaw invalidating the proof \citep{Steiner_ratio_proof_invalidated}. Hence, the Steiner ratio conjecture remains an open problem to this day.
-Nevertheless, attempts have been made to find proofs where $n$ is bounded. For example, \cite{Steiner_ratio_proof_8_points} came up with a proof for the case where $n \leq 8$.
-
-
-\begin{figure}
+\begin{figure}[htb]
     \begin{subfigure}[b]{0.48\textwidth}
         \centering
         \includestandalone[width=\textwidth]{figures/rmt_1}
@@ -328,6 +315,20 @@ Nevertheless, attempts have been made to find proofs where $n$ is bounded. For e
     \label{fig:grid_figure}
 \end{figure}
 
+\subsection{Steiner ratio}
+\label{sec:esmt_steiner_ratio}
+An ESMT without Steiner points is equivalent to the Euclidean  Minimum Spanning Tree (EMST). The EMST is the network that connects a set of points $N$, such that the sum of the edge weights is minimal, where the edge weights are the Euclidean distances between the points.
+
+SMTs are shorter or, at worst, equal in length to MSTs. The ratio between the length of the Euclidean SMT and the MST has received much attention in the literature. \cite{Gilbert1968SteinerMT} famously conjectured that the lowest possible ratio is $\frac{\sqrt{3}}{2} \approx 0.866025...$ for any set of points.
+$$
+    \text{Steiner ratio} = \frac{L_{ESMT}}{L_{EMST}} = \frac{\sqrt{3}}{2}
+$$
+
+\cite{Steiner_ratio_proof} submitted a proof for this conjecture, which was later shown to contain a flaw invalidating the proof \citep{Steiner_ratio_proof_invalidated}. Hence, the Steiner ratio conjecture remains an open problem to this day.
+Nevertheless, attempts have been made to find proofs where $n$ is bounded. For example, \cite{Steiner_ratio_proof_8_points} came up with a proof for the case where $n \leq 8$.
+
+
+
 \section{Rectilinear Steiner Minimal Tree}
 In this section, the Rectilinear Steiner Minimal Tree problem is defined formally, and some of its properties are listed. It concludes with a discussion on the rectilinear Steiner ratio.
 \label{sec:rectilinear_smt}
@@ -355,7 +356,7 @@ $$
 
 In other words, the rectilinear Minimum Spanning Tree is at most 1.5 times the length of the rectilinear Steiner Minimal Tree.
 
-\section{Steiner Tree algorithms}
+\section{Exact Steiner Tree algorithms}
 \label{sec:algorithms}
 The Steiner Tree problem is easy to understand but hard to solve \citep{Brazil2015}. \cite{Garey1977} proved that the Euclidean and Rectilinear variants of the Steiner Tree problem are NP-hard. This means no exact polynomial-time algorithms exist for these problems (unless P = NP).
 Although approximation schemes can be used to find near-optimal solutions in a reasonable amount of time, in this project, we have chosen to use exact algorithms to demonstrate that despite the problem's theoretical hardness, the actual performance in practice is impressive on modern hardware.
