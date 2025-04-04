@@ -39,7 +39,7 @@
 
 \begin{document}
 
-\title{Visualising Steiner Minimal Trees}
+\title{Understanding and Visualising Steiner Minimal Trees}
 \author{Pieter van Tuijl}
 \date{March 28, 2025}
 
@@ -48,7 +48,7 @@
 %==============================================================================
 %% ABSTRACT
 \begin{abstract}
-    The Steiner Minimal Tree (SMT) problem is a fundamental network optimisation problem with applications in road networks, circuit design, and telecommunications. Despite the theoretical interest in the problem and its practical applications, there is a lack of easily accessible visualisation tools since the problem's exponential nature has historically limited the feasibility and practicality of such tools. This project has aimed to develop a fast, accessible, and user-friendly web application for computing and visualizing Euclidean and rectilinear Steiner Minimal Trees and comparing them with Minimum Spanning Trees. The application leverages WebAssembly to run the C implementation of the GeoSteiner algorithms directly in the browser at near-native speeds while providing an intuitive interface for graph creation, manipulation, and analysis. The visualisation tool can compute and render trees for graphs of up to 200 terminals in under a second and enables real-time observation of how the Steiner ratio changes as graphs are modified. This work represents the first successful open-source compilation of the GeoSteiner implementation to WebAssembly and the first publicly available online visualisation tool for the Steiner Minimal Tree problem, making the GeoSteiner algorithm more accessible across different programming languages and platforms, and providing researchers with a tool to explore the Steiner Minimal Tree problem and its properties, such as the Steiner ratio.
+    The Steiner Minimal Tree (SMT) problem is a fundamental network optimisation problem with applications in road networks, circuit design, and telecommunications. Despite the theoretical interest in the problem and its practical applications, there is a lack of easily accessible visualisation tools since the problem's exponential nature has historically limited the feasibility and practicality of such tools. This project has aimed to develop a fast, accessible, and user-friendly web application for computing and visualizing Euclidean and rectilinear Steiner Minimal Trees and comparing them with Minimum Spanning Trees. The application leverages WebAssembly to run the C implementation of the GeoSteiner algorithms directly in the browser at near-native speeds while providing an intuitive interface for graph creation, manipulation, and analysis. The visualisation tool can compute and render Steiner minimal trees for instances of up to 200 terminals in under a second and enables real-time observation of how the Steiner ratio changes as the graph is modified by the user. This work represents the first successful open-source compilation of the GeoSteiner implementation to WebAssembly and the first publicly available online visualisation tool for the Steiner Minimal Tree problem, making the GeoSteiner algorithm more accessible across different programming languages and platforms, and providing researchers with a tool to explore the Steiner Minimal Tree problem and its properties, such as the Steiner ratio.
 
     The web application is available at \url{https://steinertree.com}, and the source code is available at \url{https://github.com/pietert2000/visual-steiner}.
 \end{abstract}
@@ -75,18 +75,18 @@ I want to heartily thank my supervisor, Dr Yiannis Giannakopoulos, for his infec
 Imagine you are an engineer tasked with designing a network of roads connecting a set of cities. At most, two roads may meet in a city, and all cities must be connected with the least total distance. This is a classic problem in graph theory, and the solution is known as the Minimum Spanning Tree (abbreviated as MST). Well-established and fast algorithms exist to find the MST of a set of points.
 
 Now, imagine that a new constraint is added to the problem. Junctions (where three or more roads meet) are allowed, provided they are built outside the cities. You are allowed to use as many such junctions as needed, as long as the total distance of the road network is minimal. The solution to this problem is known as the Steiner Minimal Tree (abbreviated as SMT) \citep{MelzakAlgo}.
-In a nutshell, the Steiner Minimal Tree achieves a total length  $\leq$ than the length of the MST by adding extra points called Steiner points.
-It is worth noting that the Steiner problem has applications in fields other than roads and telecommunication networks, such as wire routing on printed circuit boards.
+Essentially, the Steiner Minimal Tree has a total length  $\leq$ than the length of the MST by using extra points called Steiner points.
+It is worth noting that the Steiner problem has applications in fields other than roads and telecommunication networks, such as wire routing on printed circuit boards (see rectilinear Steiner Minimal Tree in section \ref{sec:rectilinear_smt}).
 
 \subsection{Steiner Minimal Tree problem is NP-hard}
 Though the constraint or description of the SMT problem is easy to state and understand, finding the optimal solution is complex.
-Since the late 1960s, effort has been put into finding an efficient algorithm for computing the SMT, but in contrast to the MST problem, no polynomial time algorithm has been found so far. The fastest and best-known algorithm for the SMT problem runs in exponential time \citep{geosteiner96}.
+Since the late 1960s, effort has been put into finding an efficient algorithm for computing the SMT, but in contrast to the MST problem, no polynomial time algorithm has been found so far. The fastest and best-known algorithm for, GeoSteiner, still runs in exponential time \citep{geosteiner96}.
 
 \subsection{Lack of great visualisation tools}
-Historically, the exponential nature of the SMT problem has imposed limits on the instance sizes that can be solved on an average computer, thus limiting the practicality and usefulness of visualisation tools for this problem.
+Historically, the exponential nature of the SMT problem has imposed restrictions on the instance sizes that can be solved on an average computer, thus limiting the practicality and usefulness of visualisation tools for this problem.
 
-Still, the SMT problem is a good example of the power of Moore's Law. The exponential growth in the processing power of computers over the last decades has been followed by similar increases in the size of instances that can be solved in a reasonable amount of time, despite the exponential nature of the problem \citep{29ee725d11ac4584b72f7fe66c4326fa}.
-However, the available tools for visualising the SMT are still limited in functionality, not easily accessible, and often lack an intuitive, user-friendly interface.
+Still, the SMT problem is a good example of the power of Moore's Law. The exponential growth in the processing power of computers over the last decades has been followed by similar increases in the size of instances that can be solved in a reasonable amount of time \citep{29ee725d11ac4584b72f7fe66c4326fa}.
+However, the available tools for visualising the SMT are limited in functionality, not easily accessible, and often lack an intuitive, user-friendly interface.
 This project aims to fill that gap.
 
 
@@ -100,7 +100,7 @@ This project aims to fill that gap.
 This section provides a summary of the project's aims and requirements. Please refer to section \ref{sec:requirements} for a detailed discussion.
 
 \subsubsection{Aims}
-This project aims to develop a fast, accessible, and user-friendly interface that allows anyone to compute and visualise the Steiner Minimal Tree solution for arbitrary instance sizes and optionally compare it with the Minimum Spanning Tree solution.
+This project aims to develop a fast, easily accessible, and user-friendly application that allows anyone to compute and visualise the Steiner Minimal Tree solution for arbitrary instance sizes and optionally compare it with the Minimum Spanning Tree solution.
 
 \subsubsection{Requirements}
 Specifically, the application shall take a set of points as input, which can be generated randomly or imported using a range of established file formats, and provide the user with the ability to visualise, compare, and analyse the SMT and MST solutions.
@@ -109,7 +109,7 @@ Lastly, the application will provide the user with different export options usin
 
 % Apart from simultaneously visualising the SMT and MST solutions, the application will also indicate how the lengths of both trees compare to each other.
 % This will allow users to build an intuition for the so-called \textit{Steiner ratio}, which is the lowest possible ratio between the length of the SMT and the MST. It is currently conjectured that the Steiner ratio is $\frac{\sqrt{3}}{2} \approx 0.866025...$ \citep{Gilbert1968SteinerMT}. In other words, the MST is in the worst case 15.5\% longer than the SMT. We will further discuss this in \ref{sec:esmt_steiner_ratio}.
-It is important to note that the Steiner Tree and Minimum Spanning Tree problems are defined for many different metric spaces. Still, in this project, we will only consider the Euclidean and rectilinear (also known as the Manhattan or taxicab distance) variants. The interface will provide the user with the option to toggle between the two variants. Figure \ref{fig:mst_rmst_3point} shows the difference between the two variants for a 3-point example instance.
+It is important to note that the Steiner Tree and Minimum Spanning Tree problems are defined for many different metric spaces. In this project, however, only the Euclidean and rectilinear (also known as the Manhattan or taxicab distance) variants are considered. Figure \ref{fig:mst_rmst_3point} shows the difference between the two variants for a 3-point example instance.
 
 \begin{figure}[htb]
     \begin{subfigure}[b]{0.24\textwidth}
@@ -158,9 +158,9 @@ This project includes the following new contributions:
 
 This dissertation presents the development of a web-based visualisation tool for the rectilinear and Euclidean variants of the Steiner Minimal Tree and Minimum Spanning Tree problems. It is structured as follows:
 \begin{itemize}
-    \item \textbf{Chapter \ref{sec:background}}: aims to equip the reader with all the required background information related to the Steiner Tree problem to understand the problem and the purpose of the visualisation tool. First, the historical development is discussed, followed by the formal definitions of the Euclidean and rectilinear Steiner Minimal Tree problems and their properties, including the Steiner ratio. Next, exact algorithms for the Euclidean variant are discussed, such as Melzak's algorithm and the GeoSteiner algorithm, with the latter also being the fastest known exact algorithm for the Steiner Minimal Tree problem and the basis of the implementation of the visualisation tool. The chapter will end with an overview of existing visualisation tools for the Steiner Tree problem and discuss their features and limitations.
-    \item \textbf{Chapter \ref{sec:requirements}}: expands the initial project aims into focused requirements, distinguishing between the core requirements and the additional features. It provides the foundation for the design decisions made during the implementation.
-    \item \textbf{Chapter \ref{sec:software_design_and_implementation}}: gives an overview of the software design and implementation of the visualisation tool. It explains and justifies the design choices, such as the technology stack, the architecture of the application, and the chosen canvas library. This is followed by a section on the implementation of the algorithms, where focus is given to the GeoSteiner algorithm and how it was integrated into the application. Next, it mentions constraints around the state management of the graph and how it was overcome. Various optimisations that improved the application's responsiveness when using large graph instances are discussed. The chapter finishes with a discussion on software quality and design aspects that were considered to promote the extensibility and maintainability of the application.
+    \item \textbf{Chapter \ref{sec:background}}: aims to equip the reader with all the required background information related to the Steiner Tree problem to understand the problem and the purpose of the visualisation tool. First, the historical context is discussed, followed by the formal definitions of the Euclidean and rectilinear Steiner Minimal Tree problems and their properties, including the Steiner ratio. Next, exact algorithms for the Euclidean variant are discussed, such as Melzak's algorithm and the GeoSteiner algorithm, with the latter also being the fastest known exact algorithm for the Steiner Minimal Tree problem and the basis of the implementation of the visualisation tool. The chapter will end with an overview of existing visualisation tools for the Steiner Tree problem and discuss their features and limitations.
+    \item \textbf{Chapter \ref{sec:requirements}}: expands the initial project aims into focused requirements, distinguishing between core requirements and the desirable features. All the design decisions discussed in the succeeding chapter are based on these requirements.
+    \item \textbf{Chapter \ref{sec:software_design_and_implementation}}: gives an overview of the software design and implementation of the visualisation tool. It explains and justifies the design choices, such as the technology stack, the architecture of the application, and the chosen canvas library. This is followed by a section on the implementation of the algorithms, where focus is given to the GeoSteiner algorithm and how it was integrated into the application using WebAssembly. Next, it discusses the constraints around the state management of the graph and how these were overcome. Mention is made of various state-related optimisations that improved the application's responsiveness when using large graph instances. The chapter finishes with a discussion on software quality and design aspects that were considered to promote the extensibility and maintainability of the application, as well as a brief consideration of licensing requirements.
     \item \textbf{Chapter \ref{sec:visualisation_and_product_features}}: demonstrates the visualisation tool and showcases the product features alongside a discussion on how they address the requirements as set out in chapter \ref{sec:requirements}.
     \item \textbf{Chapter \ref{sec:analysis_results}}: provides an analysis of the end product. The feasibility of the application is discussed and demonstrated, and a comparison is made between the end product and the existing visualisation tools as listed in chapter \ref{sec:background}. The chapter ends with a brief discussion on the potential implications of the end product and its use in other applications and research.
     \item \textbf{Chapter \ref{sec:conclusion}}: summarises the problem and the main contributions of the project. Future work is suggested for further improvements and extensions to the application.
@@ -176,12 +176,12 @@ This dissertation presents the development of a web-based visualisation tool for
 \chapter{Background}
 \label{sec:background}
 \section{Historical context}
-The Euclidean Steiner problem has a long history, with roots in the 17th century. The following section will summarise the history as expertly given by \cite{Brazil2014}.
+The Euclidean Steiner problem has a long history, with roots in the 17th century. The following section is a summary of \cite{Brazil2014}. The reader is referred to said paper for more details on the sources referenced in this section.
 
 \subsection{Fermat-Torricelli (3-point) problem}
-In 1643, Fermat posed the problem: Given three points, find a fourth point such that when connecting the three points to the fourth point, the sum of the distances is minimal. This problem has two cases:
+In 1643, Fermat \citep[p.~135]{Fermat} posed the problem: Given three points, find a fourth point such that when connecting the three points to the fourth point, the sum of the distances is minimal. This problem has two cases:
 \begin{itemize}
-    \item All the interior angles of the triangle formed by the three points are $\le 120^\circ$
+    \item All the interior angles of the triangle formed by the three points are $< 120^\circ$
     \item One of the interior angles is $\geq 120^\circ$
 \end{itemize}
 
@@ -205,89 +205,93 @@ In 1643, Fermat posed the problem: Given three points, find a fourth point such 
     \label{fig:fermat_problem}
 \end{figure}
 
-For the first case, Torricelli proposed the following construction. Given $\triangle ABC$, first draw the equilateral triangles $\triangle ABD$ and $\triangle BCE$. Then, for each of these equilateral triangles, draw the circumcircle. The position where the two circles intersect is the point where the sum of the distances is minimal, the so-called \textit{Torricelli point} (point $F$ in Figure \ref{fig:fermat_1}).
-To borrow some terminology from \cite{geosteiner96}, we will call the 3rd point for each of the equilateral triangles an \textit{equilateral point} denoted as $e_{XY}$ where $X$ and $Y$ are the base points from which the equilateral triangle is constructed. So, in figure \ref{fig:fermat_1}, $e_{AB} = D$ and $e_{BC} = E$.
+For the first case, Torricelli (1608-1647)\citep{Torricelli} proposed the following construction. Given $\triangle ABC$, first draw the equilateral triangles $\triangle ABD$ and $\triangle BCE$. Then, for each of these equilateral triangles, draw the circumcircle. The position where the two circles intersect is the point where, if it is connected to the other three points, the sum of the distances is minimal, the so-called \textit{Torricelli point} (point $F$ in Figure \ref{fig:fermat_1}).
+\subsubsection{Equilateral points}
+\label{sec:equilateral_points}
+To borrow some terminology from \cite{geosteiner96}, we will call the 3rd point for each of the equilateral triangles an \textit{equilateral point} denoted as $e_{XY}$ where $X$ and $Y$ are the base points from which the equilateral triangle is constructed. (Equilateral points will be later referenced again in our discussion on exact algorithm.) So, in figure \ref{fig:fermat_1}, $e_{AB} = D$ and $e_{BC} = E$.
 
-For the second case, Cavalieri proved that the optimal position of the 4th point is just the point with the obtuse angle. (point $B$ in Figure \ref{fig:fermat_2})
+For the second case, \cite{Cavalieri} proved that the optimal position of the 4th point conincides with the point which has the obtuse angle. (point $B$ in Figure \ref{fig:fermat_2})
 
 \subsection{Simpson lines}
-In 1750, Simpson discovered an alternative construction for the first case: a straight line is drawn from each equilateral point to the opposite vertex. The intersection of these lines coincides with the Torricelli point. These "Simpson lines" are demonstrated in Figure \ref{fig:fermat_1}.
-Later, in 1834, Heinen proved that a Simpson line has the same length as the sum of the distances to the Torricelli point.
+\cite{Simpson} discovered an alternative construction for the first case: a straight line is drawn from each equilateral point to the opposite vertex. The intersection of these lines coincides with the Torricelli point. These "Simpson lines" are demonstrated in Figure \ref{fig:fermat_1}.
+Later, \cite{Heinen} proved that a Simpson line has the same length as the sum of the distances to the Torricelli point.
 
 \subsection{Generalising to $n$ points}
 \label{sec:gergonne}
-The Fermat-Torricelli problem was later generalised to an $n$-point problem by Gergonne in 1811. Furthermore, Gergonne was among the first to consider the case where more than one extra point is allowed. He further discovered that multiple local minimal solutions can exist for the same set of points and that all must be constructed to find the global Minimum. Lastly, he devised an iterative, though incomplete, algorithm for finding a local minimum, given a full topology. We will further illustrate and discuss these concepts in \ref{sec:algorithms}.
+The Fermat-Torricelli problem was later generalised to an $n$-point problem by Gergonne in 1811. Furthermore, Gergonne was among the first to consider the case where more than one extra point is allowed. He further discovered that multiple local minimal solutions can exist for the same set of points and that all must be constructed to find the global Minimum. Lastly, he devised an iterative, though incomplete, algorithm for finding a local minimum, given a full topology \citep{Brazil2014}. We will return to the concept of local and global minima in \ref{sec:algorithms}, where Melzak's algorithm will be discussed. Melzak's algorithm is essentially an extension of Gergonne's algorithm.
 
-Gauss made another contribution to the problem in a letter to Schumacher in 1836. He considered the 4-point problem and noted that using just one extra point does not result in a minimal tree (compare \ref{fig:sub1} with \ref{fig:sub2}), as in the case of the 3-point problem. He illustrated the problem by describing the example of connecting German cities by railroad with minimal total length.
+Gauss made another contribution to the problem in a letter to Schumacher in 1836. He considered the 4-point problem and noted that using just one extra point does not result in a minimal tree (compare \ref{fig:sub1} with \ref{fig:sub2}), as in the case of the 3-point problem. He famously illustrated the problem by describing the example of connecting German cities by railroad with minimal total length.
 \begin{quote}
     I have on occasion considered the rail- road connection between Hamburg, Bremen, Hannover and Braunschweig, and I myself have thought that this problem would be an excellent prize problem for our students
 \end{quote}
 
-The last sentence of the quote proved correct because two attempts were made by Bopp in 1879 and Hoffman in 1890 to come up with a solution. Bopp considered all full topologies and used the constructions developed by Gergonne and Simpson to find the Full Steiner Tree (FST) for each full topology (if it exists). Notably, he generalised the problem to the $n$-point Steiner Tree problem and enumerated properties of the Steiner Trees, which were later rediscovered and proven by \cite{Gilbert1968SteinerMT}.
+The last sentence of the quote proved correct because two successful attempts were made by \cite{Bopp} and \cite{Hoffmann} to come up with a solution. Bopp considered all full topologies and used the constructions developed by Gergonne and Simpson to find the Full Steiner Tree (FST) for each full topology (if it exists). Notably, he generalised the problem to the $n$-point Steiner Tree problem and enumerated properties of the Steiner Trees, which were later rediscovered and proven by \cite{Gilbert1968SteinerMT}.
 
 \subsection{20th-century contributions}
-Then, in 1934, two Czech mathematicians, Jarník and Kössler, proved several important properties of the Steiner Tree, such as the degree property and the angle property (See \ref{sec:esmt_properties}). The latter two properties were valid even if the problem was extended to higher dimensions.
+Then, in 1934, two Czech mathematicians, Jarník and Kössler, proved several important properties of the Steiner Tree, such as the degree property and the angle property (See \ref{sec:esmt_properties}). The latter two properties were valid even if the problem was extended to higher dimensions \citep{Brazil2014}.
 
 \subsubsection{Street network problem}
-Choquet compares the Steiner Tree problem to a network of cities connected by roads where no junctions are available between the roads except outside the cities. (Another variant is the case where junctions are allowed inside the cities, which is the Minimum Spanning Tree problem.)
-A similar illustration was later used by Courant and Robbins (1941) in their influential book \textit{What is Mathematics?}, in which they called the generalised Fermat-Torricelli problem the "street network problem". Interestingly, they incorrectly attributed the original Fermat-Torricelli problem to Jakob Steiner. Consequently, the generalised Fermat-Torricelli problem (i.e. the street network problem) has since been known as the Steiner Tree problem in the literature even though it is unclear whether Steiner ever came up with this generalisation.
+Choquet compared the Steiner Tree problem to a network of cities connected by roads where no junctions are available between the roads except outside the cities.
+A similar illustration was later used by \cite{Courant_Robbins} in their influential book \textit{What is Mathematics?}, in which they called the generalised Fermat-Torricelli problem the "street network problem". Interestingly, they incorrectly attributed the original Fermat-Torricelli problem to Jakob Steiner. Consequently, the generalised Fermat-Torricelli problem (i.e. the street network problem) has since been known as the Steiner Tree problem in the literature even though it is unclear whether Steiner ever came up with this generalisation \citep{Brazil2014}.
 
 \subsubsection{Gilbert and Pollak's seminal paper}
-Finally, \cite{Gilbert1968SteinerMT} provided a comprehensive survey of the Steiner Tree problem and derived many of its properties that have since been the basis for much of the modern literature on the topic. (more on this in \ref{sec:esmt_properties})
+Finally, \cite{Gilbert1968SteinerMT} provided a comprehensive survey of the Steiner Tree problem. They defined much of the terminology that is used in the literature today for describing the Steiner Tree problem, and derived many of its properties that have since been the basis for much of the modern literature on the topic. (more on this in \ref{sec:esmt_properties})
 
-\subsubsection{Surging popularity in the sixties}
-From the sixties onwards, the Steiner Tree problem has grown in popularity, partly due to the development of formal algorithms for the related Minimum Spanning Tree problem and partly due to the rise of real practical applications, such as minimum-length telephone networks and efficient routing in chips. The latter application was presciently predicted by Hanan (1966) in his paper on the rectilinear variant of the Steiner Tree problem.
+\subsubsection{Renewed interest in the sixties}
+From the sixties onwards, the Steiner Tree problem has grown in popularity, partly due to the development of formal algorithms for the related Minimum Spanning Tree problem and partly due to the rise of real practical applications, such as minimum-length telephone networks and efficient routing in chips. The latter application was presciently predicted by \cite{Hanan} in his paper on the rectilinear variant of the Steiner Tree problem.
 
+\subsubsection{Summary}
 In this section, we have discussed the historical context of the Steiner Tree problem and how it has evolved over the centuries. The following section will deal with the formal definitions of the Euclidean and rectilinear Steiner Minimal Tree problems and list some of their properties.
 
 \section{Euclidean Steiner Minimal Tree}
-
+In the present section, the Euclidean Steiner Minimal Tree is defined formally, and some of its properties are listed, including the Steiner ratio conjecture.
 \subsection{Formal definition}
-The Euclidean Steiner Minimal Tree problem concerns finding the shortest tree containing a set of vertices in the Euclidean plane.
+\label{sec:esmt_definition}
+The Euclidean Steiner Minimal Tree problem is concerned with finding the shortest tree containing a set of vertices in the Euclidean plane.
 
 More formally:
 \begin{itemize}
-    \item Let $N$ be a finite set of $n$ points in $\mathbb{R}^2$ (Euclidean plane)
+    \item Let $N$ be a finite set of $n$ points in $\mathbb{R}^2$
     \item Let $V$ be the set that contains all points in $N$. ($V \supseteq N$)
     \item Let $S = V \setminus N$ be the set of additional points called \textit{Steiner points} where $|S| \geq 0$
     \item Let $T = (V, E)$ be a tree that connects all points in $V$ with exactly $E = |V| - 1$ edges
 \end{itemize}
 
-Then, the Euclidean Steiner Minimal Tree problem seeks to find $T$ such that $\sum_{e \in E} |e|$ is minimised, where $|e|$ is the Euclidean length of edge $e \in E$ \citep{Brazil2014}.
+Then, the Euclidean Steiner Minimal Tree problem seeks to find $T$ such that $\sum_{e \in E} |e|$ is minimised, where $|e|$ is the Euclidean length of edge $e \in E$ \citep{Brazil2015}.
 
 \subsection{Properties}
 \label{sec:esmt_properties}
-Euclidean Steiner Trees have specific properties, which are enumerated in the comprehensive paper by \cite{Gilbert1968SteinerMT}. We list the ones important for our discussion below and refer the reader to the mentioned paper for other properties.
+Euclidean Steiner Trees have specific properties, which are enumerated in the seminal paper by \cite{Gilbert1968SteinerMT}. We list the ones important for our discussion below and refer the reader to the mentioned paper for other properties.
 
 \begin{enumerate}
     \item Angle property: every pair of lines meets at $\theta \geq 120^\circ$.
     \item Degree property: every Steiner point has exactly 3 incident edges.
-    \item \label{prop:esmt_fst} A Steiner Tree with $n$ terminals has at most $s \leq n - 2$ Steiner points. Since a tree has $n - 1$ edges, a Steiner Tree with $n$ terminals has at most $2n - 3$ edges.
-    \item At most one relatively minimal tree exists for a given topology.
-    \item \label{prop:smt_fst} A Steiner Minimal Tree is a union of Full Steiner Trees (FSTs). And every non-Full Steiner Tree can be decomposed into a union of FSTs (see \ref{prop:fst_definition} for a definition of FSTs).
+    \item \label{prop:esmt_fst} A Steiner Tree with $n$ terminals has $s \leq n - 2$ Steiner points. Since a tree has $n - 1$ edges, a Steiner Tree with $n$ terminals has at most $2n - 3$ edges.
+    \item At most one relatively minimal tree (see \ref{prop:rmt_def} for a definition) exists for a given topology.
+    \item \label{prop:smt_fst} A Steiner Minimal Tree is a union of Full Steiner Trees (FSTs). And every non-Full Steiner Tree can be decomposed into a union of FSTs (see \ref{prop:fst_definition} for the definition of an FST).
 \end{enumerate}
 
 Next, we clarify the following terms used across the literature and first defined by \cite{Gilbert1968SteinerMT}:
 \begin{itemize}
     \item A topology is defined as the adjacency matrix, which only specifies the connections between points (i.e. how points are interconnected). \ref{fig:sub4} displays three different topologies for the same set of points, where \ref{fig:sub2} and \ref{fig:sub3} share the same topology.
-    \item \label{prop:fst_definition} A full topology has $n - 2$ Steiner points. A Full Steiner Tree (FST) is the relatively minimal tree for a full topology, where the terminals are leaves and the Steiner points are internal nodes with degree 3.
-    \item A relatively minimal tree (RMT) is the minimal tree for a given topology. All figures in \ref{fig:grid_figure} are RMTs except for \ref{fig:sub2}. A relatively minimal tree is obtained when small perturbations (displacements) of the Steiner points no longer result in a smaller tree.
-    \item  A Steiner Tree (ST) is always an RMT, but the converse does not hold. For instance, \ref{fig:sub1} is an RMT, but the angle $\angle S_1A_1A_2 = \theta < 120^\circ$ and, therefore, does not satisfy the angle property.
+    \item\label{prop:rmt_def} A relatively minimal tree (RMT) is the minimal tree for a given topology. All figures in \ref{fig:grid_figure} are RMTs except for \ref{fig:sub2}. A relatively minimal tree is obtained when small perturbations (displacements) of the Steiner points no longer result in a smaller tree.
+    \item  A Steiner Tree (ST) is always an RMT, but the converse does not hold. For instance, \ref{fig:sub1} is an RMT, but the angle $\angle S_1A_1A_2 = \theta < 120^\circ$ and, therefore, does not satisfy the angle property. A Steiner Tree is not necessarily minimal for all its vertices and is therefore a local minimum (e.g. compare Fig \ref{fig:sub3} with \ref{fig:sub4}).
     \item A Steiner Minimal Tree (SMT) is a Steiner Tree and is minimal for all its vertices (i.e. terminals + Steiner points). In other words, the SMT is the minimal tree across all possible topologies for a given set of points. See Figure \ref{fig:sub4} for an example.
+    \item \label{prop:fst_definition} A full Steiner topology has $n - 2$ Steiner points. A Full Steiner Tree (FST) is the relatively minimal tree for a full Steiner topology, where the terminals are leaves and the Steiner points are internal nodes with degree 3. Hereafter, we shall use the terms "full Steiner topology" and "full topology" interchangeably.
 \end{itemize}
 
-Given a topology, its Steiner Tree (if it exists) can be seen as a local minimum. Only by enumerating all possible topologies and their corresponding Steiner Trees can the global Minimum (i.e. the SMT) be found. This concept forms the basis of the algorithms we will discuss in the algorithms section.
+In summary, given a topology, its Steiner Tree (if it exists) can be seen as a local minimum. Only by enumerating all possible topologies and their corresponding Steiner Trees can the global Minimum (i.e. the SMT) be found. This concept forms the basis of the algorithms that will be discussed in section \ref{sec:algorithms}.
 
 \subsection{Steiner ratio}
 \label{sec:esmt_steiner_ratio}
 An ESMT without Steiner points is equivalent to the Euclidean  Minimum Spanning Tree (EMST). The EMST is the network that connects a set of points $N$, such that the sum of the edge weights is minimal, where the edge weights are the Euclidean distances between the points.
 
-SMTs are shorter or, at worst, equal in length to MSTs. The ratio between the length of the SMT and the MST has received much attention in the literature. \cite{Gilbert1968SteinerMT} famously conjectured that the lowest possible ratio is $\frac{\sqrt{3}}{2} \approx 0.866025...$ for any set of points.
+SMTs are shorter or, at worst, equal in length to MSTs. The ratio between the length of the Euclidean SMT and the MST has received much attention in the literature. \cite{Gilbert1968SteinerMT} famously conjectured that the lowest possible ratio is $\frac{\sqrt{3}}{2} \approx 0.866025...$ for any set of points.
 $$
     \text{Steiner ratio} = \frac{L_{ESMT}}{L_{EMST}} = \frac{\sqrt{3}}{2}
 $$
 
-\cite{Steiner_ratio_proof} submitted a proof for this conjecture, which was later shown to contain a flaw invalidating the proof \citep{Steiner_ratio_proof_invalidated}. Hence, the Steiner ratio conjecture remains open to this day.
+\cite{Steiner_ratio_proof} submitted a proof for this conjecture, which was later shown to contain a flaw invalidating the proof \citep{Steiner_ratio_proof_invalidated}. Hence, the Steiner ratio conjecture remains an open problem to this day.
 Nevertheless, attempts have been made to find proofs where $n$ is bounded. For example, \cite{Steiner_ratio_proof_8_points} came up with a proof for the case where $n \leq 8$.
 
 
@@ -325,8 +329,10 @@ Nevertheless, attempts have been made to find proofs where $n$ is bounded. For e
 \end{figure}
 
 \section{Rectilinear Steiner Minimal Tree}
+In this section, the Rectilinear Steiner Minimal Tree problem is defined formally, and some of its properties are listed. It concludes with a discussion on the rectilinear Steiner ratio.
+\label{sec:rectilinear_smt}
 \subsection{Formal definition}
-The Rectilinear Steiner Minimal Tree (RSMT) problem is similar to the ESMT problem in that by allowing extra Steiner points, it seeks to find the minimal tree for a given set of points, except that the rectilinear distance, also known as the Manhattan distance, is used. The rectilinear distance between two points $p_1 = (x_1, y_1)$ and $p_2 = (x_2, y_2)$ is defined as
+The formal definition of the Rectilinear Steiner Minimal Tree (RSMT) is very similar to the definition of the ESMT given in section \ref{sec:esmt_definition}, except that the rectilinear distance, also known as the Manhattan distance, is used. The rectilinear distance between two points $p_1 = (x_1, y_1)$ and $p_2 = (x_2, y_2)$ is defined as
 $$|x_1 - x_2| + |y_1 - y_2|.$$
 \subsection{Properties}
 \cite{Brazil2015} provides a list of properties of rectilinear Steiner Trees, including:
@@ -337,12 +343,12 @@ $$|x_1 - x_2| + |y_1 - y_2|.$$
     \item If $s$ is a T-point, at most one of its incident edges is a bent edge. If $s$ is a cross, all its incident edges are straight.
 \end{itemize}
 \label{sec:rsmt_properties}
-Some properties apply to the ESMT and RSMT, such as the maximum number of Steiner points and edges in a Steiner Tree (property \ref{prop:esmt_fst}).
+For clarity, some properties of the properties that were enumerated in \ref{sec:esmt_properties} also apply to the RSMT, such as the maximum number of Steiner points and edges in a Steiner Tree (property \ref{prop:esmt_fst}).
 
 \subsection{Steiner ratio}
 As before, an RSMT without Steiner points is equivalent to a rectilinear Minimum Spanning Tree (RMST). The definition of the RMST is similar to the definition of the ESMT in \ref{sec:esmt_steiner_ratio} except that the rectilinear metric is used.
 
-The Steiner ratio in the rectilinear case is the smallest ratio between the length of the RSMT and the RMST. It has been proven to be exactly $2/3$ \cite{Brazil2015}.
+The Steiner ratio in the rectilinear case is the smallest ratio between the length of the RSMT and the RMST. It has been proven to be exactly $2/3$ \citep{Brazil2015}.
 $$
     \text{Steiner ratio} = \frac{L_{RSMT}}{L_{RMST}} = \frac{2}{3}
 $$
@@ -356,8 +362,8 @@ Although approximation schemes can be used to find near-optimal solutions in a r
 
 This section will discuss two well-known exact algorithms for the Steiner Tree problem:
 \begin{itemize}
-    \item Melzak's algorithm \cite{MelzakAlgo} which is largely based on the iterative algorithm by Gergonne \citep{Brazil2014} (see \ref{sec:gergonne}). This algorithm is essentially a brute-force approach and is, therefore, not practical for large instances.
-    \item The GeoSteiner algorithm developed by \cite{geosteiner96}. This algorithm incorporates many ideas from Melzak's algorithm. Still, it is much faster and efficient due to utilising the geometric properties of Steiner Trees for pruning the search space, efficient data structures, and other clever optimisations. This algorithm has been the fastest exact algorithm for decades.
+    \item Melzak's algorithm \citep{MelzakAlgo}, which is largely based on the iterative algorithm by Gergonne (see \ref{sec:gergonne}). This algorithm is essentially a brute-force approach and is, therefore, not practical for large instances. Still it forms the basis of the GeoSteiner algorithm and is therefore important to understand.
+    \item The GeoSteiner algorithm developed by \cite{geosteiner96}. It is much faster and efficient than any other exact algorithm for the Steiner Tree problem due to utilising the geometric properties of Steiner Trees for pruning the search space, efficient data structures, and other clever optimisations. This algorithm has been the fastest for decades.
 \end{itemize}
 \textbf{Note}: The software implementation of this project uses the GeoSteiner algorithm, but the actual implementation is not discussed until section \ref{sec:software_design_and_implementation}.
 
@@ -369,7 +375,7 @@ Melzak's algorithm helps to understand the Steiner Tree problem, its properties,
 Melzak's algorithm takes a full topology as input and finds the Full Steiner Tree (FST) if it exists. At stated in \ref{prop:fst_definition}, an FST is defined as a Steiner Tree with $n$ terminals and $n-2$ Steiner points, where terminals are leafs (degree 1) and Steiner points are internal nodes (degree 3).
 
 \subsubsection{Formal definition}
-Before illustrating the algorithm with a practical example, we use the following definition from \citep{Brazil2015}:
+Before illustrating the algorithm with a practical example, we use the following definition from \cite{Brazil2015}:
 Let $\mathcal{T_n}$ be a full topology with $n$ points and $n - 2$ Steiner points. Let $S_i$ be a Steiner point in $\mathcal{T_n}$ which is adjacent (connected by an edge) to $A$ and $B$. $\overline{AB}$ shall denote the segment between $A$ and $B$. Let $X$ be the 3rd (equilateral) point of the equilateral triangle $\triangle ABX$.
 
 \begin{figure}[!htb]
@@ -439,7 +445,7 @@ Subsequently, the position of $S_3$ is the intersection between $\overline{XS_2}
 
 
 \subsection{Complexity analysis for Melzak's algorithm}
-In figure \ref{fig:melzak_algo_visualisation}, we have chosen specific sides for the equilateral points $X = e_{DE}$, $Y = e_{CX}$, and $Z = e_{AB}$.
+In figure \ref{fig:melzak_algo_visualisation}, we have chosen specific sides for the equilateral points $X = e_{DE}$, $Y = e_{CX}$, and $Z = e_{AB}$ (see section \ref{sec:equilateral_points} for the definition of an equilateral point).
 The original Melzak algorithm, however, accounts for the fact that each equilateral point $e_{xy}$ can be placed on either side of the segment $\overline{xy}$. Hence, the algorithm has a worst-case complexity of $O(2^n)$.
 An improved, $O(n)$ version of the algorithm was proposed by \cite{Melzak_linear_time}, which picks the correct side for each equilateral point $e_{xy}$ in constant time.
 
@@ -463,11 +469,12 @@ It consists of the same two steps as the brute-force algorithm above.
     \item Find the subset of FSTs that form the SMT (i.e. \textit{concatenation}).
 \end{enumerate}
 However, instead of enumerating all possible full topologies for all subsets of $n$ terminals, it only enumerates the equilateral points that are used in the construction of the FSTs \citep{geosteiner96}. Equilateral points are often repeated across different full topologies of subsets, so this avoids large redundancies. Secondly, using clever \textit{pruning tests}, many equilateral points are discarded at an early generation stage, further reducing the number of FSTs that need to be considered during \textit{concatenation}. The reader is referred to \cite{geosteiner96} for more details on these pruning tests.
-As a result of these two factors, the number of FSTs generated in the first stage is linear in $n$. It has been empirically shown that, on average, the number of generated FSTs is $2.5n$ with only $0.6n$ left after pruning \citep{29ee725d11ac4584b72f7fe66c4326fa}.
+As a result of these two factors, the number of FSTs generated in the first stage is linear in $n$. It has been empirically shown that for the Euclidean case, on average, the number of generated FSTs is $2.5n$ with only $0.6n$ left after pruning \citep{29ee725d11ac4584b72f7fe66c4326fa}.
 
 The process of generating and pruning is quadratic in $n$, but the last stage of concatenation is a major bottleneck. During concatenation, the algorithm has to check every possible subset of FSTs to see which has the minimal length. This results in exponential complexity in the number of FSTs. Hence, it is critical that as few FSTs as possible are generated in the first stage.
 
-The discussion on the GeoSteiner algorithm above has so far assumed the Euclidean version of the problem. It is noteworthy that the algorithm has been extended to the rectilinear case as well \citep{rectilinear_geosteiner}. It has been found for the rectilinear case that the generation phase is fast, but the concatenation phase is much slower compared to the Euclidean variant (\citep{29ee725d11ac4584b72f7fe66c4326fa}).
+The discussion on the GeoSteiner algorithm above has so far assumed the Euclidean version of the problem. It is noteworthy that the algorithm has been extended to the rectilinear case as well \citep{rectilinear_geosteiner}. It has been observed that for the rectilinear case, the generation phase is fast, but the concatenation phase is much slower compared to the Euclidean variant \citep{29ee725d11ac4584b72f7fe66c4326fa}.
+The software implementation of this project uses the Euclidean and Rectilinear versions of the GeoSteiner algorithm.
 
 
 \section{Existing visualisation tools}
@@ -477,8 +484,8 @@ The previous section discussed the foundational ideas from Melzak's algorithm an
 \subsection{Steiner-Tree-Visualisation (STV)}
 STV is a Python-based GUI tool developed by \cite{Steiner-Tree-Visualisation}. It provides a simple interface for visualising Euclidean MSTs and SMTs, displaying their lengths and allowing for direct comparison. However, the tool is limited by a few factors.
 \begin{itemize}
-    \item First, a brute-force approximation algorithm is used to find the SMT, and despite the ${O(n^4 \log(n))}$ complexity, the tool completely freezes for instances larger than 40 nodes.
-    \item Additionally, the GUI is not flexible enough. For example, you cannot overlay the MST and SMT simultaneously, and the canvas does not support zooming or resizing. Importing a graph from an external file or exporting the results is also not possible.
+    \item First, a brute-force approximation algorithm is used to find the SMT, and despite the ${O(n^4 \log(n))}$ complexity, the tool freezes and becomes unusable for instances larger than 40 nodes.
+    \item Additionally, the GUI is not flexible enough. For example, you cannot overlay the MST and SMT simultaneously, and the canvas does not support zooming or resizing. Importing a graph from an external file or exporting the results is also not possible. And no visualisation of the Steiner ratio is provided.
     \item Lastly, the tool only runs on Python 2.x and would require code patching to run in modern, Python 3.x environments.
 \end{itemize}
 
@@ -490,16 +497,23 @@ ST is a JavaScript-based tool developed by \cite{Steiner-Tree}. It is a web page
 
 Overall, we have found that a lack of smooth, user-friendly interfaces, visualisation options, flexible import/export capabilities, and platform independence limits the existing tools.
 
+\section{Summary}
+In this chapter, we discussed the historical context of the Steiner Tree problem, tracing the problem's evolution from Fermat's original three-point problem in the 17th century through to the modern, generalised version of the problem. The Euclidean and rectilinear variants of the Steiner Minimal Tree problem were then formally defined, and their key properties were enumerated, including the concept of the Steiner ratio. For the Euclidean case, this ratio remains an open problem with a conjectured value of $\frac{\sqrt{3}}{2}$, while for the rectilinear case, it has been proven to be exactly $\frac{2}{3}$.
+
+The chapter then focused on exact algorithms. Melzak's algorithm was discussed in detail, not only because it forms the basis for understanding the GeoSteiner algorithm but also because it helps explain the problem's exponential complexity. The GeoSteiner algorithm, which remains the fastest known exact algorithm for decades, was then discussed, highlighting the key optimisations that make it so fast in practice.
+
+Finally, existing visualisation tools were reviewed, which highlighted limitations in in terms of speed, visualisation options, import/export capabilities, and platform independence. These limitations, combined with advances in the development of an efficient exact algorithm for the Steiner Tree problem, motivate the development of our visualisation tool, whose requirements will be discussed in the next chapter.
+
 \chapter{Requirements}
 \label{sec:requirements}
 
 The visualisation requirements stated in this section expand the project aims laid out in the introduction. This section is important because:
 \begin{itemize}
     \item all design decisions and implementation choices discussed in the following chapters derive from these requirements.
-    \item it demonstrates how the shortcomings of existing tools (as highlighted in section \ref{sec:existing_tools}) are addressed and form the basis for evaluating the end product.
+    \item it demonstrates how the shortcomings of existing tools (as highlighted in section \ref{sec:existing_tools}) are addressed and also forms the basis for evaluating the end product.
 \end{itemize}
-As stated in the introduction, the project aimed to develop a fast, accessible, user-friendly interface for visualising Steiner Minimal Trees and some of their properties.
-This requires the software to feature the following \textbf{essential requirements}:
+As stated in the introduction, the project aimed to develop a fast, easily accessible, user-friendly application for visualising Steiner Minimal Trees and some of their properties.
+This aim has been translated into the following \textbf{essential requirements}:
 \begin{requirements}
     \item The software must feature a well-designed, clean, and intuitive user interface.
     \item The software must support the visualisation of the Steiner Minimal Tree (SMT) and the Minimum Spanning Tree (MST), specifically the Euclidean and rectilinear variants.
@@ -507,7 +521,7 @@ This requires the software to feature the following \textbf{essential requiremen
     \item The computation of the SMT and MST must be fast and snappy for instances of up to 200 nodes (< 1 second).
     \item The user can create a graph instance of any size by importing from an external file, drawing on the canvas, or generating a random instance.
     \item The user can add, move, or remove nodes of an existing graph instance by directly manipulating the canvas.
-    \item If the user updates a graph instance after the SMT and MST have been computed, both trees must be dynamically recalculated and reflected on the canvas.
+    \item If the user updates a graph instance after the SMT and MST have been computed, both trees must be dynamically recalculated and rerendered on the canvas.
     \item The SMT and MST can be directly compared in terms of length (Steiner ratio) and tree structure.
     \item The software must be deployed as a web app to be accessible and platform-independent.
 
@@ -526,27 +540,29 @@ In addition, the following \textbf{desirable requirements} have been identified:
 This section serves as a guide to the implementation of the software.
 \begin{itemize}
     \item First, justification is given for the selected tech stack and design choices.
-    \item Then, the application's big-picture architecture and the codebase's structure are discussed.
-    \item After that, the implementation of core features is discussed, focusing on the integration with the GeoSteiner algorithms library.
-    \item Lastly, aspects of the software design, such as modularity, type-safety, separation of concerns, extensibility, and immutability, are highlighted.
+    \item Then, the application's big-picture architecture is discussed.
+    \item After that, the implementation of algorithms is discussed, focusing on the integration with the GeoSteiner library.
+    \item Then, aspects of the software design, such as modularity, type-safety, separation of concerns, extensibility, and immutability, are highlighted.
+    \item Lastly, there is a brief mention of licensing requirements.
 \end{itemize}
 
 \section{Technologies / Design choices}
+This section presents and justifies the key technologies and design choices used in developing the software. First, we discuss the choice of a web-based architecture over a native application, followed by an examination of the selected technology stack and its components. Special attention is given to the graph drawing library selection process, where we compare different options based on their features and performance characteristics. Finally, background information on WebAssembly and Emscripten is provided, which will be relevant for the disucssion of the implementation of the GeoSteiner algorithm in \ref{sec:geosteiner_integration}.
 \subsection{Web vs native}
 The first implementation decision was to build a web app instead of a native app (see requirement E9 in section \ref{sec:requirements}). Browsers are ubiquitous nowadays and provide a cross-platform way to run and distribute applications. Updates can easily be deployed without requiring users to install them manually. Further, differences between browser vendors have become less pronounced due to the development of standards and the rise of frameworks that abstract away the jarring differences.
 
 \subsection{Tech stack}
 \label{sec:tech_stack}
 
-The web app is built using \textbf{Typescript}\footnote{https://www.typescriptlang.org/} (TS) as the primary programming language, which is a statically-typed superset of JavaScript (JS) that compiles to JS \citep{typescript}. Type-safety makes the application more robust and easier to reason about. In addition, Typescript has a great developer experience (e.g. for refactoring and code completion). Empirical evidence suggests that it effectively detects bugs and improves code maintainability \citep{typescript_bugs_paper}.
+The web app is built using \textbf{Typescript}\footnote{\url{https://www.typescriptlang.org/}} (TS) as the primary programming language, which is a statically-typed superset of JavaScript (JS) that compiles to JS \citep{typescript}. Type-safety makes the application more robust and easier to reason about. In addition, Typescript has a great developer experience (e.g. for refactoring and code completion). Empirical evidence has also suggested that it is effective at detecting bugs and that it improves code maintainability \citep{typescript_bugs_paper}.
 
-\textbf{React}\footnote{https://react.dev/} has been used for the core UI logic. React is a popular library for building interactive frontends and has a large ecosystem of component libraries. React code is declarative (i.e., you only define what the UI should look like, not how to achieve it) and, therefore, easier to reason about and maintain.
+\textbf{React}\footnote{\url{https://react.dev/}} has been used for the core UI logic. React is a popular library for building interactive frontends and has a large ecosystem of component libraries behind it. React code is declarative (i.e., you only define what the UI should look like, not how to achieve it) and, therefore, easier to reason about and maintain.
 
 Other dependencies include:
 \begin{itemize}
-    \item \textbf{Shadcn/ui}\footnote{https://ui.shadcn.com/}: a React component library that provides a set of accessible components, such as buttons, inputs, drop downs, colour-pickers, etc.
-    \item \textbf{Sigma.js}\footnote{https://sigmajs.org/}: a popular canvas library for visualising graphs.
-    \item \textbf{Graphology}\footnote{https://Graphology.github.io/}: a library that provides a graph data model, which is required by Sigma.js.
+    \item \textbf{Shadcn/ui}\footnote{\url{https://ui.shadcn.com/}}: a React component library that provides a set of accessible components, such as buttons, inputs, drop downs, colour-pickers, etc.
+    \item \textbf{Sigma.js}\footnote{\url{https://sigmajs.org/}}: a popular canvas library for visualising graphs.
+    \item \textbf{Graphology}\footnote{\url{https://Graphology.github.io/}}: a library that provides a graph data model, which is required by Sigma.js.
 \end{itemize}
 
 % !TEX region-formatter-ignore-begin
@@ -555,19 +571,19 @@ Other dependencies include:
 
 \subsection{Graph drawing library}
 As specified above, the app uses the open source library Sigma.js for graph drawing, with Graphology as its graph data model. Table \ref{tab:canvas_libs} shows how Sigma.js compares to other popular JavaScript graph drawing libraries. Sigma.js was chosen because it ticked most boxes regarding required features and quality metrics.
-Sigma.js is one of the most performant graph drawing libraries\footnote{https://www.youtube.com/watch?v=JGN9dejWjAk\&ab\_channel=DominikMaszczyk} because it uses WebGL instead of SVG or the HTML 2D Canvas for rendering. Besides, it uses a separate, lightweight, and flexible data model (Graphology) for storing and manipulating graph data, which helps keep the views separate from the data manipulation logic.
+Sigma.js is one of the most performant graph drawing libraries\footnote{\url{https://www.youtube.com/watch?v=JGN9dejWjAk\&ab\_channel=DominikMaszczyk}} because it uses WebGL for rendering instead of SVG or the HTML 2D Canvas. Besides, it uses a separate, lightweight, and flexible data model (Graphology) for storing and manipulating graph data, which helps keep the views separate from the data manipulation logic.
 Lastly, it satisfies the essential requirement of supporting direct interaction with the graph through the canvas (see E6 in section \ref{sec:requirements}) by exposing user-interaction events, such as the clicking or dragging nodes.
 
 \subsection{WebAssembly + Emscripten}
 As this project uses the GeoSteiner C library to compute the Steiner Minimal Tree, it is necessary to use WebAssembly to run the algorithm in the browser. The browser cannot natively execute C code, but WebAssembly provides a way to run languages other than JS directly in the browser at near-native performance.
 \subsubsection{WebAssembly}
-WebAssembly\footnote{https://webassembly.org/} (WASM) is a binary instruction format for a stack-based virtual machine that can be executed in the browser. It is designed to be a portable target for the compilation of languages, such as C and C++, into a compact binary format.
+WebAssembly\footnote{\url{https://webassembly.org/}} (WASM) is a binary instruction format for a stack-based virtual machine that can be executed in the browser. It is designed to be a portable target for the compilation of languages, such as C and C++, into a compact binary format.
 Due to its compact format, executing WASM code is much faster than executing optimised JS code \citep{WebAssemblyIntro}.
-WASM is supported by most browsers, except for Internet Explorer and Opera Mini \footnote{https://caniuse.com/wasm}.
+WASM is supported by most browsers, except for Internet Explorer and Opera Mini \footnote{\url{https://caniuse.com/wasm}}.
 
 \subsubsection{Emscripten}
 \label{sec:emscripten}
-Emscripten\footnote{https://emscripten.org/} is a compiler toolchain that can compile C and C++ code to WASM. It comprises a designated compiler frontend (emcc) and an LLVM back end optimised for generating WASM binaries.
+Emscripten\footnote{\url{https://emscripten.org/}} is a compiler toolchain that can compile C and C++ code to WASM. It comprises a designated compiler frontend (emcc) and an LLVM back end optimised for generating WASM binaries.
 The output from the Emscripten compiler is a .wasm file (module) and a .js file containing "glue code". This code serves as an interface between the WASM binary and the JavaScript environment \citep{Emscripten_tutorial}. The front end only needs to load the glue code, which loads and instantiates the WASM module.
 
 \subsubsection{Communication between JS and WASM}
@@ -581,19 +597,21 @@ This avoids the need to manually handle different offsets and strides.
 
 \section{Software architecture}
 \label{sec:software_architecture}
-The application is developed as a client-only application without a back-end API. Figure \ref{fig:architecture} shows the various high-level components of the application. The top layer (i.e. the front end) is divided into three main parts:
-\begin{itemize}
-    \item The views part, which handles user interaction (controls) and the visual appearance
-    \item The algorithms part handles the computation of the Minimum Spanning Tree (MST) and Steiner Minimal Tree (SMT) algorithms.
-    \item The graph data structure as a global state, which can be read and updated by the views and algorithms. The state containing the graph instance is immutable (see section \ref{sec:immutability}).
-\end{itemize}
-
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includesvg[width=0.8\linewidth]{images/architecture_diagram.svg}
     \caption{Architecture of the web application. It comprises the frontend (top layer) and the WebAssembly module (bottom layer) compiled with Emscripten from the GeoSteiner C library. The WASM module is loaded by the front end at runtime. The arrows indicate the flow of data and control.}
     \label{fig:architecture}
 \end{figure}
+The application is developed as a static, client-only application without a back-end API. A great benefit of this architecture is that it is secure by default as no communication with a server backend is required.
+Figure \ref{fig:architecture} shows the various high-level components of the application. The top layer (i.e. the front end) is divided into three main parts:
+\begin{itemize}
+    \item The views part, which handles user interaction (controls) and the visual appearance of the application.
+    \item The algorithms part, which handles the computation of the Minimum Spanning Tree (MST) and Steiner Minimal Tree (SMT) algorithms.
+    \item The graph data structure as a global state, which can be read and updated by the views and algorithms. The state containing the graph instance is immutable (see section \ref{sec:immutability}).
+\end{itemize}
+
+
 
 Through the relevant UI controls, the user can modify the graph instance, either directly, by adding a new graph or by editing the existing one, or indirectly, by triggering the computation of an algorithm. The algorithm's output is merged with the existing graph data structure in the latter case. This is important because it keeps the graph instance immutable (see section \ref{sec:immutability}).
 Updates to the graph data structure are reflected in the canvas component.
@@ -629,7 +647,7 @@ Since Steiner Minimal Trees are the focus of this project, the details of Prim's
 
 \section{GeoSteiner integration}
 \label{sec:geosteiner_integration}
-This section explains how the GeoSteiner library was integrated within the web application. This section is crucial because, to the author's knowledge, this integration is the first of its kind, and it is expected to open doors for new levels of interest in the field of Steiner Minimal Trees. Due to WASM's portable format, it will now be possible to leverage the GeoSteiner algorithms in any language with WASM support, including Python\footnote{https://github.com/wasmerio/wasmer-python}, Java \footnote{https://github.com/wasmerio/wasmer-java}, server-side Javascript runtimes like Node.js\footnote{https://nodejs.org/}, and many more. Please refer to section \ref{sec:analysis_results} for more discussion on implications.
+This section explains how the GeoSteiner library was integrated within the web application. This section is crucial because, to the author's knowledge, this integration is the first of its kind, and it is expected to open doors for new levels of interest in exact algorithms for the Steiner Tree problem. Due to WASM's portable format, it will now be possible to leverage the GeoSteiner algorithms in any language with WASM support, including Python\footnote{\url{https://github.com/wasmerio/wasmer-python}}, Java \footnote{\url{https://github.com/wasmerio/wasmer-java}}, server-side Javascript runtimes like Node.js\footnote{\url{https://nodejs.org/}}, and many more. Please refer to section \ref{sec:analysis_results} for more discussion on the possible implications.
 
 \subsubsection{Outline}
 This section consists of two parts:
@@ -640,10 +658,10 @@ This section consists of two parts:
 
 \subsection{Compiling GeoSteiner to WASM}
 
-The GeoSteiner library consists of the main algorithm implementation and an optimised version of the linear solver, lp\_solve v2.3\footnote{https://sourceforge.net/projects/lpsolve/files/lpsolve/2.3/}, that is used during the FST concatenation stage.
+The GeoSteiner library consists of the main algorithm implementation and an optimised version of the open-source linear solver, lp\_solve v2.3\footnote{\url{https://sourceforge.net/projects/lpsolve/files/lpsolve/2.3/}}, that is used during the FST concatenation stage.
 Compiling any library to WASM requires compiling all its dependencies to WASM.
 
-First, it was verified that the GeoSteiner library and the solver dependency would be portable to WASM using the portability guidelines in \cite{Emscripten_portability}.
+It was therefore first verified that the GeoSteiner library and the solver dependency would be portable to WASM using the portability guidelines in \cite{Emscripten_portability}.
 Despite satisfying all requirements, several problems were encountered during the first compilation attempts.
 
 \subsubsection{Floating point control register (fpcr) settings}
@@ -653,23 +671,22 @@ GeoSteiner uses different floating point control register settings depending on 
     \item Floating-point exceptions for overflow, divide-by-zero, and invalid operations are trapped.
 \end{itemize}
 
-The rounding mode for the WASM virtual machine is set to "round to nearest" by default, so no special rounding mode settings were needed. However, floating point traps are not implemented in WASM \citep{WASM_faqs}. The GeoSteiner code relies on floating-point traps because most systems will generate and propagate NaNs during floating-point exceptions, which may compromise the numerical stability of the algorithm. At present, this feature is only supported on x86 and ARM64 architectures \citep{Geosteiner_manual}.
+The rounding mode for the WASM virtual machine is already set to "round to nearest" by default, voiding the need to set the rounding mode in WASM environments. However, floating point traps are not implemented in WASM \citep{WASM_faqs}. The GeoSteiner code relies on floating-point traps because most systems will generate and propagate NaNs during floating-point exceptions, which may compromise the numerical stability of the algorithm. At present, this feature is only supported on x86 and ARM64 architectures \citep{Geosteiner_manual}.
 Due to this limitation, the GeoSteiner code was modified not to rely on floating-point traps in WASM environments. This was achieved by using preprocessor directives to conditionally apply the floating-point traps.
-\todo{Add a link to the modified code here.}
 
 \subsubsection{Makefile modifications}
 The GeoSteiner library ships with an auto-generated Makefile. The following changes were made to ensure compatibility with the Emscripten toolchain.
 \begin{itemize}
-    \item A flag was set to create a static library instead of a dynamic one, according to Emscripten's recommendation for the best performance\footnote{https://emscripten.org/docs/compiling/Dynamic-Linking.html}.
+    \item A flag was set to create a static library instead of a dynamic one, according to Emscripten's recommendation for the best performance\footnote{\url{https://emscripten.org/docs/compiling/Dynamic-Linking.html}}.
     \item The build process was modified to use the \textit{emcc} compiler frontend instead of the default GCC compiler.
-    \item The normal compilation process depends on a locally installed version of the GNU libtool\footnote{https://www.gnu.org/software/libtool/}. Libtool uses the \textit{ar} and \textit{ranlib} utilities for creating static libraries. Emscripten provides a custom version of these tools that is compatible with WASM, called \textit{emar} and \textit{emranlib}, respectively. Unfortunately, it is not possible to use environment variables to set custom paths for the \textit{ar} and \textit{ranlib} utilities used by libtool. Therefore, direct changes to the local libtool installation had to be made.
+    \item In order to create a static library, the normal compilation process depends on a locally installed version of the GNU libtool\footnote{\url{https://www.gnu.org/software/libtool/}}. Libtool itself uses the \textit{ar} and \textit{ranlib} utilities. Emscripten provides a custom version of these utilities that is compatible with WASM, called \textit{emar} and \textit{emranlib}, respectively. Unfortunately, it was not possible to use environment variables to set custom paths for the \textit{ar} and \textit{ranlib} utilities used by libtool, so, direct changes to the local libtool installation had to be made instead.
 \end{itemize}
 
 With these changes, a WASM-compatible libgeosteiner.a static library archive file was created and used to compile the WASM module.
 
 \subsubsection{GeoSteiner facade}
 As mentioned in section \ref{sec:js_wasm_communication}, WASM-defined functions that are to be called from JS must be explicitly exported, which is done by adding their names to the \textit{EXPORTED\_FUNCTIONS} \textit{emcc} compile flag.
-Since the complexity of interacting with the WASM module grows with the number of exported functions, it was decided only to export a \textbf{simplified API}, using the \textit{facade}\footnote{https://en.wikipedia.org/wiki/Facade\_pattern} design pattern. This facade handles all the underlying GeoSteiner-specific logic required for the computation of Steiner Minimal Trees but irrelevant for the front end. The facade's interface is shown in listing \ref{lst:wrapper_functions}.
+Since the complexity of interacting with the WASM module grows with the number of exported functions, it was decided only to export a \textbf{simplified API}, using the \textit{facade}\footnote{\url{https://en.wikipedia.org/wiki/Facade\_pattern}} design pattern. This facade handles all the underlying GeoSteiner-specific logic required for the computation of Steiner Minimal Trees but irrelevant for the front end. The facade's interface is shown in listing \ref{lst:wrapper_functions}.
 
 \begin{lstlisting}[language=C,caption=Wrapper functions for the GeoSteiner library,label=lst:wrapper_functions]
     void calc_esmt(int n, double *terms, double *length, int *nsps, double *sps, int *nedges, int *edges);
@@ -677,7 +694,7 @@ Since the complexity of interacting with the WASM module grows with the number o
     void calc_rsmt(int n, double *terms, double *length, int *nsps, double *sps, int *nedges, int *edges);
 \end{lstlisting}
 
-The facade functions make heavy use of pointers because arrays are non-primitive data types which cannot be directly passed to WASM functions. Instead, JS and WASM share a special, contiguous memory space that can be used to share complex data types such as arrays (see section \ref{sec:js_wasm_communication}). Data can be passed to the WASM module by allocating memory in the memory space and passing a pointer to the memory location to the WASM module. Due to this explicit memory management, `malloc` and `free` must be exported in addition to the facade functions.
+The facade functions make heavy use of pointers because arrays are non-primitive data types which cannot be directly passed to WASM functions. Instead, JS and WASM share a special, contiguous memory space that can be used to share complex data types such as arrays (see section \ref{sec:js_wasm_communication}). Data can be passed to the WASM module by allocating memory in the memory space and passing a pointer to the memory location to the WASM module. Due to this explicit memory management, `malloc` and `free` are also explicitly exported from the WASM module in addition to the facade functions.
 
 \subsection{Integrating the GeoSteiner WASM module with the frontend}
 The output from the WASM compilation process is a .wasm file and a .js file containing "glue code" (see section \ref{sec:emscripten}). The .js file is loaded like any other JavaScript file, which completely hides the loading and setup process of the WASM module.
@@ -761,6 +778,13 @@ However, the GeoSteiner library is not distributed with a typical open-source li
 The license\footnote{\url{http://www.geosteiner.com/LICENSE}} states that technical modifications are allowed as long as the authors are attributed, an indication of modification is provided, and a link to GeoSteiner's license is included. Section 2(a)(4) of the license also states that technical modifications do not constitute adapted material, thus voiding the need to use a similar license in our project.
 
 Attribution for the GeoSteiner library has been added both to the project's GitHub repository\footnote{\url{https://github.com/pietert2000/visual-steiner}} and the web application\footnote{\url{https://steinertree.com}}.
+
+\section{Summary}
+This chapter has presented the software design and implementation of the visualisation tool. We began by justifying the choice of a web-based architecture and the selected technology stack, including the use of WebAssembly to run the GeoSteiner C library in the browser at near-native performance. The architecture of the application was then discussed, showcasing the different components and parts of the application and how they interact with each other.
+
+The implementation of the algorithms was examined, with particular focus on the integration of the GeoSteiner library through WebAssembly. This integration represents a significant contribution, as it is the first successful compilation of the GeoSteiner implementation to WebAssembly, making the algorithm accessible to any programming language that supports WebAssembly. The chapter also discussed how the graph state is managed and the various optimisations that were implemented to improve the application's responsiveness.
+
+Finally, we considered licensing and  important software design aspects such as immutability, separation of concerns, modularity, type safety, and extensibility, which were crucial for developing a maintainable and extensible application. The next chapter will demonstrate the UI and its features in detail.
 
 
 \chapter{Visualisation and product features}
@@ -871,24 +895,33 @@ As stated in the introduction, the project aimed to develop a fast, accessible, 
 So far, only the design and implementation of the product have been discussed (see sections \ref{sec:software_design_and_implementation} and \ref{sec:visualisation_and_product_features}), but in this section, the product result is evaluated for its feasibility, how it compares to existing tools, and its potential implications.
 
 \section{Product feasibility}
-Requirements E4 and E9 (section \ref{sec:requirements}) stated that product should be deployed as a web application and that it should be able to compute the Steiner Minimal Tree and Minimum Spanning Tree of a graph in under 1 second for up to 200 terminals, to be easily accessible and fast. To meet these constraints, instead of building a native app or using the standard client-server architecture, the product was designed as a client-only web application that runs the highly optimised yet computationally expensive GeoSteiner algorithm at near-native speeds directly in the client's browser using WebAssembly.
-This section will demonstrate the feasibility of these design choices.
+When the technology stack and the client-only architecture initially were chosen, it was based on the assumption that GeoSteiner would be able to run fast enough through WebAssembly to meet the performance requirements and that loading the WASM module on each application page load would not be a problem in terms of bandwidth usage. The following section will show that these assumptions were correct and that the approach was feasible.
 
 \subsection{Performance}
 \label{sec:performance}
-By testing the product\footnote{\url{https://steinertree.com}} with multiple random graphs of 200 terminals, it was found that the app was consistently able to compute and render the Steiner Minimal Tree and Minimum Spanning Tree of a graph in under a second, meeting the initial design constraints. Naturally, the exact timing will vary depending on the hardware used. Still, the constraint should be interpreted as a rough guideline rather than a strict limit; hence, no quantitative results are included here. Instead, the reader is encouraged to test the product for themselves. Moreover, most use cases are expected to be with graphs much smaller than 200 terminals (see section \ref{sec:implications}). Hence, the product will perform well for most use cases, even on less capable hardware.
+Requirement E4 states that the product should be able to compute the (Euclidean or rectilinear) Steiner Minimal Tree and Minimum Spanning Tree in under 1 second for up to 200 terminals.
+By testing the product\footnote{\url{https://steinertree.com}} with multiple random graphs of 200 terminals (using the "generate graph" button in the "import" tab), it was found that the app was consistently able to compute and render the Steiner Minimal Tree and Minimum Spanning Tree of a graph in under a second, meeting the initial design constraints. Naturally, the exact timing will vary depending on the hardware used.  Instead, the reader is encouraged to test the product for themselves. Moreover, most use cases are expected to be with graphs much smaller than 200 terminals. So, the product should perform well for most use cases, even on less capable hardware.
+For example, one use case could be checking counter-examples to the Euclidean Steiner ratio conjecture (see section \ref{sec:research_uses}). As the instance size increases, it becomes increasingly hard to get anywhere near the conjectured lower bound (as shown in Table 3 in \cite{geosteiner96}). Hence, instances with 3-10 terminals are most useful in this scenario.
 
 The impressively fast performance of the GeoSteiner algorithms has also enabled dynamic tree re-computation when the user edits the graph, meeting requirement E7 (section \ref{sec:requirements}). This feature is only usable and responsive if the computation happens fast enough since long feedback loops will make the UI feel laggy.
-\subsection{Ease of access}
-As a web application, the product is easily accessible from any device with a modern web browser, and no special tools, installations, or configurations are required. However, the product's UI has not been optimised for mobile screen sizes, as it is expected that most use cases will be on larger screens, such as laptops and desktops.
 
 
+\subsection{Client-only architecture}
+In determining the feasibility of the client-only architecture, the size of the GeoSteiner WASM module was also considered. For example, if the module is too large, it might take too long to load the application, thus failing to meet the requirement of a easily accessible tool.
+As it turns out, the GeoSteiner WASM module and its required glue code is around 400kB and with Gzip compression (which is enabled by default in most browsers), it is around 170kB. It is clear that this size is reasonable and does not pose a problem for the product's accessibility.
+
+From the two sections above, it can be concluded that:
+\begin{itemize}
+    \item The GeoSteiner algorithm despite its exponential complexity, is fast enough in practise to be used for visualisation purposes.
+    \item Running the GeoSteiner algorithm in the browser through WebAssembly is feasible and combines the benefits of native performance with platform independence.
+\end{itemize}
 
 \section{Comparison with existing tools}
 The previous section demonstrated the feasibility of our approach to meeting the performance and accessibility requirements.
 This section will discuss how the product compares to existing tools.
 
 Section \ref{sec:existing_tools} listed existing tools and concluded that they lacked a smooth and user-friendly interface, visualisation options, flexible import/export capabilities, and platform independence. A summary of the comparison of features between our product and the existing tools is given in table \ref{tab:tools_comparison}. For a full discussion on the product requirements and features, the reader is referred to sections \ref{sec:requirements} and \ref{sec:visualisation_and_product_features}.
+It is furthermore worth noting that, besides comparing the product to the existing tools, table \ref{tab:tools_comparison} also implicitly makes clear that all requirements have been met by the product.
 
 \input{tables/tools_comparison}
 \footnotetext[2]{\url{https://github.com/Keydrain/Steiner-Tree-Visualisation}}
@@ -905,16 +938,17 @@ As mentioned in section \ref{sec:geosteiner_integration}, the GeoSteiner WASM mo
 
 Moreover, as the GeoSteiner WASM module is entirely independent of the UI, it could be used in other (open source) graph visualisation tools, such as GeoGebra \footnote[6]{\url{https://www.geogebra.org/geometry}}.
 \subsection{Using the visualisation tool in research}
+\label{sec:research_uses}
 The visualisation tool may also have several uses in research. First, its features will be useful for gaining a better intuition for the Steiner Tree and its properties. For instance, our implementation can smoothly recompute the Steiner Minimal Tree in response to user input, such as adding, moving, or removing points. This enables the user to observe how the Steiner ratio changes as a function of the configuration of the terminals. It also allows verifying potential counter-examples to the (Euclidean) Steiner ratio conjecture in real time.
 
 %==================================================================================================================================
 \chapter{Conclusion}
 \label{sec:conclusion}
-\section{Summary of the problem}
+\section{Summary}
+\subsubsection{Problem Statement}
 The Steiner Minimal Tree (SMT) problem and the Minimum Spanning Tree (MST) problem belong to the class of network optimisation problems. The SMT problem is similar to the MST problem but allows for the addition of Steiner points to further reduce the tree length.
 Despite being simple to state, the SMT problem is NP-hard. Consequently, its associated exponential complexity has limited the feasibility and practicality of visualisation tools, in contrast to the MST problem, which has efficient algorithms and plenty of visualisation options. This lack has also limited the ability of researchers and students to build an intuition for the problem, particularly in investigating the Steiner ratio (still an open problem in the Euclidean but not in the rectilinear case), which is the smallest ratio of the length of the Steiner Minimal Tree to the length of the Minimum Spanning Tree.
 
-\section{Summary of contributions}
 This dissertation presented the development of a web-based visualisation tool for the Euclidean and rectilinear variants of the Steiner Minimal Tree and Minimum Spanning Tree. The tool leverages GeoSteiner, the fastest known algorithm for the SMT problem, and exploits state-of-the-art techniques for optimal performance.
 The result is a publicly available client-only web app\footnote{\url{https://steinertree.com}} that can be run on any device with a modern web browser.
 
@@ -926,6 +960,7 @@ The \textbf{key contributions} of this work include:
     \item A dynamic tree-updating feature enables the user to observe how the Steiner ratio changes in real time as the graph is edited.
 \end{itemize}
 
+\subsubsection{Implications}
 The abstraction of the GeoSteiner implementation to a WebAssembly module makes integration into new programming languages and applications straightforward. This opens new possibilities and could lead to the broader adoption of exact algorithms instead of approximations in open source network analysis libraries and other geometric computing or visualisation tools.
 Moreover, researchers could use the visualisation tool to explore the Steiner Tree and its properties in a new and interactive way. In particular, the dynamic tree-updating feature has dramatically reduced the feedback loop for investigating potential counter-examples to the Steiner ratio conjecture.
 
