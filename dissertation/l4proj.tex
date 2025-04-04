@@ -737,7 +737,7 @@ This section discusses several graph-state-related optimisations to improve the 
 
 \subsubsection{Optimising canvas re-renders}
 It was observed that the initial implementation of the merging process described above was a major bottleneck. Our investigation revealed this was due to how updates to the graph's internal state were handled.
-For each operation, such as updating node or edge attributes, Graphology will trigger an event, which will cause a re-render of the entire graph on the canvas. This makes sense, except for quick successive operations in loops. In the latter case, the browser will freeze due to the number of re-renders. An issue was raised in the Sigma.js GitHub repository\footnote{https://github.com/jacomyal/sigma.js/issues/1046}.
+For each operation, such as updating node or edge attributes, Graphology will trigger an event, which will cause a re-render of the entire graph on the canvas. This makes sense, except for quick successive operations in loops. In the latter case, the browser will freeze due to the number of re-renders. An issue was raised in the Sigma.js GitHub repository\footnote{\url{https://github.com/jacomyal/sigma.js/issues/1046}}.
 
 In the meantime, a workaround was developed that prevents events from being triggered for updates to node and edge attributes. Events will still get triggered for adding or removing nodes and edges in batches, but at least no more freezes were noticed.
 
@@ -760,7 +760,7 @@ Even though this is generally not recommended in React \citep{React_update_objec
     \item It guarantees that all parts of the application will always have a consistent view of the graph instance's internal state (since the reference of the graph instance is never changed). In React, in particular, an inconsistent state due to batch updates can be a major source of bugs for applications with complex user interactions.
 \end{itemize}
 
-The only drawback is that components (other than the canvas) that depend on the graph's internal state are not automatically re-rendered when the graph state changes. As a workaround, a publish/subscribe design pattern\footnote{https://en.wikipedia.org/wiki/Publish-subscribe\_pattern} has been implemented for the components that need to react to changes in the graph's internal state.
+The only drawback is that components (other than the canvas) that depend on the graph's internal state are not automatically re-rendered when the graph state changes. As a workaround, a publish/subscribe design pattern\footnote{\url{https://en.wikipedia.org/wiki/Publish-subscribe\_pattern}} has been implemented for the components that need to react to changes in the graph's internal state.
 
 
 \subsection{Separation of concerns}
